@@ -1,313 +1,283 @@
 # CFA Quest — Checkpoint Tuần 1
 
-> **Học phần:** NHA408E  
-> **Ý tưởng:** Một trò chơi luyện tập CFA Level 1 theo phong cách RPG Dungeon, trong đó người chơi vượt qua các Area, Level và Boss bằng cách trả lời câu hỏi CFA. Mục tiêu chính là làm cho quá trình luyện tập câu hỏi multiple choice trở nên thú vị hơn và giảm cảm giác nhàm chán khi phải luyện tập lặp đi lặp lại.
-
-
-
-
-
-## Thành viên nhóm
-
-| Thành viên | Vai trò |
-|---|---|
-| **Quỳnh** | Project Lead + Game Structure Developer |
-| **Hồng** | CFA Question Bank + Quiz Engine Developer |
-| **Trang** | Special Mechanics Developer |
-| **Minh** | Player Points + Shop + Inventory Developer |
-| **Khôi** | Frontend/UI + Result Analytics + QA Lead |
+**Học phần:** NHA408E  
+**Ý tưởng ban đầu:** Xây dựng một sản phẩm luyện tập CFA Level 1 nhằm làm cho quá trình luyện multiple-choice questions bớt lặp lại và nhàm chán.
 
 ---
 
-# 1. Các Problem Candidates (đề xuất vấn đề)
+# 1\. Problem Candidates — Các vấn đề đề xuất
 
-## Đề xuất 1 — Sự nhàm chán khi luyện tập CFA lặp đi lặp lại
+## Đề xuất 1 — Khó duy trì hứng thú khi phải luyện CFA lặp đi lặp lại
 
-Người đang ôn CFA Level 1 phải luyện tập một lượng lớn câu hỏi multiple choice thuộc nhiều môn khác nhau. Khi hoạt động luyện tập chủ yếu lặp lại theo chu trình **đọc câu hỏi → chọn đáp án → kiểm tra kết quả → làm câu tiếp theo**, quá trình ôn luyện có thể trở nên đơn điệu và nhàm chán.
+Người ôn CFA Level 1 cần luyện một lượng lớn câu hỏi multiple choice. Tuy nhiên, việc liên tục thực hiện cùng một chu trình:
 
-Đây là vấn đề được VER2 xác định trực tiếp khi mô tả người dùng mục tiêu là những người cần luyện multiple choice nhưng cảm thấy quá trình luyện tập căng thẳng và nhàm chán.
+**Đọc câu hỏi → Chọn đáp án → Xem đúng/sai → Làm câu tiếp theo**
 
-### Đề xuất 2 — Quá trình luyện tập CFA có thể tạo cảm giác căng thẳng
+có thể khiến quá trình luyện tập trở nên lặp lại và nhàm chán.
 
-Ngoài sự nhàm chán, việc phải liên tục làm một số lượng lớn câu hỏi để đạt mức điểm yêu cầu có thể khiến quá trình luyện thi trở nên căng thẳng.
+VER2 xác định trực tiếp người dùng mục tiêu là những người cần luyện MCQ nhưng cảm thấy quá trình ôn luyện căng thẳng và nhàm chán.
 
-VER2 vì vậy không chỉ hướng tới tạo thêm sự thú vị mà còn muốn biến quá trình luyện tập thành một trải nghiệm có thử thách và tiến trình rõ ràng hơn.
+---
 
-### Đề xuất 3 — Hoạt động luyện câu hỏi thông thường thiếu sự đa dạng về trải nghiệm
+## Đề xuất 2 — Người học cần duy trì việc luyện tập trong nhiều câu hỏi và nhiều topic
 
-Một bộ câu hỏi thông thường chủ yếu tập trung vào việc trả lời và tính điểm. Người học có ít thay đổi về hình thức tương tác trong suốt quá trình luyện tập.
+CFA Level 1 bao gồm nhiều mảng kiến thức. Người học không chỉ cần làm một vài câu hỏi mà phải luyện tập liên tục trên nhiều topic khác nhau.
 
-VER2 đề xuất bổ sung các yếu tố như:
+Khó khăn cần kiểm chứng:
 
-- Area và Level;
-- Boss;
-- hệ thống điểm;
-- Trap;
-- Gamble;
-- Side Quest;
-- Shop và Item;
+**Liệu sự lặp lại có khiến người học giảm mong muốn tiếp tục luyện tập trước khi hoàn thành lượng practice cần thiết hay không?**
 
-để cùng một hoạt động luyện CFA có nhiều trạng thái và thử thách khác nhau.
+---
 
+## Đề xuất 3 — Sau khi luyện tập, người học cần biết mình nên luyện gì tiếp theo
+
+Chỉ biết tổng số câu đúng/sai chưa chắc đã đủ hữu ích.
+
+Một kết quả luyện tập có giá trị hơn nếu giúp người học biết:
+
+* topic nào đang làm tốt;
+
+* topic nào đang yếu;
+
+* câu nào sai;
+
+* vì sao sai;
+
+* nên ưu tiên luyện phần nào tiếp theo.
+
+VER2 đã dự kiến đầu ra gồm Overall Accuracy, Topic Accuracy, Weakest Areas và explanation cho câu hỏi.
+
+---
 
 ## Hướng vấn đề được lựa chọn
 
-Nhóm lựa chọn:
+Nhóm lựa chọn vấn đề chính:
 
-> **Đề xuất 1 — Sự nhàm chán khi luyện tập CFA Level 1 lặp đi lặp lại.**
+**Người đang ôn CFA Level 1 cần luyện tập nhiều câu hỏi để kiểm tra và củng cố kiến thức, nhưng quá trình luyện MCQ lặp đi lặp lại có thể trở nên nhàm chán và làm giảm hứng thú tiếp tục luyện tập.**
 
-Đây là vấn đề phù hợp nhất với mục tiêu ban đầu của VER2.
+### Output Tuần 1
 
-Các yếu tố như Area, Level, Boss, Trap, Gamble, Side Quest và Shop không phải mục tiêu cuối cùng của sản phẩm mà là **các cơ chế được sử dụng để giải quyết vấn đề nhàm chán**.
+**Problem Direction**
 
-### Logic của nhóm
+Repeated CFA practice is necessary, but its repetitive nature may reduce learner engagement.
 
-**Người học vẫn cần luyện CFA questions**  
-↓  
-**Không thay thế hoạt động luyện tập**  
-↓  
-**Thay đổi trải nghiệm xung quanh hoạt động luyện tập**  
-↓  
-**Biến practice thành một game có progression và challenge**  
-↓  
-**Giảm cảm giác lặp lại và nhàm chán**
+### Input cho Tuần 2
+
+Problem Direction này đặt ra yêu cầu:
+
+**Sản phẩm phải làm cho người dùng muốn tiếp tục practice nhưng không được làm mất learning value của việc luyện CFA.**
 
 ---
 
-# 2. Target User (Người dùng mục tiêu được lựa chọn)
+# 2\. Target User — Người dùng mục tiêu
 
-Đối tượng người dùng chính là:
+Người dùng chính là:
 
-> **Người đang ôn thi CFA Level 1 và cần luyện tập câu hỏi multiple choice.**
+**Người đang ôn CFA Level 1 và đang ở giai đoạn luyện tập câu hỏi multiple choice.**
 
 Người dùng này:
 
-- cần luyện tập kiến thức của nhiều môn CFA;
-- cần làm nhiều câu hỏi để kiểm tra khả năng của bản thân;
-- có thể phải lặp lại hoạt động luyện tập nhiều lần;
-- có nhu cầu biết mình đang mạnh hoặc yếu ở topic nào;
-- cảm thấy cách luyện câu hỏi thông thường có thể trở nên căng thẳng và nhàm chán.
+* đã tiếp xúc với kiến thức CFA;
 
-VER2 chia nội dung CFA thành 5 Area chính và một Side Quest Area để người dùng luyện tập trên nhiều nhóm kiến thức khác nhau.
+* cần luyện nhiều câu hỏi;
 
-### Phạm vi người dùng ở Tuần 1
+* cần kiểm tra mức độ hiểu của bản thân;
 
-Ở giai đoạn hiện tại, nhóm **chưa mở rộng người dùng sang sinh viên tài chính nói chung hoặc người học kiến thức mới**.
+* cần xác định topic còn yếu;
 
-Sản phẩm được xác định là:
+* phải duy trì hoạt động practice trong nhiều vòng;
 
-> **Game luyện tập cho người đang ôn CFA Level 1.**
+* có thể cảm thấy quá trình practice truyền thống lặp lại và nhàm chán.
 
+### Output Tuần 1
 
+**Target User**
 
-# 3. User Task / Decision (Nhiệm vụ hoặc quyết định của người dùng)
+CFA Level 1 candidates who need repeated MCQ practice.
 
-## Nhiệm vụ cốt lõi
+### Input cho Tuần 2
 
-Người dùng cần:
+Target User giúp Week 2 xác định:
 
-> **Luyện tập câu hỏi CFA Level 1 và cố gắng vượt qua các Level/Area bằng cách đạt mức độ chính xác yêu cầu.**
-
-Game không thay đổi nhiệm vụ học tập cơ bản. Người chơi vẫn phải đọc và trả lời câu hỏi CFA.
-
-Điểm thay đổi là nhiệm vụ đó được đưa vào một hành trình game.
-
-## Luồng nhiệm vụ chính
-
-**Chọn Area**  
-→ **Chọn Level**  
-→ **Trả lời CFA Questions**  
-→ **Tính Pts và MPS**  
-→ **Pass / Fail**  
-→ **Tích lũy điểm**  
-→ **Tiếp tục Level**  
-→ **Boss**  
-→ **Unlock Area tiếp theo**  
-→ **Final Boss**
-
-Mỗi Area gồm 10 Level thường và 1 Boss. Level 1 bắt đầu với 5 câu và mỗi Level tiếp theo tăng thêm 2 câu. Sau khi hoàn thành 5 Area, người chơi mở Final Boss là mock test 180 câu.
+Sản phẩm là **practice product**, không phải sản phẩm dạy CFA từ đầu.
 
 ---
 
-## Các quyết định bổ sung của người chơi
+# 3\. User Task / Decision — Nhiệm vụ của người dùng
 
-Ngoài việc trả lời câu hỏi, người chơi còn phải đưa ra một số quyết định trong quá trình chơi:
+## Core User Task
 
-### Gamble
+Nhiệm vụ cốt lõi là:
 
-Khi gặp Boss:
+**Luyện câu hỏi CFA Level 1, đánh giá kết quả của bản thân và xác định những topic cần tiếp tục luyện tập.**
 
-> Có cược một phần accumulated points để đổi lấy khả năng nhận thêm Smart Pts hay không?
+## User Task Flow
 
-Các mức cược:
+**Chọn nhóm kiến thức**
 
-**10% / 25% / 50% / 75% / 100%**
+→ **Làm CFA questions**
 
-### Side Quest
+→ **Nhận kết quả**
 
-Sau khi hoàn thành Area:
+→ **Xem performance theo topic**
 
-> Có thực hiện thêm Side Quest để kiếm thêm điểm hay tiếp tục hành trình chính?
+→ **Nhận ra phần kiến thức yếu**
 
-### Shop
-
-Người chơi quyết định:
-
-> Có sử dụng accumulated points để mua Item hay giữ điểm?
-
-### Item
-
-Người chơi quyết định thời điểm sử dụng các Item như:
-
-- Skip Key;
-- Leverage Token;
-- Savings Account;
-- Trap Insurance.
-
-Như vậy, game bổ sung **decision-making** vào một hoạt động vốn chủ yếu chỉ có trả lời câu hỏi.
+→ **Quyết định luyện tiếp phần nào**
 
 ---
 
-# 4. Draft Problem Statement (Bản nháp phát biểu vấn đề)
+## User Decision
 
-> **Người đang ôn CFA Level 1 cần luyện tập một lượng lớn câu hỏi multiple choice, nhưng việc thực hiện liên tục các bộ câu hỏi theo cùng một hình thức có thể khiến quá trình luyện tập trở nên căng thẳng, lặp lại và nhàm chán, từ đó làm giảm sự hứng thú trong quá trình ôn luyện.**
+Sau một lượt practice, người dùng cần trả lời được:
 
-### Lưu ý
+**“Tôi đang yếu ở phần nào và tôi nên luyện gì tiếp theo?”**
 
-Problem statement ở giai đoạn này **không đề cập RPG, Area, Boss, Shop hay bất kỳ giải pháp công nghệ cụ thể nào**.
+# 4\. Draft Problem Statement — Bản nháp phát biểu vấn đề
 
-Các cơ chế đó thuộc phần **solution**, không thuộc phần **problem**.
+**Người đang ôn CFA Level 1 cần thực hiện repeated multiple-choice practice để đánh giá và củng cố kiến thức, nhưng cách luyện tập lặp đi lặp lại có thể trở nên nhàm chán và làm giảm hứng thú tiếp tục luyện tập; đồng thời người học cần kết quả đủ rõ để biết mình đang yếu ở topic nào và nên luyện gì tiếp theo.**
 
----
+### Output Tuần 1
 
-# 5. Initial Source / Observation  
-## Nguồn giả định ban đầu & kế hoạch quan sát
+**Draft Problem Statement**
 
-Vấn đề hiện tại xuất phát trực tiếp từ giả định được đặt ra trong VER2:
+### Input cho Tuần 2
 
-> Người đang ôn CFA Level 1 cần luyện multiple-choice nhưng cảm thấy quá trình ôn luyện căng thẳng và nhàm chán.
+Problem Statement tạo hai yêu cầu mà sản phẩm phải đáp ứng:
 
-Ở Checkpoint Tuần 1, nhóm xem đây là một **giả định cần được kiểm chứng**, thay vì mặc định rằng mọi người học CFA đều cảm thấy như vậy.
+1. **Engagement value:** làm repeated practice bớt nhàm chán.
 
----
-
-## Kế hoạch kiểm chứng
-
-Nhóm có thể thực hiện một buổi quan sát hoặc thử nghiệm quy mô nhỏ với người thuộc nhóm người dùng mục tiêu.
-
-### Phần 1 — Conventional practice
-
-Người tham gia làm một bộ câu hỏi CFA theo hình thức thông thường.
-
-Ghi nhận:
-
-- mức độ hứng thú;
-- cảm giác lặp lại;
-- mức độ muốn tiếp tục;
-- số câu hoàn thành;
-- cảm nhận sau khi kết thúc.
-
-### Phần 2 — Gamified practice
-
-Người tham gia làm lượng câu hỏi tương đương nhưng đặt trong prototype của CFA Quest.
-
-Ghi nhận lại các yếu tố tương tự.
-
-### Các câu hỏi cần quan sát
-
-- Người dùng có cảm thấy việc luyện câu hỏi thông thường nhàm chán hay không?
-- Người dùng có muốn tiếp tục luyện sau khi hoàn thành một Level không?
-- Area/Level/Boss có tạo cảm giác tiến triển không?
-- Trap hoặc Side Quest có làm trải nghiệm đa dạng hơn không?
-- Gamble và Shop có khiến người dùng chú ý đến game nhiều hơn việc luyện CFA không?
-- Người dùng thích hình thức nào hơn khi lượng câu hỏi CFA tương đương?
-
-### Điểm quan trọng
-
-Mục đích của thử nghiệm **không phải chứng minh người chơi làm đúng nhiều câu hơn ngay lập tức**.
-
-Điều nhóm cần kiểm chứng trước tiên là:
-
-> **Gamification có thực sự làm trải nghiệm luyện tập bớt nhàm chán hơn không?**
+2. **Learning value:** giúp người học hiểu performance và weak areas của mình.
 
 ---
 
-# 6. Vì sao đây là vấn đề tài chính hoặc ngân hàng?
+# 5\. Initial Source / Observation — Giả định và kế hoạch kiểm chứng
 
-Sản phẩm liên quan trực tiếp tới lĩnh vực tài chính vì nội dung luyện tập được xây dựng dựa trên chương trình **CFA Level 1**.
+Hiện tại nhóm có hai giả định cần kiểm chứng.
 
-VER2 chia 10 môn CFA thành các Area:
+## Giả định 1 — Engagement Problem
 
-| Area | CFA Topics |
-|---|---|
-| **Area 1** | FSA + Corporate Finance |
-| **Area 2** | Equity + Fixed Income |
-| **Area 3** | Derivatives + Alternative Investments |
-| **Area 4** | Economics + Ethics |
-| **Area 5** | Quantitative Methods + Portfolio Management |
-| **Area 6** | Side Quest |
+Người ôn CFA Level 1 cảm thấy repeated MCQ practice nhàm chán.
 
+## Giả định 2 — Learning Need
 
+Sau khi practice, người học muốn biết mình yếu ở topic nào và vì sao mình trả lời sai.
 
-Người chơi không thực hiện các mini-game không liên quan đến tài chính để tiến bộ.
-
-**Core activity vẫn là trả lời câu hỏi CFA.**
-
-Gamification chỉ được đặt xung quanh hoạt động luyện tập đó nhằm thay đổi trải nghiệm người dùng.
-
-Vì vậy:
-
-> **Financial content = nội dung cốt lõi.**  
-> **Game mechanics = phương thức tạo engagement.**
+Hai giả định này **chưa được xem là sự thật đã chứng minh**.
 
 ---
 
-# 7. Đóng góp của từng thành viên
+## Kế hoạch quan sát
 
-## Phân công tổng thể
+Cho người dùng mục tiêu thực hiện một lượt CFA practice và ghi nhận:
 
-| Thành viên | Vai trò | Sản phẩm cuối cùng | Sản phẩm Tuần 1 |
-|---|---|---|---|
-| **Quỳnh** | Project Lead + Game Structure Developer | Xây dựng cấu trúc tổng thể của game gồm Area → Level → Boss → Unlock; quản lý Player Progress; tích hợp module của cả nhóm; xây dựng pseudocode tổng hệ thống. | **Game flow chart**, thống nhất tên biến chung, quan hệ Area → Level → Boss → Unlock, cấu trúc folder/code và sơ đồ trạng thái người chơi. |
-| **Hồng** | CFA Question Bank + Quiz Engine Developer | Xây dựng Question Bank, Quiz Engine, scoring/MPS, answer explanation và dữ liệu phục vụ analytics. | Thiết kế **question data schema** thống nhất gồm `question`, `options`, `correctAnswer`, `explanation`, `subject`, `topic`, `area`, `difficulty`. |
-| **Trang** | Special Mechanics Developer | Xây dựng Trap, Gamble và Side Quest; xử lý logic kích hoạt, Pass/Fail, penalty, reward và replay. | Xây dựng logic **Trap 20% ở Normal Level** và cơ chế kích hoạt/chuyển sang Trap khi điều kiện xảy ra. |
-| **Minh** | Player Points + Shop + Inventory Developer | Xây dựng Point Manager, Shop, Inventory và toàn bộ Item: Skip Key, Leverage Token, Savings Account, Trap Insurance. | Xác định **Player Economy Data Model** gồm `accumulatedPts`, `smartPts`, `inventory`, `itemOwned`, `itemUsed`. |
-| **Khôi** | Frontend/UI + Result Analytics + QA Lead | Xây dựng giao diện toàn game, Result Analytics, QA checklist và demo flow từ đầu đến cuối. | Vẽ **wireframe toàn bộ màn hình**, xác định UI flow và thống nhất giao diện trước khi bắt đầu code frontend. |
+### Trước / trong practice
 
----
+* Người dùng có cảm thấy task lặp lại không?
 
+* Có muốn tiếp tục làm thêm câu hỏi không?
 
+* Khi số lượng câu hỏi tăng, mức độ hứng thú thay đổi như thế nào?
 
-# 8. Open Questions (Câu hỏi còn bỏ ngỏ)
+### Sau practice
 
-1. **Người đang ôn CFA Level 1 có thực sự cảm thấy việc luyện multiple-choice lặp đi lặp lại nhàm chán hay không?**
+Hỏi người dùng:
 
-2. **Mức độ nhàm chán có đủ lớn để người dùng muốn chuyển sang một hình thức gamified practice không?**
+* Bạn muốn biết thông tin gì sau khi hoàn thành?
 
-3. **Area, Level và Boss có thực sự tạo cảm giác progression hay chỉ thay đổi cách trình bày của một bộ câu hỏi?**
+* Tổng score có đủ không?
 
+* Bạn có muốn biết topic yếu nhất không?
 
+* Explanation của câu sai có hữu ích không?
 
-
-
-
-
-# Hướng đi hiện tại của Tuần 1
-
-- **Người dùng mục tiêu:** Người đang ôn CFA Level 1 và cần luyện tập multiple-choice questions.
-
-- **Vấn đề chính:** Quá trình luyện tập câu hỏi CFA lặp đi lặp lại có thể trở nên căng thẳng và nhàm chán.
-
-- **Nhiệm vụ người dùng:** Trả lời câu hỏi CFA để vượt qua Level, Area và Boss.
-
-- **Giải pháp đang xem xét:** Giữ nguyên CFA questions nhưng bổ sung RPG progression và các mechanics như Points, Trap, Gamble, Side Quest và Shop.
-
-- **Giả định quan trọng cần kiểm chứng:** Gamification làm việc luyện cùng một loại câu hỏi trở nên thú vị hơn so với cách làm question bank/mock test thông thường.
-
-- **Quyết định hiện tại:** Tiếp tục phát triển theo hướng CFA Quest VER2, đồng thời kiểm chứng giả định về sự nhàm chán trước khi kết luận rằng các mechanics đã thực sự giải quyết được vấn đề.
-
-- **Phạm vi prototype dự kiến:** 2 Area cơ bản + Side Quest; kiểm thử Pass/Fail, Trap, Gamble, Side Quest, Shop, Boss và Item theo phạm vi test đã xác định trong VER2.
+* Kết quả đó có giúp bạn quyết định phần cần luyện tiếp không?
 
 ---
 
-**Cập nhật lần cuối: Checkpoint Tuần 1.**
+### Output Tuần 1
+
+**Two hypotheses to validate**
+
+1. Repetition reduces engagement.
+
+2. Topic-level feedback provides useful learning value.
+
+### Input cho Tuần 2
+
+Week 2 phải thiết kế sản phẩm sao cho có thể tạo ra và sau này kiểm chứng được cả:
+
+**Engagement outcome \+ Learning outcome**
+
+---
+
+# 6\. Finance / Banking Relevance
+
+Core task của người dùng là:
+
+**Practice and evaluate CFA Level 1 financial knowledge.**
+
+VER2 chia nội dung thành các nhóm CFA như FSA, Corporate Finance, Equity, Fixed Income, Derivatives, Economics, Quantitative Methods và Portfolio Management.
+
+### Output Tuần 1
+
+**Finance Relevance**
+
+The product supports CFA Level 1 financial knowledge practice and performance evaluation.
+
+### Input cho Tuần 2
+
+Mọi Main Output và Core Process ở Week 2 phải dựa trên **CFA learning performance**, không chỉ dựa trên game score.
+
+---
+
+# 7\. Đóng góp của từng thành viên
+
+| Thành viên | Vai trò | Output Tuần 1 | Được sử dụng ở Tuần 2 để |
+| :---- | :---- | :---- | :---- |
+| **Quỳnh** | Project Lead \+ Game Structure Developer | Tổng hợp **Problem Direction \+ User Task** và dependency giữa Week 1 → Week 2 | Xây Product Statement và Solution Chain |
+| **Hồng** | CFA Question Bank \+ Quiz Engine Developer | Xác định **learning information** người học cần sau practice: correctness, topic, accuracy, explanation | Định nghĩa Main Output và required input |
+| **Trang** | Special Mechanics Developer | Xác định **engagement hypothesis**: điểm nào của repeated practice gây nhàm chán và mechanic chỉ nên hỗ trợ ở đâu | Xác định engagement layer mà không phá core learning loop |
+| **Minh** | Player Points \+ Shop \+ Inventory Developer | Xác định sự khác nhau giữa **learning output** và **reward output** | Quyết định feature nào core, supporting hoặc out of scope |
+| **Khôi** | Frontend/UI \+ Result Analytics \+ QA Lead | Xác định thông tin người dùng cần nhìn thấy sau một practice attempt và thiết kế observation questions | Định nghĩa visible Main Output và MVP flow |
+
+---
+
+## Shared Output của cả nhóm ở cuối Tuần 1
+
+### Problem
+
+Repeated CFA practice can become monotonous.
+
+### Target User
+
+CFA Level 1 candidates in the practice stage.
+
+### User Task
+
+Practice questions, evaluate performance and identify weak topics.
+
+### Desired Learning Outcome
+
+User understands what they know, what they are weak at and what to practice next.
+
+### Desired Engagement Outcome
+
+User is willing to continue practicing despite the repetitive nature of CFA MCQs.
+
+---
+
+# 8\. Open Questions — Câu hỏi còn bỏ ngỏ
+
+1. Người ôn CFA Level 1 có thực sự thấy repeated MCQ practice nhàm chán không?
+
+2. Sự nhàm chán có làm họ giảm willingness to continue practice không?
+
+3. Weakest Areas có giúp người dùng quyết định phần cần luyện tiếp không?
+
+4. Gamification có làm người dùng muốn luyện thêm hay chỉ khiến giao diện thú vị hơn?
+
+5. Game mechanics có nguy cơ làm người chơi tập trung vào Points hơn CFA knowledge không?
+
+6. Làm thế nào để chứng minh CFA Quest bớt nhàm chán hơn conventional practice?
+
