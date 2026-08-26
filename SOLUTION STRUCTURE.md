@@ -1,222 +1,397 @@
-# **SOLUTION STRUCTURE**
+# CFA Quest — Solution Structure
 
-## **1\. Product Direction**
+> Học phần: **NHA408E**
+> Nhóm: **[điền]**
+> Sản phẩm: game luyện thi CFA Level I theo cơ chế chẩn đoán — hầm ngục 5 Arena
 
-The product is a gamified CFA Level 1 practice platform designed to make repeated multiple-choice question practice more engaging while maintaining its learning value.
+---
 
-The core purpose is to help users:
+## 0. Sản phẩm trong một đoạn
 
-* practice CFA Level 1 questions;  
-* evaluate their performance;  
-* identify weak topics;  
-* understand incorrect answers;  
-* decide what to practice next.
+CFA Quest là một hầm ngục gồm 5 đấu trường (Arena) cho mỗi chủ đề CFA Level I. **Chỉ Arena 1 là đề cố định** — đó là bài chẩn đoán. Bốn Arena còn lại được sinh ra từ chính dữ liệu sai của người học: hệ thống đo tỷ lệ đúng theo từng nhóm nội dung, tìm nhóm yếu nhất, rồi lọc ngân hàng câu hỏi để ném lại đúng nhóm đó vào mặt người học.
 
-Gamification is used as a supporting engagement layer rather than the main purpose of the product.
+Người học không tự chọn mình luyện gì. **Dữ liệu sai của họ chọn hộ.**
 
-## **2\. Core User Flow**
+---
 
-**User → Select Topic → Answer CFA Questions → Check Correctness → Receive Explanation → Performance Analysis → Identify Weak Areas → Recommend Next Practice → Continue Practice**
+## 1. User → Input → Process → Output → User Action
 
-The learning loop remains the core process, while game mechanics are added around it to encourage continued practice.
+### User
 
-## **3\. Initial Required Information**
+Thí sinh đang tự ôn CFA Level I, đã học xong lý thuyết một chủ đề nhưng chưa biết mình yếu cụ thể ở nhóm nội dung nào bên trong chủ đề đó.
 
-### **Question Information**
+### Input
 
-* Question content  
-* Multiple-choice answers  
-* Correct answer  
-* Topic classification  
-* Answer explanation
+- Lựa chọn đáp án của người học cho từng câu (3 phương án, đúng định dạng đề CFA thật).
+- Ngân hàng câu hỏi tĩnh dạng JSON, mỗi câu đã gắn nhãn sẵn: chủ đề, **nhóm nội dung**, độ khó, đáp án đúng, lý do gây nhiễu của từng phương án sai, gợi ý, lời giải.
 
-### **User Performance Information**
+Không đăng nhập, không gọi API bên ngoài, không dữ liệu thời gian thực.
 
-* Number of questions attempted  
-* Correct and incorrect answers  
-* Overall Accuracy  
-* Topic Accuracy  
-* Weakest Areas
+### Process
 
-### **Engagement Information**
+Chấm bài → cộng dồn tỷ lệ đúng theo từng nhóm nội dung → xác định nhóm yếu nhất → lọc ngân hàng câu hỏi theo nhóm đó → sinh Arena kế tiếp → chấm đỗ/trượt → tính lại điểm yếu.
 
-* Player progress  
-* Points or rewards generated from practice  
-* Supporting gamification status
+### Output
 
-Not every game-related element needs to appear in the MVP.
+> **Bảng chẩn đoán theo nhóm nội dung + đề luyện được sinh tự động từ bảng đó**
 
-## **4\. Core Process Type**
+### User Action
 
-The product uses a repeated practice and performance-evaluation cycle.
+Người học nhìn thấy nhóm nội dung nào của mình đang yếu, làm tiếp Arena được sinh riêng cho lỗ hổng đó, rồi đối chiếu tỷ lệ đúng ở Arena 1 với Arena 5 để biết lỗ hổng đã đóng chưa.
 
-**Question Set → User Answers → Quiz Engine → Correctness Check → Performance Calculation → Topic-Level Feedback → Weak Area Identification → Next Practice**
+Luồng tổng quát:
 
-## **5\. MVP Flow**
+```text
+USER
+        ↓
+Answers + Tagged Question Bank
+        ↓
+Diagnose by Content Group
+        ↓
+Weakness Profile
+        ↓
+Auto-Generated Targeted Arena
+        ↓
+Compare Arena 1 vs Arena 5
+```
 
-The first implementation can demonstrate one complete practice cycle:
+---
 
-1. **Topic Selection:** user selects a CFA Level 1 topic.  
-2. **Practice:** user completes a set of multiple-choice questions.  
-3. **Checking:** the system evaluates whether each answer is correct or incorrect.  
-4. **Learning Support:** explanations are provided for incorrect answers.  
-5. **Performance Analysis:** the system calculates Overall Accuracy and Topic Accuracy.  
-6. **Weak Area Identification:** the system identifies the user's weakest topic.  
-7. **Recommendation:** the user is shown what should be practiced next.  
-8. **Continue:** the user can begin another practice session.
+## 2. Nội dung game
 
-## **6\. Target Product Direction**
+### Chủ đề chia thành nhóm nội dung
 
-The full product can gradually expand across different CFA Level 1 topics, including:
+Mỗi chủ đề được chia thành các **nhóm nội dung (content group)** — đây là trục chẩn đoán duy nhất của sản phẩm. Mỗi câu hỏi thuộc đúng một nhóm.
 
-* Financial Statement Analysis  
-* Corporate Issuers / Corporate Finance  
-* Equity Investments  
-* Fixed Income  
-* Derivatives  
-* Economics  
-* Quantitative Methods  
-* Portfolio Management
+Ví dụ với chủ đề **Ethics**:
 
-Each topic can contain multiple practice sessions and contribute to the user's overall performance profile.
+| Mã | Nhóm nội dung |
+|---|---|
+| E1 | GIPS |
+| E2 | Code of Ethics |
+| E3 | Standards of Professional Conduct I–VII |
 
-The product can also include supporting game mechanics to make repeated practice less monotonous.
+Mỗi câu còn gắn thêm **độ khó 1–3**. Độ khó không phải trục chẩn đoán; nó chỉ dùng để cân bằng Arena 1 và để phân định khi hai nhóm có tỷ lệ đúng bằng nhau.
 
-## **7\. Product Interface**
+### Định dạng câu hỏi
 
-The current concept can be organized into three main areas:
+3 phương án, đúng chuẩn đề CFA Level I.
 
-* **Practice**  
-  Topic selection and CFA multiple-choice questions.  
-* **Progress / Game**  
-  Player progress, points, rewards, and supporting gamification features.  
-* **Results / Analytics**  
-  Overall Accuracy, Topic Accuracy, Weakest Areas, incorrect questions, explanations, and recommended next practice.
+```text
+{
+  "id": "ETH-E1-D2-007",
+  "topic": "ETHICS",
+  "group": "E1",              // truc chan doan
+  "difficulty": 2,
+  "stem": "...",
+  "options": ["...", "...", "..."],
+  "answer": 1,
+  "distractor_reason": ["...", "...", "..."],   // loi tu duy dan toi tung phuong an sai
+  "hint": "...",
+  "explanation": "..."
+}
+```
 
-## **8\. MVP Scope**
+---
 
-Recommended first working scope:
+## 3. Core Process Type
 
-* a limited number of CFA Level 1 topics;  
-* a manageable question bank;  
-* multiple-choice question practice;  
-* automatic correctness checking;  
-* answer explanations;  
-* Overall Accuracy;  
-* Topic Accuracy;  
-* Weakest Area identification;  
-* next-practice recommendation;  
-* simple gamification mechanics.
+Core process là **Diagnostic-Driven Practice Generation**.
 
-The purpose is to prove the complete chain:
+```text
+Diagnose
+   ↓
+Rank Weakness
+   ↓
+Filter Question Bank
+   ↓
+Generate Targeted Arena
+   ↓
+Re-Diagnose
+   ↓
+Verify
+```
+
+Chấm điểm không phải core process. Điểm số chỉ tồn tại để quyết định đỗ/trượt và cấp Credit.
+
+Giá trị của sản phẩm nằm ở chuỗi:
+
+```text
+Wrong Answers
+    ↓
+Weakness Profile
+    ↓
+Targeted Practice
+    ↓
+Measured Improvement
+```
+
+Đây là điểm phân biệt với một bộ đề trắc nghiệm thường: bộ đề trả lời *"tôi được bao nhiêu điểm"*, sản phẩm này trả lời *"lần sau tôi nên luyện gì"* — và tự sinh luôn đề đó.
+
+---
+
+## 4. Cấu trúc hầm ngục — 5 Arena
+
+| Arena | Tên | Số câu | Nguồn câu hỏi | Vai trò |
+|---|---|---|---|---|
+| 1 | The Gate | 15 | Chia đều cho các nhóm; mỗi nhóm đủ 3 mức khó | **Chẩn đoán.** Dữ liệu gốc của cả hầm ngục |
+| 2 | Trap I | 10 | Nhóm yếu nhất (W1) | Bẫy 1 — bịt lỗ hổng lớn nhất |
+| 3 | The Crossroads | 10 | Trộn đều mọi nhóm; câu dư dồn cho nhóm đang yếu nhất | Kiểm tra duy trì + bổ sung dữ liệu chẩn đoán |
+| 4 | Trap II | 10 | Nhóm yếu thứ hai (W2), tính lại sau Arena 3 | Bẫy 2 — bịt lỗ hổng thứ hai |
+| 5 | Boss | 15 | 3 nhóm yếu nhất, phân bổ **7 / 5 / 3** câu theo thứ tự yếu dần | Kiểm tra tổng hợp, quyết định vượt chủ đề |
+
+Tổng: **60 câu** cho một lượt chơi sạch (không trượt lần nào).
+
+Với Ethics (3 nhóm), Arena 1 cho **5 câu mỗi nhóm** — chẩn đoán chắc hơn so với chủ đề chia 5 nhóm (chỉ 3 câu mỗi nhóm).
+
+> **Vì sao Boss phân bổ 7/5/3 chứ không chia đều:** nếu chủ đề chỉ có 3 nhóm, quy tắc "lấy 3 nhóm yếu nhất" sẽ lấy cả 3 và mất hoàn toàn tính chọn lọc. Phân bổ 7/5/3 giữ được ý nghĩa "càng yếu càng bị hỏi nhiều", đồng thời chạy được cho cả chủ đề 3 nhóm lẫn 5 nhóm mà không cần viết hai nhánh code.
+
+---
+
+## 5. Cơ chế lõi — Chẩn đoán và Bẫy
+
+### Công thức
+
+```text
+Accuracy(nhóm) = số câu đúng thuộc nhóm ÷ số câu đã làm thuộc nhóm
+```
+
+Tính **cộng dồn** trên toàn bộ câu người học đã làm trong chủ đề, tính lại sau mỗi Arena. Nhóm có Accuracy thấp nhất là nhóm yếu nhất.
+
+Phân định khi bằng nhau, theo thứ tự: (1) độ khó trung bình của các câu làm sai cao hơn → (2) thời gian trả lời trung bình dài hơn → (3) thứ tự mã nhóm.
+
+### Hai quy tắc bắt buộc
+
+- **Trap II phải nhắm nhóm khác Trap I.** Nếu không, người học yếu nặng một nhóm sẽ bị ném 20 câu liên tiếp cùng nhóm ở hai Arena kề nhau, ngân hàng câu hỏi của nhóm đó phải lớn gấp đôi, còn lỗ hổng thứ hai bị bỏ trống. Nếu W1 vẫn yếu, nó sẽ tự quay lại ở Boss.
+- **Boss không loại trừ nhóm nào.** Nếu hai Trap có tác dụng thật, W1 và W2 sẽ tự rơi khỏi vị trí yếu nhất — và đó chính là bằng chứng cơ chế hoạt động.
+
+### Ví dụ chạy thật (chủ đề Ethics)
+
+```text
+Arena 1 (15 câu, 5 câu/nhóm)
+  GIPS       2/5  = 40.0%   ← yếu nhất
+  Standards  3/5  = 60.0%
+  Code       4/5  = 80.0%
+        ↓  W1 = GIPS
+Arena 2 — Trap I: 10 câu GIPS, đúng 8
+  GIPS      10/15 = 66.7%
+        ↓
+Arena 3 (10 câu: GIPS 4, Standards 3, Code 3)
+  GIPS      13/19 = 68.4%
+  Standards  4/8  = 50.0%   ← yếu nhất, và khác W1
+  Code       7/8  = 87.5%
+        ↓  W2 = Standards
+Arena 4 — Trap II: 10 câu Standards, đúng 7
+  Standards 11/18 = 61.1%
+        ↓  xếp hạng lại
+Arena 5 — Boss (15 câu)
+  Standards  7 câu   (61.1% — yếu nhất)
+  GIPS       5 câu   (68.4%)
+  Code       3 câu   (87.5%)
+```
+
+GIPS bắt đầu ở 40% và kết thúc ở 68.4% — mức cải thiện này là output mà sản phẩm phải chứng minh được.
+
+---
+
+## 6. MVP Flow
+
+MVP phải kiểm chứng đúng một điều: **dữ liệu sai của người học có sinh ra được đề luyện đúng chỗ yếu hay không.**
+
+```text
+Chọn chủ đề
+        ↓
+Arena 1 — Chẩn đoán
+        ↓
+Bảng tỷ lệ đúng theo nhóm nội dung
+        ↓
+Hệ thống công bố nhóm yếu nhất
+        ↓
+Sinh Trap I từ nhóm đó
+        ↓
+Người học làm Trap I
+        ↓
+Tỷ lệ đúng nhóm đó thay đổi trên biểu đồ
+```
+
+Main output của MVP:
+
+> **Weakness Profile + Targeted Arena sinh từ Profile đó**
 
-**Question → Answer → Evaluation → Learning Feedback → Weak Area Identification → Continued Practice**
+Sáu thành phần bắt buộc của MVP:
 
-## **9\. Target Scope**
+| Thành phần | Nội dung |
+|---|---|
+| Target user | Thí sinh tự ôn CFA L1, một chủ đề duy nhất |
+| Core task | Đi hết 5 Arena và biết nhóm nội dung nào đã cải thiện |
+| Input thiết yếu | Đáp án người chọn + ngân hàng câu hỏi JSON đã gắn nhãn |
+| Logic path chính | Chấm → cộng dồn theo nhóm → xếp hạng yếu → lọc bank → sinh Arena → đỗ/trượt |
+| Output có ý nghĩa | Bảng chẩn đoán theo nhóm + biểu đồ tiến bộ + giải thích từng câu sai |
+| User flow hoàn chỉnh | Mục 7 |
 
-After the MVP works, expansion may include:
+---
 
-* additional CFA Level 1 topics;  
-* larger question banks;  
-* more detailed performance analytics;  
-* practice history;  
-* personalized topic recommendations;  
-* additional player rewards;  
-* points and progression systems;  
-* shop and inventory features;  
-* special game mechanics.
+## 7. User Flow
 
-## **10\. Fallback Scope**
+### Đường chính
 
-If implementation becomes too complex:
+```text
+Vào chủ đề
+    ↓
+Arena 1 · 15 câu · không hiện đúng/sai ngay
+    ↓
+Kết quả: % tổng · đỗ/trượt · Credit · bảng chẩn đoán · giải thích câu sai
+    ↓
+Hệ thống công bố nhóm bị nhắm ở Arena sau
+    ↓
+[tuỳ chọn] Vào Shop mua vật phẩm
+    ↓
+Arena 2 → 3 → 4  (lặp lại vòng trên)
+    ↓
+Arena 5 — Boss
+    ↓
+Bảng tổng kết: đối chiếu Arena 1 với Arena 5 theo từng nhóm
+```
 
-* one or two CFA topics;  
-* a small question bank;  
-* standard multiple-choice practice;  
-* automatic correctness checking;  
-* short answer explanations;  
-* Overall Accuracy;  
-* basic Topic Accuracy;  
-* one simple result page;  
-* minimal gamification.
+### Đường phụ
 
-## **11\. Out of Scope for MVP**
+- **Trượt một Arena:** vẫn hiện kết quả và lời giải, không cấp Credit, khoá Arena kế tiếp, cho chơi lại với bộ câu rút mới. Không giới hạn số lần.
+- **Không mua vật phẩm nào:** hành trình vẫn hoàn chỉnh — đây là kiểm chứng rằng Shop nằm ngoài logic path chính.
+- **Đúng toàn bộ Arena 1:** không tồn tại nhóm yếu nhất, chuyển sang phân định theo thời gian trả lời, kèm thông báo giải thích cách chọn.
 
-* full coverage of the entire CFA Level 1 curriculum;  
-* teaching CFA Level 1 knowledge from the beginning;  
-* highly complex RPG systems;  
-* complex shop and inventory systems;  
-* extensive special mechanics;  
-* advanced personalized learning algorithms;  
-* replacing CFA study materials or formal CFA preparation resources.
+### Đường lỗi
 
-## **12\. Initial Rule Hypothesis**
+| Tình huống | Xử lý |
+|---|---|
+| Xác nhận khi chưa chọn phương án | Chặn chuyển câu |
+| Mua vật phẩm khi không đủ Credit | Vô hiệu hoá nút, báo còn thiếu bao nhiêu |
+| Dùng vật phẩm thứ hai trên cùng một câu | Chặn — mỗi câu tối đa 1 vật phẩm |
+| Ngân hàng hết câu cho một nhóm | Lấy bù câu cũ, xáo lại thứ tự phương án, báo cho người học |
+| Thoát giữa Arena | Huỷ lượt, không lưu dở dang |
+| Mất dữ liệu trình duyệt | Khởi tạo tiến trình rỗng, báo bắt đầu lại |
 
-The product is currently based on two hypotheses:
+---
 
-### **Engagement Hypothesis**
+## 8. Đỗ/trượt, Credit, Shop
 
-Repeated CFA multiple-choice practice may become monotonous and reduce users' willingness to continue practicing.
+**Ngưỡng đỗ: ≥ 70% số câu của Arena** (Arena 10 câu cần ≥ 7; Arena 15 câu cần ≥ 11).
 
-Gamification should therefore encourage continued practice without distracting users from CFA knowledge.
+| Kết quả | Credit |
+|---|---|
+| < 70% | 0 — trượt, chơi lại |
+| 70–79% | 2 |
+| 80–89% | 3 |
+| ≥ 90% | 4 |
+| Vượt Boss lần đầu | +5 |
 
-### **Learning Hypothesis**
+Số dư khởi đầu: **3 Credit** — vì vật phẩm rẻ nhất giá 3, nếu bắt đầu từ 0 thì người học không dùng được vật phẩm nào trước Arena 2 và sẽ không hiểu Shop để làm gì.
 
-Topic-level performance feedback may provide more learning value than a simple total score.
+| Vật phẩm | Giá | Hiệu ứng |
+|---|---|---|
+| Bùa Loại Trừ | 3 Credit | Loại **1 phương án sai** của câu hiện tại (3 → 2 phương án) |
+| Cuộn Giấy Gợi Ý | 4 Credit | Hiện một dòng gợi ý: chuẩn mực/khái niệm cần áp dụng. Không tiết lộ đáp án |
 
-The system should therefore use user answers to generate:
+> Vì đề chỉ có **3 phương án** đúng chuẩn CFA, vật phẩm không thể loại 2 phương án — làm vậy sẽ chỉ còn lại đáp án đúng, biến vật phẩm thành nút cho điểm miễn phí.
 
-* Overall Accuracy;  
-* Topic Accuracy;  
-* Weakest Areas;  
-* incorrect-answer explanations;  
-* next-practice recommendations.
+**Quy tắc quan trọng:** câu có dùng vật phẩm **vẫn tính** vào % đỗ/trượt của Arena, nhưng **bị loại** khỏi phép tính Accuracy theo nhóm. Lý do: trả lời đúng nhờ loại bớt phương án không chứng minh người học nắm được nhóm đó; đưa vào mẫu sẽ che mất lỗ hổng thật và khiến Trap bắn sai chỗ.
 
-These hypotheses still need to be validated through user observation and testing.
+---
 
-## **13\. Responsibility by Output**
+## 9. Ngân hàng câu hỏi cần chuẩn bị
 
-### **Quỳnh — Project Lead \+ Game Structure Developer**
+Trường hợp tốn nhiều nhất rơi vào nhóm được chọn làm W1: `5 (Arena 1) + 10 (Trap I) + 4 (Arena 3) + 7 (Boss) = 26 câu`.
 
-**Output:** Product structure and solution chain
+| Phương án | Số câu | Đánh giá |
+|---|---|---|
+| Target | ~26 câu × 3 nhóm ≈ **80 câu** | Đủ cho một lượt chơi sạch không lặp câu |
+| Fallback | ~17 câu × 3 nhóm ≈ **50 câu** | Chấp nhận lặp câu ở nhóm W1, có xáo thứ tự phương án |
 
-* define the overall product flow;  
-* connect Week 1 problem findings to the Week 2 solution;  
-* ensure that gamification supports the CFA learning loop;  
-* coordinate dependencies among different product components.
+> Đây là rủi ro tiến độ lớn nhất của dự án. 80 câu tự biên soạn kèm lời giải và lý do gây nhiễu cho từng phương án là khối lượng lớn hơn phần lập trình. Cần chốt sản lượng thực tế theo tuần của người phụ trách nội dung **trước khi** khoá phạm vi MVP.
 
-### **Hồng — CFA Question Bank \+ Quiz Engine Developer**
+---
 
-**Output:** CFA Question Bank \+ Quiz Engine
+## 10. Target / Fallback / Out of Scope
 
-* organize questions by CFA topic;  
-* define correct answers and explanations;  
-* develop the answer-checking logic;  
-* provide the data required for Overall Accuracy, Topic Accuracy, and Weakest Areas.
+### Target Scope
 
-### **Trang — Special Mechanics Developer**
+Một chủ đề, đủ 5 Arena, ngân hàng ~80 câu. Điểm yếu tính lại sau mỗi Arena. Shop 2 vật phẩm. Bảng chẩn đoán + biểu đồ tiến bộ + giải thích từng câu sai. Lưu tiến trình trên trình duyệt.
 
-**Output:** Engagement Mechanics
+### Fallback Scope
 
-* design supporting mechanics that reduce the monotony of repeated practice;  
-* determine where special mechanics should appear in the practice flow;  
-* ensure that engagement mechanics do not disrupt the core learning process.
+Vẫn giữ nguyên core flow — **chẩn đoán → sinh đề theo lỗ hổng** — nhưng rút gọn:
 
-### **Minh — Player Points \+ Shop \+ Inventory Developer**
+- ngân hàng còn ~50 câu, chấp nhận lặp câu;
+- điểm yếu chỉ tính **một lần** sau Arena 1 rồi khoá cứng cho cả hầm ngục;
+- Shop còn 1 vật phẩm;
+- biểu đồ thay bằng bảng số liệu.
 
-**Output:** Reward and Progression System
+Fallback không được biến thành một bộ đề trắc nghiệm có chấm điểm. Nếu cơ chế Trap bị cắt, sản phẩm mất toàn bộ lý do tồn tại.
 
-* design the player points system;  
-* define reward-related features;  
-* develop shop and inventory concepts where feasible;  
-* distinguish learning outputs from game rewards.
+### Out of Scope
 
-### **Khôi — Frontend/UI \+ Result Analytics \+ QA Lead**
+- nhiều chủ đề cùng lúc;
+- hệ thống tài khoản, đăng nhập, đồng bộ thiết bị;
+- bảng xếp hạng, chế độ nhiều người chơi;
+- trợ lý hỏi đáp, sinh câu hỏi bằng AI;
+- giới hạn thời gian mỗi câu;
+- cảnh báo lệ thuộc vật phẩm.
 
-**Output:** User Interface \+ Result Analytics
+---
 
-* design the practice and result interfaces;  
-* display Overall Accuracy, Topic Accuracy, and Weakest Areas;  
-* present incorrect-answer explanations clearly;  
-* support testing and quality assurance of the complete user flow.
+## 11. Initial Route Hypothesis
 
+**Code-Based Web Application, HTML/CSS/JavaScript thuần, dữ liệu tĩnh, không backend.**
+
+Sản phẩm có luồng tương tác hữu hạn, dữ liệu câu hỏi chuẩn bị trước, toàn bộ logic chẩn đoán chỉ là phép cộng và sắp xếp trên mảng — không cần máy chủ. Tiến trình lưu trên trình duyệt.
+
+Fallback kỹ thuật: prototype tương tác kèm tài liệu đặc tả logic rõ ràng. Dù đi route nào, người dùng vẫn phải hoàn thành cùng một core task và nhận cùng một main output.
+
+**Bản quyền:** câu hỏi do nhóm tự biên soạn; tình huống trong đề Ethics là tình huống giả định, không trích nguyên văn tài liệu CFA Institute.
+
+---
+
+## 12. Conceptual Solution Chain
+
+```text
+User Task
+    ↓
+Main Output
+    ↓
+Core Process
+    ↓
+MVP Flow
+    ↓
+Target Scope
+```
+
+Áp dụng cho CFA Quest:
+
+```text
+Biết mình yếu nhóm nội dung nào và luyện đúng nhóm đó
+        ↓
+Weakness Profile + Targeted Arena
+        ↓
+Diagnostic-Driven Practice Generation
+        ↓
+Arena 1 chẩn đoán sinh ra Trap I
+        ↓
+Đủ 5 Arena, tính lại điểm yếu sau mỗi Arena, Shop và biểu đồ tiến bộ
+```
+
+---
+
+## 13. Điểm cần chốt
+
+| # | Vấn đề | Ảnh hưởng |
+|---|---|---|
+| 1 | Chủ đề dùng cho MVP demo: Ethics (3 nhóm) hay chủ đề khác | Thiết kế chạy được cả hai nhờ quy tắc Boss 7/5/3; nhưng ngân hàng câu hỏi phải soạn cho đúng một chủ đề |
+| 2 | Sản lượng biên soạn câu hỏi thực tế theo tuần | Quyết định chọn mốc 80 câu hay 50 câu. Là điều kiện tiên quyết để khoá phạm vi |
+| 3 | Mức ≥90% được 4 Credit và thưởng +5 khi vượt Boss | Phần nhóm tự đề xuất, chưa có trong yêu cầu gốc. Bỏ đi thì tổng Credit giảm ~1/3 |
+
+---
+
+## Câu hỏi mà MVP phải trả lời
+
+> Sau khi đi hết một hầm ngục, tỷ lệ đúng ở những nhóm nội dung **bị Trap nhắm** có tăng rõ rệt hơn so với những nhóm **không bị nhắm** hay không?
+
+Nếu có, cơ chế chẩn đoán tạo ra giá trị thật. Nếu không, sản phẩm chỉ là một bộ đề trắc nghiệm được đóng gói đẹp — và nhóm phải sửa cơ chế, không phải thêm tính năng.
