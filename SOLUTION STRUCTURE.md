@@ -22,7 +22,7 @@ Thí sinh đang tự ôn CFA Level I, đã học xong lý thuyết một chủ �
 
 ### Input
 
-- Lựa chọn đáp án của người học cho từng câu (3 phương án, đúng định dạng đề CFA thật).
+- Lựa chọn đáp án của người học cho từng câu (4 phương án, tương tự định dạng đề CFA thật).
 - Ngân hàng câu hỏi tĩnh dạng JSON, mỗi câu đã gắn nhãn sẵn: chủ đề, **nhóm nội dung**, độ khó, đáp án đúng, lý do gây nhiễu của từng phương án sai, gợi ý, lời giải.
 
 Không đăng nhập, không gọi API bên ngoài, không dữ liệu thời gian thực.
