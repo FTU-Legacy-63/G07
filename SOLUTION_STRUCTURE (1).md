@@ -1,7 +1,7 @@
 # CFA Quest — Solution Structure
 
 > Học phần: **NHA408E**
-> Nhóm: **[điền]**
+> Nhóm: **7**
 > Chủ đề: **Ethics** — 9 module, 5 cụm chẩn đoán, hầm ngục 5 Arena
 
 ---
@@ -59,18 +59,9 @@ Compare Arena 1 vs Arena 5
 
 ### Vì sao phải có tầng cụm
 
-Ethics có 9 module. Nếu chẩn đoán trực tiếp trên 9 module thì:
+Ethics có 9 module được nhóm thành 5 nhóm chính
 
-```text
-Arena 1 = 15 câu ÷ 9 module = 1,67 câu/module
-        → kết luận "module yếu nhất" rút ra từ 1–2 câu là vô nghĩa
-Muốn 3 câu/module → Arena 1 phải 27 câu (~40 phút, quá dài cho bài mở đầu)
-Ngân hàng câu hỏi khi đó ≈ 190 câu
-```
-
-Giải pháp: **gom 9 module thành 5 cụm**. Chẩn đoán và sinh đề chạy ở tầng cụm; nội dung và báo cáo chi tiết vẫn giữ nguyên tầng module. Arena 1 quay về 15 câu (3 câu/cụm), ngân hàng giảm còn **~110 câu — cắt 42% khối lượng biên soạn**, mà vẫn phủ đủ 9 module.
-
-### Bảng ánh xạ
+### Bảng nhóm kiến thức
 
 | Cụm | Tên cụm | Module bên trong |
 |---|---|---|
@@ -80,7 +71,7 @@ Giải pháp: **gom 9 module thành 5 cụm**. Chẩn đoán và sinh đề ch�
 | C4 | Standards IV–V | IV. Duties to Employers · V. Investment Analysis, Recommendations & Actions |
 | C5 | Standards VI–VII | VI. Conflicts of Interest · VII. Responsibilities as CFA Member/Candidate |
 
-Standard III đứng riêng một cụm vì đây là Standard nặng nhất và xuất hiện dày nhất trong đề thi thật.
+Standard III đứng riêng một cụm vì đây là Standard nặng nhất.
 
 ### Ba quy tắc bảo đảm phủ hết 9 module
 
