@@ -22,8 +22,8 @@ Thí sinh đang tự ôn CFA Level I, đã học xong lý thuyết một chủ �
 
 ### Input
 
-- Lựa chọn đáp án của người học cho từng câu (4 phương án, tương tự định dạng đề CFA thật).
-- Ngân hàng câu hỏi tĩnh dạng JSON, mỗi câu đã gắn nhãn sẵn: chủ đề, **nhóm nội dung**, độ khó, đáp án đúng, lý do gây nhiễu của từng phương án sai, gợi ý, lời giải.
+- Lựa chọn đáp án của người học cho từng câu (3 phương án, tương tự định dạng đề CFA thật).
+- Ngân hàng câu hỏi tĩnh dạng JSON, mỗi câu đã gắn nhãn sẵn: chủ đề, **nhóm nội dung**, đáp án đúng, lý do đúng sai của từng phương án.
 
 Không đăng nhập, không gọi API bên ngoài, không dữ liệu thời gian thực.
 
@@ -37,7 +37,7 @@ Chấm bài → cộng dồn tỷ lệ đúng theo từng nhóm nội dung → x
 
 ### User Action
 
-Người học nhìn thấy nhóm nội dung nào của mình đang yếu, làm tiếp Arena được sinh riêng cho lỗ hổng đó, rồi đối chiếu tỷ lệ đúng ở Arena 1 với Arena 5 để biết lỗ hổng đã đóng chưa.
+Người học nhìn thấy nhóm nội dung nào của mình đang yếu, làm tiếp Arena được sinh riêng cho lỗ hổng đó, rồi đối chiếu tỷ lệ đúng ở Arena 1 với Arena 5 để biết lỗ hổng đã được khắc phục chưa.
 
 Luồng tổng quát:
 
@@ -69,8 +69,13 @@ Ví dụ với chủ đề **Ethics**:
 |---|---|
 | E1 | GIPS |
 | E2 | Code of Ethics |
-| E3 | Standards of Professional Conduct I–VII |
-
+| E3 | Standards I |
+| E4 | Standards II |
+| E5 | Standards III |
+| E6 | Standards IV |
+| E7 | Standards V|
+| E8 | Standards VI|
+| E9 | Standards VII|
 Mỗi câu còn gắn thêm **độ khó 1–3**. Độ khó không phải trục chẩn đoán; nó chỉ dùng để cân bằng Arena 1 và để phân định khi hai nhóm có tỷ lệ đúng bằng nhau.
 
 ### Định dạng câu hỏi
@@ -134,17 +139,13 @@ Measured Improvement
 
 | Arena | Tên | Số câu | Nguồn câu hỏi | Vai trò |
 |---|---|---|---|---|
-| 1 | The Gate | 15 | Chia đều cho các nhóm; mỗi nhóm đủ 3 mức khó | **Chẩn đoán.** Dữ liệu gốc của cả hầm ngục |
-| 2 | Trap I | 10 | Nhóm yếu nhất (W1) | Bẫy 1 — bịt lỗ hổng lớn nhất |
-| 3 | The Crossroads | 10 | Trộn đều mọi nhóm; câu dư dồn cho nhóm đang yếu nhất | Kiểm tra duy trì + bổ sung dữ liệu chẩn đoán |
-| 4 | Trap II | 10 | Nhóm yếu thứ hai (W2), tính lại sau Arena 3 | Bẫy 2 — bịt lỗ hổng thứ hai |
-| 5 | Boss | 15 | 3 nhóm yếu nhất, phân bổ **7 / 5 / 3** câu theo thứ tự yếu dần | Kiểm tra tổng hợp, quyết định vượt chủ đề |
+| 1 | The Gate | 45 | Chia đều cho các nhóm; mỗi nhóm đủ 3 mức khó | **Chẩn đoán.** Dữ liệu gốc của cả hầm ngục |
+| 2 | Trap I | 20 | Nhóm yếu nhất (W1) | Bẫy 1 — bịt lỗ hổng lớn nhất |
+| 3 | The Crossroads | 20 | Trộn đều mọi nhóm; câu dư dồn cho nhóm đang yếu nhất | Kiểm tra duy trì + bổ sung dữ liệu chẩn đoán |
+| 4 | Trap II | 20 | Nhóm yếu thứ hai (W2), tính lại sau Arena 3 | Bẫy 2 — bịt lỗ hổng thứ hai |
+| 5 | Boss | 30 | 3 nhóm yếu nhất, phân bổ số lượng câu sao cho topic yếu nhất có số lượng câu nhiều nhất | Kiểm tra tổng hợp, quyết định vượt chủ đề |
 
-Tổng: **60 câu** cho một lượt chơi sạch (không trượt lần nào).
-
-Với Ethics (3 nhóm), Arena 1 cho **5 câu mỗi nhóm** — chẩn đoán chắc hơn so với chủ đề chia 5 nhóm (chỉ 3 câu mỗi nhóm).
-
-> **Vì sao Boss phân bổ 7/5/3 chứ không chia đều:** nếu chủ đề chỉ có 3 nhóm, quy tắc "lấy 3 nhóm yếu nhất" sẽ lấy cả 3 và mất hoàn toàn tính chọn lọc. Phân bổ 7/5/3 giữ được ý nghĩa "càng yếu càng bị hỏi nhiều", đồng thời chạy được cho cả chủ đề 3 nhóm lẫn 5 nhóm mà không cần viết hai nhánh code.
+Tổng: **140 câu** cho một lượt chơi (không trượt lần nào).
 
 ---
 
@@ -303,10 +304,10 @@ Trường hợp tốn nhiều nhất rơi vào nhóm được chọn làm W1: `5
 
 | Phương án | Số câu | Đánh giá |
 |---|---|---|
-| Target | ~26 câu × 3 nhóm ≈ **80 câu** | Đủ cho một lượt chơi sạch không lặp câu |
-| Fallback | ~17 câu × 3 nhóm ≈ **50 câu** | Chấp nhận lặp câu ở nhóm W1, có xáo thứ tự phương án |
+| Target | ~20 câu × 9 nhóm ≈ **180 câu** | Đủ cho một lượt chơi không lặp câu |
+| Fallback | ~10 câu × 9 nhóm ≈ **90 câu** | Chấp nhận lặp câu ở nhóm W1, có xáo thứ tự phương án |
 
-> Đây là rủi ro tiến độ lớn nhất của dự án. 80 câu tự biên soạn kèm lời giải và lý do gây nhiễu cho từng phương án là khối lượng lớn hơn phần lập trình. Cần chốt sản lượng thực tế theo tuần của người phụ trách nội dung **trước khi** khoá phạm vi MVP.
+> Đây là rủi ro tiến độ lớn nhất của dự án. 270 câu tự biên soạn kèm lời giải và lý do gây nhiễu cho từng phương án là khối lượng lớn hơn phần lập trình. Cần chốt sản lượng thực tế theo tuần của người phụ trách nội dung **trước khi** khoá phạm vi MVP.
 
 ---
 
@@ -314,7 +315,7 @@ Trường hợp tốn nhiều nhất rơi vào nhóm được chọn làm W1: `5
 
 ### Target Scope
 
-Một chủ đề, đủ 5 Arena, ngân hàng ~80 câu. Điểm yếu tính lại sau mỗi Arena. Shop 2 vật phẩm. Bảng chẩn đoán + biểu đồ tiến bộ + giải thích từng câu sai. Lưu tiến trình trên trình duyệt.
+Một chủ đề, đủ 5 Arena, ngân hàng ~270 câu. Điểm yếu tính lại sau mỗi Arena. Shop 2 vật phẩm. Bảng chẩn đoán + biểu đồ tiến bộ + giải thích từng câu sai. Lưu tiến trình trên trình duyệt.
 
 ### Fallback Scope
 
@@ -384,7 +385,7 @@ Arena 1 chẩn đoán sinh ra Trap I
 
 | # | Vấn đề | Ảnh hưởng |
 |---|---|---|
-| 1 | Chủ đề dùng cho MVP demo: Ethics (3 nhóm) hay chủ đề khác | Thiết kế chạy được cả hai nhờ quy tắc Boss 7/5/3; nhưng ngân hàng câu hỏi phải soạn cho đúng một chủ đề |
+| 1 | Chủ đề dùng cho MVP demo: Ethics (9 nhóm) hay chủ đề khác | Thiết kế chạy được cả hai nhờ quy tắc Boss; nhưng ngân hàng câu hỏi phải soạn cho đúng một chủ đề |
 | 2 | Sản lượng biên soạn câu hỏi thực tế theo tuần | Quyết định chọn mốc 80 câu hay 50 câu. Là điều kiện tiên quyết để khoá phạm vi |
 | 3 | Mức ≥90% được 4 Credit và thưởng +5 khi vượt Boss | Phần nhóm tự đề xuất, chưa có trong yêu cầu gốc. Bỏ đi thì tổng Credit giảm ~1/3 |
 
