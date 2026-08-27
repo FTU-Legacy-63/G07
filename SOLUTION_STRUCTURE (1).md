@@ -141,7 +141,7 @@ Bộ đề trắc nghiệm thường trả lời *"tôi được bao nhiêu đi�
 | 4 | Trap II | 10 | Cụm yếu thứ hai (W2), tính lại sau Arena 3 | Bẫy 2 — bịt lỗ hổng thứ hai |
 | 5 | Boss | 15 | 3 cụm yếu nhất, phân bổ **7 / 5 / 3** câu theo thứ tự yếu dần | Kiểm tra tổng hợp, quyết định vượt chủ đề |
 
-Tổng: **60 câu** cho một lượt chơi sạch (không trượt lần nào).
+Tổng: **60 câu** cho một lượt chơi (không trượt lần nào). Do khuôn khổ môn học nên nhóm để số lượng câu hỏi ít trong mỗi arena.
 
 > **Vì sao Boss phân bổ 7/5/3 chứ không chia đều:** giữ được ý "càng yếu càng bị hỏi nhiều", và chạy được cho cả chủ đề 3 cụm lẫn 5 cụm mà không phải viết hai nhánh code.
 
