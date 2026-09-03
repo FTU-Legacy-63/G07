@@ -23,7 +23,13 @@ Thí sinh đang tự ôn CFA Level I môn Ethics, đã học xong lý thuyết n
 ### Input
 
 - Lựa chọn đáp án của người học cho từng câu (3 phương án, đúng định dạng đề CFA thật).
-- Ngân hàng câu hỏi tĩnh dạng JSON, mỗi câu gắn nhãn sẵn: **cụm**, **module**, độ khó, đáp án đúng, lý do gây nhiễu của từng phương án sai, gợi ý, lời giải.
+- Thời gian trả lời từng câu — đo bằng khoảng cách giữa lúc câu hiện lên và lúc bấm
+  Xác nhận. Chỉ dùng làm tiêu chí phân định khi hai cụm bằng nhau; không chấm điểm,
+  không giới hạn thời gian.
+- Trạng thái dùng vật phẩm của từng câu (có/không, và loại nào) — quyết định câu đó
+  có vào mẫu chẩn đoán hay không.
+- Ngân hàng câu hỏi tĩnh dạng JSON, mỗi câu gắn nhãn sẵn: cụm, module, sub-standard,
+  độ khó, đáp án đúng, lý do gây nhiễu của từng phương án sai, gợi ý, lời giải.
 
 Không đăng nhập, không gọi API bên ngoài, không dữ liệu thời gian thực.
 
@@ -152,10 +158,12 @@ Tổng: **60 câu** cho một lượt chơi (không trượt lần nào). Do khu
 ### Công thức
 
 ```text
-Accuracy(cụm) = số câu đúng thuộc cụm ÷ số câu đã làm thuộc cụm
+Accuracy(cụm) = diagnostic_correct[cụm] ÷ diagnostic_attempted[cụm]
 ```
 
-Tính **cộng dồn** trên toàn bộ câu người học đã làm, tính lại sau mỗi Arena. Cụm có Accuracy thấp nhất là cụm yếu nhất.
+Trong đó cả tử số và mẫu số CHỈ tính những câu người học trả lời mà KHÔNG dùng vật phẩm. 
+
+Tính cộng dồn trên toàn hành trình, tính lại sau mỗi Arena. Cụm có Accuracy thấp nhất là cụm yếu nhất.
 
 Phân định khi bằng nhau: (1) độ khó trung bình của câu làm sai cao hơn → (2) thời gian trả lời trung bình dài hơn → (3) thứ tự mã cụm.
 
@@ -225,7 +233,7 @@ Main output của MVP:
 |---|---|
 | Target user | Thí sinh tự ôn CFA L1 môn Ethics |
 | Core task | Đi hết 5 Arena và biết Standard nào đã cải thiện |
-| Input thiết yếu | Đáp án người chọn + ngân hàng câu hỏi JSON gắn nhãn 2 tầng |
+| Input thiết yếu | Đáp án người chọn + thời gian trả lời + trạng thái dùng vật phẩm + ngân hàng câu hỏi JSON gắn nhãn 2 tầng |
 | Logic path chính | Chấm → cộng dồn theo cụm → xếp hạng yếu → lọc bank → sinh Arena → đỗ/trượt |
 | Output có ý nghĩa | Bảng chẩn đoán 5 cụm / 9 module + biểu đồ tiến bộ + giải thích từng câu sai |
 | User flow hoàn chỉnh | Mục 7 |
@@ -295,7 +303,7 @@ Số dư khởi đầu: **3 Credit** — vì vật phẩm rẻ nhất giá 3, n�
 
 > Vì đề chỉ có **3 phương án** đúng chuẩn CFA, vật phẩm không thể loại 2 phương án — làm vậy sẽ chỉ còn lại đáp án đúng, biến vật phẩm thành nút cho điểm miễn phí.
 
-**Quy tắc quan trọng:** câu có dùng vật phẩm **vẫn tính** vào % đỗ/trượt của Arena, nhưng **bị loại** khỏi phép tính Accuracy theo cụm. Trả lời đúng nhờ loại bớt phương án không chứng minh người học nắm được cụm đó; đưa vào mẫu sẽ che mất lỗ hổng thật và khiến Trap bắn sai chỗ.
+**Quy tắc quan trọng:** câu có dùng vật phẩm vẫn tính vào `arena_score_correct`(quyết định đỗ/trượt và Credit), nhưng bị loại khỏi `diagnostic_correct` và `diagnostic_attempted` (quyết định cụm yếu). Trả lời đúng nhờ loại bớt phương án không chứng minh người học nắm được cụm đó; đưa vào mẫu sẽ đẩy Accuracy của cụm lên cao giả tạo, cụm đó thoát khỏi vị trí yếu nhất, và Trap bắn sang cụm khác.
 
 ---
 
@@ -359,7 +367,7 @@ Fallback không được biến thành một bộ đề trắc nghiệm có ch�
 - hệ thống tài khoản, đăng nhập, đồng bộ thiết bị;
 - bảng xếp hạng, chế độ nhiều người chơi;
 - trợ lý hỏi đáp, sinh câu hỏi bằng AI;
-- giới hạn thời gian mỗi câu;
+- giới hạn thời gian mỗi câu (thời gian vẫn được đo để phân định cụm yếu, nhưng không đếm ngược và không trừ điểm);
 - cảnh báo lệ thuộc vật phẩm.
 
 ---
@@ -411,7 +419,7 @@ Arena 1 chẩn đoán sinh ra Trap I
 | # | Vấn đề | Ảnh hưởng |
 |---|---|---|
 | 1 | **Bảng ánh xạ 9 module → 5 cụm ở mục 2** là đề xuất của nhóm, chưa đối chiếu với trọng số đề thi thật | Nếu đổi cách gom cụm, toàn bộ số liệu ngân hàng ở mục 9 phải tính lại. Nên chốt trước khi soạn câu hỏi |
-| 2 | Sản lượng biên soạn câu hỏi thực tế theo tuần | Quyết định chọn mốc 110 câu hay 75 câu. Là điều kiện tiên quyết để khoá phạm vi |
+| 2 | Sản lượng biên soạn câu hỏi thực tế theo tuần | Quyết định chọn mốc 110 câu. Là điều kiện tiên quyết để khoá phạm vi |
 | 3 | Mức ≥90% được 4 Credit và thưởng +5 khi vượt Boss | Phần nhóm tự đề xuất, chưa có trong yêu cầu gốc. Bỏ đi thì tổng Credit giảm ~1/3 |
 
 ---
