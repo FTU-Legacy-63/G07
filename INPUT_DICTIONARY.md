@@ -2,7 +2,7 @@
 
 **Sản phẩm:** CFA Quest — Ethics diagnostic dungeon
 **Học phần:** NHA408E · Nhóm 7
-**Nguồn tham chiếu nội bộ:** `SOLUTION_STRUCTURE.md` v hiện hành, `ethics_bank_110.json` (110 câu)
+**Nguồn tham chiếu nội bộ:** `SOLUTION_STRUCTURE.md`, `ethics_bank_110.json` (110 câu)
 
 ---
 
@@ -107,7 +107,7 @@ Loại này không phải contextual, cũng không phải input sản phẩm. N�
 
 | Field | Dùng lúc nào | Ai dùng |
 |---|---|---|
-| `sub_standard` | Lúc soạn đề. Kiểm tra ngân hàng đã phủ đủ các sub-standard chưa (hiện có 28 giá trị: GIPS-fundamentals, CODE-six-components, I(A)–I(D), II(A)–II(B), III(A)–III(E), IV(A)–IV(C), V(A)–V(C), VI(A)–VI(C), VII(A)–VII(B)). Đồng thời là khoá nối sang `SOURCE_USE_MAP.md` | Hồng (nội dung), Quỳnh (tài liệu) |
+| `sub_standard` | Lúc soạn đề. Kiểm tra ngân hàng đã phủ đủ các sub-standard chưa (hiện có 28 giá trị: GIPS-fundamentals, GIPS-composite, GIPS-disclosures, GIPS-verification, CODE-code-vs-standards, CODE-six-components, I(A)–I(D), II(A)–II(B), III(A)–III(E), IV(A)–IV(C), V(A)–V(C), VI(A)–VI(C), VII(A)–VII(B)). Đồng thời là khoá nối sang `SOURCE_USE_MAP.md` | Hồng (nội dung), Quỳnh (tài liệu) |
 
 Lúc sản phẩm chạy, `sub_standard` không xuất hiện ở bất kỳ màn hình nào. Bảng chẩn đoán dừng ở tầng module.
 
