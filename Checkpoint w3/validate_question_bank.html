@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiểm tra ngân hàng câu hỏi — CFA Quest</title>
+<style>
+  :root{
+    --ink:#1c2b2d; --paper:#fbfaf7; --rule:#d8d3c8;
+    --pass:#2f6f4f; --fail:#a33a2a; --warn:#8a6a1e; --dim:#6d6a62;
+    --mark:#e8e3d7;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font:16px/1.55 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    padding:48px 24px 80px;
+  }
+  main{max-width:66ch;margin:0 auto}
+  h1{font-size:1.65rem;font-weight:600;margin:0 0 .2em;letter-spacing:-.01em}
+  .lede{color:var(--dim);margin:0 0 2.2em;font-size:.95rem}
+  #drop{
+    border:1.5px dashed var(--rule); border-radius:3px;
+    padding:40px 24px; text-align:center; cursor:pointer;
+    transition:border-color .15s, background .15s; background:transparent;
+  }
+  #drop:hover,#drop.over{border-color:var(--ink);background:var(--mark)}
+  #drop p{margin:0;color:var(--dim);font-size:.95rem}
+  #drop b{color:var(--ink);font-weight:600}
+  input[type=file]{display:none}
+
+  .verdict{margin:2.4em 0 0;padding:20px 22px;border-left:3px solid var(--rule)}
+  .verdict.ok{border-left-color:var(--pass)}
+  .verdict.bad{border-left-color:var(--fail)}
+  .verdict h2{margin:0 0 .3em;font-size:1.15rem;font-weight:600}
+  .verdict.ok h2{color:var(--pass)} .verdict.bad h2{color:var(--fail)}
+  .verdict p{margin:0;color:var(--dim);font-size:.95rem}
+
+  .notes{margin:2em 0 0;padding-left:1.1em;border-left:3px solid var(--warn)}
+  .notes h3{margin:0 0 .2em;font-size:1rem;font-weight:600;color:var(--warn)}
+  .notes p{margin:0;color:var(--dim);font-size:.88rem}
+  ol.warns{margin:.8em 0 0;padding-left:1.4em;font-size:.9rem;color:var(--dim)}
+  ol.warns li{margin-bottom:.4em}
+
+  table{border-collapse:collapse;width:100%;margin:1.6em 0 0;font-size:.9rem}
+  caption{text-align:left;font-weight:600;padding:1.4em 0 .5em;font-size:.95rem}
+  th,td{text-align:left;padding:.42em .6em .42em 0;border-bottom:1px solid var(--rule)}
+  th{font-weight:600;color:var(--dim);font-size:.82rem}
+  td.n{text-align:right;font-variant-numeric:tabular-nums;padding-right:1.4em}
+
+  ol.errs{margin:1.2em 0 0;padding-left:1.4em;font-size:.9rem}
+  ol.errs li{margin-bottom:.5em}
+  code{background:var(--mark);padding:.08em .32em;border-radius:2px;font-size:.86em;
+       font-family:"SF Mono",Menlo,Consolas,monospace}
+  .rules{margin-top:3em;padding-top:1.4em;border-top:1px solid var(--rule);
+         font-size:.87rem;color:var(--dim)}
+  .rules ul{margin:.6em 0 0;padding-left:1.3em} .rules li{margin-bottom:.3em}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Kiểm tra ngân hàng câu hỏi</h1>
+  <p class="lede"> Không cần mạng, không cài đặt — mở file này bằng trình duyệt là dùng được.</p>
+
+  <label id="drop" for="f">
+    <p>Kéo file <b>questions.js</b> hoặc <b>.json</b> vào đây, hoặc bấm để chọn</p>
+  </label>
+  <input type="file" id="f" accept=".json,.js">
+
+  <div id="out"></div>
+
+  <div class="rules">
+    <b>Lỗi</b> — phải sửa, ảnh hưởng tính đúng đắn của dữ liệu:
+    <ul>
+      <li>Đúng 3 phương án; <code>distractor_reason</code> đúng 3 phần tử, rỗng ở vị trí đáp án</li>
+      <li>Đáp án đúng không phải phương án dài nhất</li>
+      <li>Chênh lệch độ dài phương án tối đa 5 từ và 25 ký tự</li>
+      <li>Độ dài đề: 45–95 từ với <code>vignette</code>, 20–50 từ với <code>concept</code></li>
+      <li><code>cluster</code> khớp <code>module</code>; id không trùng; phương án nhiễu không tái sử dụng</li>
+    </ul>
+    <b>Cảnh báo</b> — chỉ để tham khảo, không làm ngân hàng câu hỏi bị đánh trượt:
+    <ul>
+      <li>Từ tuyệt đối (<code>always</code>, <code>never</code>…) trong phương án nhiễu</li>
+      <li>Một vị trí đáp án chiếm quá 50% toàn bộ ngân hàng</li>
+    </ul>
+  </div>
+</main>
+
+<script>
+const BAN = ["always","never","automatically","regardless","in all cases","must always","under no circumstances"];
+const MAP = {GIPS:"C1",CODE:"C1",S1:"C2",S2:"C2",S3:"C3",S4:"C4",S5:"C4",S6:"C5",S7:"C5"};
+const words = s => s.trim().split(/\s+/).length;
+
+function parse(text){
+  const t = text.trim();
+  if (t.startsWith("[")) return JSON.parse(t);
+  const m = t.match(/=\s*(\[[\s\S]*?\])\s*;/);      // const X = [...];
+  if (!m) throw new Error("Không tìm thấy mảng câu hỏi trong file.");
+  return JSON.parse(m[1]);
+}
+
+function validate(items){
+  const errs = [], warns = [];
+  const seen = new Set(), reasons = new Set(), distractors = new Set();
+
+  items.forEach(it => {
+    const p = it.id || "(thiếu id)";
+    const push = m => errs.push(p + " — " + m);
+    const note = m => warns.push(p + " — " + m);
+
+    if (seen.has(it.id)) push("id trùng"); seen.add(it.id);
+    const o = it.options || [], a = it.answer, dr = it.distractor_reason || [];
+    if (o.length !== 3) return push("không đủ 3 phương án");
+    if (dr.length !== 3) push("distractor_reason không đủ 3 phần tử");
+    if (dr[a] !== "") push("distractor_reason tại vị trí đáp án phải rỗng");
+
+    const L = o.map(x => x.length), W = o.map(words), s = [...L].sort((x,y)=>x-y);
+    if (L[a] === s[2]) push("đáp án đúng là phương án dài nhất");
+    if (Math.max(...W)-Math.min(...W) > 5) push("chênh lệch số từ " + (Math.max(...W)-Math.min(...W)));
+    if (Math.max(...L)-Math.min(...L) > 25) push("chênh lệch ký tự " + (Math.max(...L)-Math.min(...L)));
+
+    const lo = it.item_type === "concept" ? 20 : 45, hi = it.item_type === "concept" ? 50 : 95;
+    const sw = words(it.stem || "");
+    if (sw < lo || sw > hi) push("đề " + sw + " từ, ngoài khoảng " + lo + "–" + hi);
+    if (!/[:?]$/.test((it.stem||"").trim())) push("đề không kết thúc bằng dấu hai chấm");
+
+    o.forEach((x,i) => {
+      if (i === a) return;
+      BAN.forEach(b => {
+        if (new RegExp("\\b" + b.replace(/ /g,"\\s") + "\\b","i").test(x)) note('từ tuyệt đối "' + b + '" ở phương án ' + (i+1));
+      });
+      if (distractors.has(x)) push("phương án nhiễu bị tái sử dụng"); distractors.add(x);
+    });
+    dr.forEach((r,i) => {
+      if (i === a || !r) return;
+      if (reasons.has(r)) push("lý do gây nhiễu bị tái sử dụng"); reasons.add(r);
+    });
+    if (MAP[it.module] !== it.cluster) push("cluster không khớp module");
+  });
+
+  // Phân bố vị trí đáp án tính trên toàn bộ ngân hàng, không tính theo từng nhóm 5 câu.
+  const n = items.length;
+  if (n >= 30){
+    [0,1,2].forEach(k => {
+      const c = items.filter(x => x.answer === k).length;
+      if (c / n > 0.5)
+        warns.push("Toàn ngân hàng — phương án " + (k+1) + " chiếm " + Math.round(c/n*100) + "% số đáp án đúng (" + c + "/" + n + ")");
+    });
+  }
+  return {errs, warns};
+}
+
+function tally(items, key){
+  const m = new Map();
+  items.forEach(i => m.set(i[key], (m.get(i[key])||0)+1));
+  return [...m.entries()].sort((a,b) => String(a[0]).localeCompare(String(b[0])));
+}
+
+function table(cap, rows, head){
+  return "<table><caption>"+cap+"</caption><tr><th>"+head[0]+"</th><th>"+head[1]+"</th></tr>"
+    + rows.map(r => "<tr><td>"+r[0]+"</td><td class='n'>"+r[1]+"</td></tr>").join("")
+    + "</table>";
+}
+
+function render(items, result){
+  const out = document.getElementById("out");
+  const errs = result.errs, warns = result.warns;
+  const ok = errs.length === 0;
+  let h = '<div class="verdict '+(ok?"ok":"bad")+'"><h2>'
+    + (ok ? "Đạt toàn bộ ràng buộc" : errs.length + " lỗi cần sửa")
+    + '</h2><p>' + items.length + " câu đã kiểm"
+    + (warns.length ? ", " + warns.length + " cảnh báo tham khảo." : ".") + "</p></div>";
+
+  if (!ok) h += "<ol class='errs'>" + errs.map(e => "<li>"+e+"</li>").join("") + "</ol>";
+
+  if (warns.length){
+    h += '<div class="notes"><h3>Cảnh báo</h3><p>Không phải lỗi. Xem rồi bỏ qua cũng được.</p>'
+      + "<ol class='warns'>" + warns.map(e => "<li>"+e+"</li>").join("") + "</ol></div>";
+  }
+
+  const pos = {"nằm giữa":0, "ngắn nhất":0, "dài nhất":0};
+  items.forEach(i => {
+    const s = i.options.map(o=>o.length).sort((a,b)=>a-b), a = i.options[i.answer].length;
+    pos[a===s[0] ? "ngắn nhất" : a===s[2] ? "dài nhất" : "nằm giữa"]++;
+  });
+
+  h += table("Số câu theo module", tally(items,"module"), ["Module","Câu"]);
+  h += table("Số câu theo tiểu chuẩn mực", tally(items,"sub_standard"), ["Tiểu chuẩn mực","Câu"]);
+  h += table("Độ khó", tally(items,"difficulty"), ["Mức","Câu"]);
+  h += table("Vị trí đáp án đúng", tally(items,"answer").map(r=>["Phương án "+(r[0]+1), r[1]]), ["Vị trí","Câu"]);
+  h += table("Độ dài đáp án đúng so với hai phương án còn lại",
+             Object.entries(pos), ["Vị trí độ dài","Câu"]);
+  out.innerHTML = h;
+  out.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function load(file){
+  const r = new FileReader();
+  r.onload = () => {
+    try { const items = parse(r.result); render(items, validate(items)); }
+    catch(e){
+      document.getElementById("out").innerHTML =
+        '<div class="verdict bad"><h2>Không đọc được file</h2><p>'+e.message+'</p></div>';
+    }
+  };
+  r.readAsText(file);
+}
+
+const drop = document.getElementById("drop"), input = document.getElementById("f");
+input.addEventListener("change", e => e.target.files[0] && load(e.target.files[0]));
+["dragenter","dragover"].forEach(n => drop.addEventListener(n, e => {
+  e.preventDefault(); drop.classList.add("over");
+}));
+["dragleave","drop"].forEach(n => drop.addEventListener(n, e => {
+  e.preventDefault(); drop.classList.remove("over");
+}));
+drop.addEventListener("drop", e => e.dataTransfer.files[0] && load(e.dataTransfer.files[0]));
+</script>
+</body>
+</html>
