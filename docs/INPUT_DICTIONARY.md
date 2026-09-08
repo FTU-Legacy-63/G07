@@ -198,7 +198,7 @@ Lúc sản phẩm chạy, `sub_standard` không xuất hiện ở bất kỳ mà
 |---|---|
 | File này, và việc đồng bộ với `SOLUTION_STRUCTURE.md` | Quỳnh |
 | Nghĩa và chất lượng các field trong ngân hàng câu hỏi (Mục 2, Mục 6) | Hồng |
-| State variables và cách tính (Mục 3, Mục 4) | Minh |
+| State variables và cách tính (Mục 3, Mục 4) | Mô tả state variables và ba công thức (Mục 3, 4): Quỳnh — Triển khai và test: Minh |
 | Cơ chế sinh Arena đọc đúng các field ở Mục 2, Mục 3 | Trang |
 | Nhãn hiển thị trên giao diện không được đổi nghĩa của field | Khôi |
 | Phạm vi và ưu tiên khi phải cắt field | Quỳnh |
