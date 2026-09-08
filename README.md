@@ -1,283 +1,98 @@
-# CFA Quest — Checkpoint Tuần 1
+# CFA Quest — Ethics
 
-**Học phần:** NHA408E  
-**Ý tưởng ban đầu:** Xây dựng một sản phẩm luyện tập CFA Level 1 nhằm làm cho quá trình luyện multiple-choice questions bớt lặp lại và nhàm chán.
-
----
-
-# 1\. Problem Candidates — Các vấn đề đề xuất
-
-## Đề xuất 1 — Khó duy trì hứng thú khi phải luyện CFA lặp đi lặp lại
-
-Người ôn CFA Level 1 cần luyện một lượng lớn câu hỏi multiple choice. Tuy nhiên, việc liên tục thực hiện cùng một chu trình:
-
-**Đọc câu hỏi → Chọn đáp án → Xem đúng/sai → Làm câu tiếp theo**
-
-có thể khiến quá trình luyện tập trở nên lặp lại và nhàm chán.
-
-VER2 xác định trực tiếp người dùng mục tiêu là những người cần luyện MCQ nhưng cảm thấy quá trình ôn luyện căng thẳng và nhàm chán.
+**Học phần:** NHA408E — Technology Applications in Banking and Finance · FTU 2026  
+**Nhóm 7:** Quỳnh (lead, tài liệu) · Hồng (nội dung câu hỏi) · Trang (sinh đề, validation) · Minh (engine tính điểm) · Khôi (giao diện, QA)
 
 ---
 
-## Đề xuất 2 — Người học cần duy trì việc luyện tập trong nhiều câu hỏi và nhiều topic
+## Project statement
 
-CFA Level 1 bao gồm nhiều mảng kiến thức. Người học không chỉ cần làm một vài câu hỏi mà phải luyện tập liên tục trên nhiều topic khác nhau.
+Thí sinh tự ôn CFA Level I môn Ethics biết mình sai bao nhiêu câu, nhưng không biết sai tập trung ở Standard nào — nên lần luyện sau vẫn làm dàn trải như lần trước.
 
-Khó khăn cần kiểm chứng:
+**CFA Quest là một hầm ngục 5 đấu trường, trong đó chỉ Arena 1 có đề cố định. Bốn Arena còn lại được sinh ra từ chính dữ liệu sai của người học.** Hệ thống đo tỷ lệ đúng theo 5 cụm nội dung, tìm cụm thấp nhất, rồi lọc ngân hàng 110 câu để hỏi lại đúng phần đó.
 
-**Liệu sự lặp lại có khiến người học giảm mong muốn tiếp tục luyện tập trước khi hoàn thành lượng practice cần thiết hay không?**
+Người học không tự chọn mình luyện gì. Dữ liệu sai của họ chọn hộ.
 
----
-
-## Đề xuất 3 — Sau khi luyện tập, người học cần biết mình nên luyện gì tiếp theo
-
-Chỉ biết tổng số câu đúng/sai chưa chắc đã đủ hữu ích.
-
-Một kết quả luyện tập có giá trị hơn nếu giúp người học biết:
-
-* topic nào đang làm tốt;
-
-* topic nào đang yếu;
-
-* câu nào sai;
-
-* vì sao sai;
-
-* nên ưu tiên luyện phần nào tiếp theo.
-
-VER2 đã dự kiến đầu ra gồm Overall Accuracy, Topic Accuracy, Weakest Areas và explanation cho câu hỏi.
+**Người dùng mục tiêu:** thí sinh đã học xong lý thuyết Ethics, đang ở giai đoạn luyện MCQ.  
+**User task:** đi hết 5 Arena và biết cụm nào đã cải thiện, cụm nào chưa.  
+**Main output:** bảng chẩn đoán 5 cụm / 9 module + đề luyện sinh tự động từ bảng đó.
 
 ---
 
-## Hướng vấn đề được lựa chọn
+## Ranh giới của sản phẩm
 
-Nhóm lựa chọn vấn đề chính:
+Sản phẩm **xác định cụm có tỷ lệ đúng thấp nhất trong một phiên chơi 60 câu**. Nó không chẩn đoán năng lực Ethics, không dự báo kết quả thi thật, và chưa chứng minh cơ chế Trap cải thiện việc học.
 
-**Người đang ôn CFA Level 1 cần luyện tập nhiều câu hỏi để kiểm tra và củng cố kiến thức, nhưng quá trình luyện MCQ lặp đi lặp lại có thể trở nên nhàm chán và làm giảm hứng thú tiếp tục luyện tập.**
+`performance_score` so sánh được giữa hai người chơi **trong sản phẩm này**, không phải thang đo năng lực chuẩn hoá.
 
-### Output Tuần 1
-
-**Problem Direction**
-
-Repeated CFA practice is necessary, but its repetitive nature may reduce learner engagement.
-
-### Input cho Tuần 2
-
-Problem Direction này đặt ra yêu cầu:
-
-**Sản phẩm phải làm cho người dùng muốn tiếp tục practice nhưng không được làm mất learning value của việc luyện CFA.**
+Ngưỡng 70%, bảng ánh xạ 9 module → 5 cụm, và nhãn độ khó 1–3 đều do nhóm tự đặt. Chi tiết ở [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md); phát biểu đầy đủ ở [`docs/SOLUTION_STRUCTURE.md` Mục 14](docs/SOLUTION_STRUCTURE.md).
 
 ---
 
-# 2\. Target User — Người dùng mục tiêu
+## Midterm evidence links
 
-Người dùng chính là:
-
-**Người đang ôn CFA Level 1 và đang ở giai đoạn luyện tập câu hỏi multiple choice.**
-
-Người dùng này:
-
-* đã tiếp xúc với kiến thức CFA;
-
-* cần luyện nhiều câu hỏi;
-
-* cần kiểm tra mức độ hiểu của bản thân;
-
-* cần xác định topic còn yếu;
-
-* phải duy trì hoạt động practice trong nhiều vòng;
-
-* có thể cảm thấy quá trình practice truyền thống lặp lại và nhàm chán.
-
-### Output Tuần 1
-
-**Target User**
-
-CFA Level 1 candidates who need repeated MCQ practice.
-
-### Input cho Tuần 2
-
-Target User giúp Week 2 xác định:
-
-Sản phẩm là **practice product**, không phải sản phẩm dạy CFA từ đầu.
+| Yêu cầu Week 4 | Tìm ở đâu |
+|---|---|
+| **Logic chain** — user → input → process → output → user action | [`SOLUTION_STRUCTURE.md` Mục 1](docs/SOLUTION_STRUCTURE.md), [Mục 3](docs/SOLUTION_STRUCTURE.md), [Mục 12](docs/SOLUTION_STRUCTURE.md) |
+| **Logic specification** — input/state → công thức → output → claim boundary | [`SOLUTION_STRUCTURE.md` Mục 5.0](docs/SOLUTION_STRUCTURE.md) (bảng 5 cột) và Mục 5 (ba công thức, bảng tổng kết O4) |
+| **Claim boundary** | [`SOLUTION_STRUCTURE.md` Mục 14](docs/SOLUTION_STRUCTURE.md) — bảng "được nói / không được nói" cho cả bốn output |
+| **Input dictionary** — nghĩa từng field và output nào bị ảnh hưởng | [`docs/INPUT_DICTIONARY.md`](docs/INPUT_DICTIONARY.md) |
+| **Source & use** — nguồn nào cấp gì, giới hạn nào | [`docs/SOURCE_USE_MAP.md`](docs/SOURCE_USE_MAP.md) |
+| **Assumptions** — 24 giả định, rủi ro, cách kiểm chứng | [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md) |
+| **Expected result** — một sample dự đoán được trước khi chạy | [`docs/SAMPLE_INPUT_OUTPUT.md` Mục 2–6](docs/SAMPLE_INPUT_OUTPUT.md): 15 dòng input → toàn bộ hành trình → bảng tổng kết |
+| **Explanation + limitation** | [`SAMPLE_INPUT_OUTPUT.md` Mục 7](docs/SAMPLE_INPUT_OUTPUT.md) (kết quả nói gì / không nói gì) và [Mục 11](docs/SAMPLE_INPUT_OUTPUT.md) |
+| **MVP + out of scope** | [`SOLUTION_STRUCTURE.md` Mục 6](docs/SOLUTION_STRUCTURE.md) và [Mục 10](docs/SOLUTION_STRUCTURE.md) |
+| **Progress evidence** | [`docs/MIDTERM_REVIEW.md` Part D](docs/MIDTERM_REVIEW.md) |
+| **Individual output & ownership** | [`docs/MIDTERM_REVIEW.md` Part E](docs/MIDTERM_REVIEW.md) |
+| **Tổng hợp Part A–E** | [`docs/MIDTERM_REVIEW.md`](docs/MIDTERM_REVIEW.md) |
 
 ---
 
-# 3\. User Task / Decision — Nhiệm vụ của người dùng
+## Cấu trúc repo
 
-## Core User Task
+```text
+README.md                      ← bạn đang ở đây
+data/
+  ethics_bank_110.json         ngân hàng 110 câu, nguồn dữ liệu duy nhất
+  questions.js                 bản nhúng của file trên, để chạy không cần server
+docs/
+  SOLUTION_STRUCTURE.md        tài liệu lõi: core flow, ba công thức, O4, claim boundary
+  INPUT_DICTIONARY.md          nghĩa từng field, ba bộ đếm, quy tắc đặt tên biến
+  ASSUMPTIONS.md               giả định, rủi ro, câu không được biến thành claim
+  SOURCE_USE_MAP.md            nguồn nào cấp gì, traceability từng field
+  SAMPLE_INPUT_OUTPUT.md       sample tính tay, 16 test case, validation
+  MIDTERM_REVIEW.md            tổng hợp Part A–E cho giữa kỳ
+tools/
+  validate.html                công cụ QA offline cho ngân hàng câu hỏi
+```
 
-Nhiệm vụ cốt lõi là:
-
-**Luyện câu hỏi CFA Level 1, đánh giá kết quả của bản thân và xác định những topic cần tiếp tục luyện tập.**
-
-## User Task Flow
-
-**Chọn nhóm kiến thức**
-
-→ **Làm CFA questions**
-
-→ **Nhận kết quả**
-
-→ **Xem performance theo topic**
-
-→ **Nhận ra phần kiến thức yếu**
-
-→ **Quyết định luyện tiếp phần nào**
+**Dữ liệu nhúng trong `.js` chứ không fetch JSON** — để người chấm mở file bằng cách bấm đúp là chạy được, không cần dựng local server.
 
 ---
 
-## User Decision
+## Trạng thái hiện tại
 
-Sau một lượt practice, người dùng cần trả lời được:
-
-**“Tôi đang yếu ở phần nào và tôi nên luyện gì tiếp theo?”**
-
-# 4\. Draft Problem Statement — Bản nháp phát biểu vấn đề
-
-**Người đang ôn CFA Level 1 cần thực hiện repeated multiple-choice practice để đánh giá và củng cố kiến thức, nhưng cách luyện tập lặp đi lặp lại có thể trở nên nhàm chán và làm giảm hứng thú tiếp tục luyện tập; đồng thời người học cần kết quả đủ rõ để biết mình đang yếu ở topic nào và nên luyện gì tiếp theo.**
-
-### Output Tuần 1
-
-**Draft Problem Statement**
-
-### Input cho Tuần 2
-
-Problem Statement tạo hai yêu cầu mà sản phẩm phải đáp ứng:
-
-1. **Engagement value:** làm repeated practice bớt nhàm chán.
-
-2. **Learning value:** giúp người học hiểu performance và weak areas của mình.
+| Hạng mục | Trạng thái |
+|---|---|
+| Ngân hàng 110 câu | Xong, đã validate cấu trúc |
+| Đặc tả logic (3 công thức, O1–O4) | Xong |
+| Sample tính tay dự đoán được output | Xong |
+| Claim boundary | Xong |
+| Engine JavaScript | Chưa bắt đầu |
+| Giao diện | Chưa bắt đầu |
+| Observation/interview người dùng thật | **Chưa có** — problem evidence vẫn là open item |
 
 ---
 
-# 5\. Initial Source / Observation — Giả định và kế hoạch kiểm chứng
+## Open questions
 
-Hiện tại nhóm có hai giả định cần kiểm chứng.
-
-## Giả định 1 — Engagement Problem
-
-Người ôn CFA Level 1 cảm thấy repeated MCQ practice nhàm chán.
-
-## Giả định 2 — Learning Need
-
-Sau khi practice, người học muốn biết mình yếu ở topic nào và vì sao mình trả lời sai.
-
-Hai giả định này **chưa được xem là sự thật đã chứng minh**.
+1. `accuracy_cumulative` gồm cả câu Trap, nên cụm được Trap luyện tốt có thể rơi khỏi Boss và không được đo lại. Giữ cơ chế và báo cáo cả hai vế, hay đổi sang xếp hạng Boss bằng mốc chẩn đoán? (`ASSUMPTIONS.md` B10)
+2. Ngưỡng 70% ở O4 chặt không đều trên slot 7/5/3 câu — slot 3 câu thành ra phải đúng tuyệt đối. Giữ, hay đổi sang luật "số câu sai tối đa"? (`ASSUMPTIONS.md` B8)
+3. Chưa có problem evidence thật. Kế hoạch observation đã có nhưng chưa thực hiện. (`SOURCE_USE_MAP.md` Source 6, 7)
+4. `item_type` trong JSON có nhãn chưa khớp nội dung — sửa hay xoá? (`INPUT_DICTIONARY.md` Mục 7)
 
 ---
 
-## Kế hoạch quan sát
+## Bản quyền
 
-Cho người dùng mục tiêu thực hiện một lượt CFA practice và ghi nhận:
-
-### Trước / trong practice
-
-* Người dùng có cảm thấy task lặp lại không?
-
-* Có muốn tiếp tục làm thêm câu hỏi không?
-
-* Khi số lượng câu hỏi tăng, mức độ hứng thú thay đổi như thế nào?
-
-### Sau practice
-
-Hỏi người dùng:
-
-* Bạn muốn biết thông tin gì sau khi hoàn thành?
-
-* Tổng score có đủ không?
-
-* Bạn có muốn biết topic yếu nhất không?
-
-* Explanation của câu sai có hữu ích không?
-
-* Kết quả đó có giúp bạn quyết định phần cần luyện tiếp không?
-
----
-
-### Output Tuần 1
-
-**Two hypotheses to validate**
-
-1. Repetition reduces engagement.
-
-2. Topic-level feedback provides useful learning value.
-
-### Input cho Tuần 2
-
-Week 2 phải thiết kế sản phẩm sao cho có thể tạo ra và sau này kiểm chứng được cả:
-
-**Engagement outcome \+ Learning outcome**
-
----
-
-# 6\. Finance / Banking Relevance
-
-Core task của người dùng là:
-
-**Practice and evaluate CFA Level 1 financial knowledge.**
-
-VER2 chia nội dung thành các nhóm CFA như FSA, Corporate Finance, Equity, Fixed Income, Derivatives, Economics, Quantitative Methods và Portfolio Management.
-
-### Output Tuần 1
-
-**Finance Relevance**
-
-The product supports CFA Level 1 financial knowledge practice and performance evaluation.
-
-### Input cho Tuần 2
-
-Mọi Main Output và Core Process ở Week 2 phải dựa trên **CFA learning performance**, không chỉ dựa trên game score.
-
----
-
-# 7\. Đóng góp của từng thành viên
-
-| Thành viên | Vai trò | Output Tuần 1 | Được sử dụng ở Tuần 2 để |
-| :---- | :---- | :---- | :---- |
-| **Quỳnh** | Project Lead \+ Game Structure Developer | Tổng hợp **Problem Direction \+ User Task** và dependency giữa Week 1 → Week 2 | Xây Product Statement và Solution Chain |
-| **Hồng** | CFA Question Bank \+ Quiz Engine Developer | Xác định **learning information** người học cần sau practice: correctness, topic, accuracy, explanation | Định nghĩa Main Output và required input |
-| **Trang** | Special Mechanics Developer | Xác định **engagement hypothesis**: điểm nào của repeated practice gây nhàm chán và mechanic chỉ nên hỗ trợ ở đâu | Xác định engagement layer mà không phá core learning loop |
-| **Minh** | Player Points \+ Shop \+ Inventory Developer | Xác định sự khác nhau giữa **learning output** và **reward output** | Quyết định feature nào core, supporting hoặc out of scope |
-| **Khôi** | Frontend/UI \+ Result Analytics \+ QA Lead | Xác định thông tin người dùng cần nhìn thấy sau một practice attempt và thiết kế observation questions | Định nghĩa visible Main Output và MVP flow |
-
----
-
-## Shared Output của cả nhóm ở cuối Tuần 1
-
-### Problem
-
-Repeated CFA practice can become monotonous.
-
-### Target User
-
-CFA Level 1 candidates in the practice stage.
-
-### User Task
-
-Practice questions, evaluate performance and identify weak topics.
-
-### Desired Learning Outcome
-
-User understands what they know, what they are weak at and what to practice next.
-
-### Desired Engagement Outcome
-
-User is willing to continue practicing despite the repetitive nature of CFA MCQs.
-
----
-
-# 8\. Open Questions — Câu hỏi còn bỏ ngỏ
-
-1. Người ôn CFA Level 1 có thực sự thấy repeated MCQ practice nhàm chán không?
-
-2. Sự nhàm chán có làm họ giảm willingness to continue practice không?
-
-3. Weakest Areas có giúp người dùng quyết định phần cần luyện tiếp không?
-
-4. Gamification có làm người dùng muốn luyện thêm hay chỉ khiến giao diện thú vị hơn?
-
-5. Game mechanics có nguy cơ làm người chơi tập trung vào Points hơn CFA knowledge không?
-
-6. Làm thế nào để chứng minh CFA Quest bớt nhàm chán hơn conventional practice?
-
+Toàn bộ 110 câu hỏi, tình huống, lời giải và lý do gây nhiễu do nhóm tự biên soạn. Tình huống là tình huống giả định, không trích nguyên văn tài liệu CFA Institute hay GIPS Standards. Tên Standard được dùng cho mục đích phân loại học thuật. Không có tài liệu nguồn thương mại nào trong repo hoặc trong lịch sử commit.
