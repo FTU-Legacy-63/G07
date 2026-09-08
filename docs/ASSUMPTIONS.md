@@ -151,7 +151,7 @@ Phải sửa `ASSUMPTIONS.md` nếu có một trong các thay đổi sau:
 | Nhóm assumption | Owner chính |
 |---|---|
 | Target user / problem evidence | Trang, Khôi |
-| Diagnostic logic / tie-break / counters | Minh, Trang |
+| Diagnostic logic / tie-break / counters | Mô tả: Quỳnh, Triển khai: Minh, Trang |
 | Mapping cluster / scope / game economy | Quỳnh, Minh |
 | Bảng tổng kết O4, nhãn cải thiện, claim boundary | Quỳnh |
 | Question-bank quality / difficulty | Hồng |
