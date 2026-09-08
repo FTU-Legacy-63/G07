@@ -388,7 +388,7 @@ Bị reject vì: option ngoài range 0–2; thời gian âm; `item_used` và `it
 | Sample runtime structure, `arena` / `attempt_index` | Minh |
 | Question ID/content consistency | Hồng |
 | Diagnostic expected output (Mục 3, 4) | Trang, Minh |
-| Chuỗi hành trình và O4 (Mục 5, 6, 7) | Quỳnh, Minh |
+| Chuỗi hành trình và O4 (Mục 5, 6, 7) | Quỳnh |
 | Validation cases (Mục 9, 10) | Minh, Khôi |
 | Hiển thị O4 và hai dòng chú thích bắt buộc (6.4) | Khôi |
 | Documentation / traceability | Quỳnh |
