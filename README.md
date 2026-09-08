@@ -1,7 +1,7 @@
 # CFA Quest — Ethics
 
 **Học phần:** NHA408E — Technology Applications in Banking and Finance · FTU 2026  
-**Nhóm 7:** Quỳnh (lead, tài liệu) · Hồng (nội dung câu hỏi) · Trang (sinh đề, validation) · Minh (engine tính điểm) · Khôi (giao diện, QA)
+**Nhóm 7:** Quỳnh (lead, engine tính điểm) · Hồng (nội dung câu hỏi) · Trang (sinh đề, validation) · Minh (cơ chế shop và vật phẩm) · Khôi (giao diện, QA)
 
 ---
 
