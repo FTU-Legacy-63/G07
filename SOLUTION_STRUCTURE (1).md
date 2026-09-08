@@ -8,7 +8,7 @@
 
 ## 0. Sản phẩm trong một đoạn
 
-CFA Quest là một hầm ngục gồm 5 đấu trường (Arena). **Chỉ Arena 1 là đề cố định** — đó là bài chẩn đoán. Bốn Arena còn lại được sinh ra từ chính dữ liệu sai của người học: hệ thống đo tỷ lệ đúng theo từng cụm nội dung, tìm cụm yếu nhất, rồi lọc ngân hàng câu hỏi để ném lại đúng phần đó vào mặt người học.
+CFA Quest là một hầm ngục gồm 5 đấu trường (Arena). **Chỉ Arena 1 là đề cố định** — đó là bài chẩn đoán. Bốn Arena còn lại được sinh ra từ chính dữ liệu sai của người học: hệ thống đo tỷ lệ đúng theo từng cụm nội dung, tìm cụm yếu nhất, rồi lọc ngân hàng câu hỏi để kiểm tra lại phần kiến thức đó cho người học.
 
 Người học không tự chọn mình luyện gì. **Dữ liệu sai của họ chọn hộ.**
 
@@ -43,7 +43,7 @@ Chấm bài → cộng dồn tỷ lệ đúng theo từng cụm → xác định
 
 ### User Action
 
-Người học nhìn thấy Standard nào của mình đang yếu, làm tiếp Arena được sinh riêng cho lỗ hổng đó, rồi đối chiếu tỷ lệ đúng ở Arena 1 với Arena 5 để biết lỗ hổng đã đóng chưa.
+Người học nhìn thấy Standard nào của mình đang yếu, làm tiếp Arena được sinh riêng cho lỗ hổng đó, rồi đối chiếu tỷ lệ đúng ở mốc chuẩn đoán (Arena 1 + crossroad) với Arena 5 để biết lỗ hổng đã đóng chưa.
 
 ```text
 USER
@@ -56,7 +56,7 @@ Weakness Profile (5 cụm / 9 module)
         ↓
 Auto-Generated Targeted Arena
         ↓
-Compare Arena 1 vs Arena 5
+Compare Baseline (Arena 1 + crossroad) vs Boss
 ```
 
 ---
@@ -92,7 +92,7 @@ Standard III đứng riêng một cụm vì đây là Standard nặng nhất.
   "id": "ETH-C2-S1-007",
   "topic": "ETHICS",
   "cluster": "C2",             // truc CHAN DOAN va SINH DE
-  "module": "STD_I",           // truc NOI DUNG va BAO CAO chi tiet
+  "module": "S1",           // truc NOI DUNG va BAO CAO chi tiet
   "difficulty": 2,
   "stem": "...",
   "options": ["...", "...", "..."],
@@ -141,7 +141,7 @@ Bộ đề trắc nghiệm thường trả lời *"tôi được bao nhiêu đi�
 
 | Arena | Tên | Số câu | Nguồn câu hỏi | Vai trò |
 |---|---|---|---|---|
-| 1 | The Gate | 15 | 3 câu × 5 cụm, rải hết 9 module, đủ 3 mức khó | **Chẩn đoán.** Dữ liệu gốc của cả hầm ngục |
+| 1 | The Gate | 15 | 3 câu × 5 cụm, rải hết 9 module, đủ 3 mức khó (1 câu mỗi mức) | **Chẩn đoán.** Dữ liệu gốc của cả hầm ngục |
 | 2 | Trap I | 10 | Cụm yếu nhất (W1), chia đều cho các module trong cụm | Bẫy 1 — bịt lỗ hổng lớn nhất |
 | 3 | The Crossroads | 10 | 2 câu × 5 cụm | Kiểm tra duy trì + bổ sung dữ liệu chẩn đoán |
 | 4 | Trap II | 10 | Cụm yếu thứ hai (W2), tính lại sau Arena 3 | Bẫy 2 — bịt lỗ hổng thứ hai |
@@ -158,14 +158,78 @@ Tổng: **60 câu** cho một lượt chơi (không trượt lần nào). Do khu
 ### Công thức
 
 ```text
-Accuracy(cụm) = diagnostic_correct[cụm] ÷ diagnostic_attempted[cụm]
+(1) accuracy_cumulative(cụm) = diagnostic_correct[cụm] ÷ diagnostic_attempted[cụm]
 ```
+Công thức (1) dùng để xác định phần kiến thức mà người chơi còn yếu
 
 Trong đó cả tử số và mẫu số CHỈ tính những câu người học trả lời mà KHÔNG dùng vật phẩm. 
 
 Tính cộng dồn trên toàn hành trình, tính lại sau mỗi Arena. Cụm có Accuracy thấp nhất là cụm yếu nhất.
 
 Phân định khi bằng nhau: (1) độ khó trung bình của câu làm sai cao hơn → (2) thời gian trả lời trung bình dài hơn → (3) thứ tự mã cụm.
+
+```text
+(2) arena_score_correct = Σ số câu đúng trong toàn bộ arena / Σ số câu trong toàn bộ arena
+```
+Công thức (2) dùng để tính số điểm pass của arena
+
+Trong công thức này, tính cả những câu mà người chơi sử dụng vật phẩm vào cả tử và mẫu của công thức
+
+```text
+(3) performance_score = Σ điểm độ khó của các câu ĐÚNG và KHÔNG dùng vật phẩm ÷ Σ điểm độ khó của TOÀN BỘ câu đã được hỏi
+```
+
+Công thức (3) dùng để phân biệt hai người chơi có cùng `arena_score_correct` nhưng làm đúng ở mức khó khác nhau. Tính một lần cho cả lượt chơi 5 arena, hiển thị ở màn tổng kết sau Boss vì độ khó sẽ khác nhau giữa các màn và giữa các người chơi với nhau nên khi gộp lại sự chênh lệch độ khó được triệt tiêu. Con số cuối cùng có thể được so giữa những người chơi khác nhau
+
+Điểm độ khó lấy thẳng từ field `difficulty` của ngân hàng câu hỏi:
+
+```js
+const DIFFICULTY_POINTS = { 1: 1, 2: 2, 3: 3 };
+```
+
+Kết quả là một tỷ lệ phần trăm, không phải tổng điểm thô. Tổng điểm thô không so được giữa hai người chơi: từ Trap I trở đi câu được bốc ngẫu nhiên nên trần điểm của mỗi người một khác, người bốc trúng nhiều câu dễ sẽ có trần thấp hơn và trông như làm kém hơn.
+
+### Ba công thức khác nhau ở chỗ nào
+
+Ba công thức của tài liệu này đếm cùng một tập câu trả lời nhưng xử lý câu dùng vật phẩm theo ba cách khác nhau. Đây là chỗ dễ nhầm nhất khi code:
+
+| Công thức | Tử số | Mẫu số | Dùng để |
+|---|---|---|---|
+| (1) `accuracy_cumulative` | Loại câu dùng vật phẩm | Loại câu dùng vật phẩm | Xếp hạng cụm yếu |
+| (2) `arena_score_correct` | Tính cả | Tính cả | Đỗ/trượt, Credit |
+| (3) `performance_score` | Loại câu dùng vật phẩm | **Tính cả** | Phân biệt người chơi cùng điểm |
+
+Mẫu số của (3) khác (1) là cố ý. Ở (1), câu dùng vật phẩm bị loại hẳn vì nó không cho biết người học có nắm cụm đó không. Ở (3), câu đó ở lại mẫu số vì chỉ số này đo phần người chơi **tự** làm được trên toàn bộ những gì đã gặp — vật phẩm giúp qua màn, không mua được performance score.
+
+**Note**: `performance_score` không tham gia vào chuỗi `Diagnose → Rank Weakness → Filter → Generate` ở Mục 3. Nó không quyết định `W1` và `W2`, không quyết định cụm nào vào Boss, không quyết định đỗ/trượt, không cấp Credit.
+
+### Arena 1 là mốc so sánh trực quan nhất
+
+Mục 4 quy định Arena 1 lấy đủ 3 mức khó cho mỗi cụm, tức 1 câu mỗi mức × 5 cụm. Mục 8 quy định Arena 1 không dùng vật phẩm.
+
+Hai điều này cộng lại cho một hệ quả có ích: **trần điểm Arena 1 luôn bằng 30 với mọi người chơi**, và mẫu số không bao giờ có câu dùng vật phẩm. `performance_score` ở Arena 1 vì vậy so ngang giữa các người chơi được trực tiếp, không cần chuẩn hóa gì thêm.
+
+Ví dụ, hai người chơi cùng đạt 12/15:
+
+| Trường hợp | Điểm đạt | `arena_score_correct` | `performance_score` |
+|---|---|---|---|
+| 3 câu sai đều là mức 1 | 27/30 | 80% | 90% |
+| 3 câu sai đều là mức 2 | 24/30 | 80% | 80% |
+| 3 câu sai đều là mức 3 | 21/30 | 80% | 70% |
+
+Cùng một điểm Arena, performance score trải trên 20 điểm phần trăm.
+
+Từ Trap I trở đi câu được bốc ngẫu nhiên nên độ khó trung bình mỗi Arena một khác. Điểm màn này thấp hơn màn kia không có nghĩa người chơi đi xuống.
+
+Con số chính là `performance_score` của **toàn lượt**: cộng gộp cả 60 câu thành một tử số và một mẫu số. Đây là con số dùng để so giữa những người chơi khác nhau.
+
+### Đọc theo lượt nào khi người chơi trượt và chơi lại
+
+`performance_score` ghi theo **lượt làm đầu tiên**, cùng phía với mốc chẩn đoán, không cùng phía với điểm số và Credit.
+
+Lý do giống hệt lý do đã nêu cho mốc chẩn đoán: lượt đầu là lần duy nhất người học chưa đọc lời giải của bộ câu đó. Nếu ghi theo lượt đỗ, người trượt hai lần rồi làm lại bộ câu đã biết đáp án sẽ có performance score cao hơn người qua ngay lần đầu — ngược đúng với việc chỉ số này sinh ra để làm.
+
+Nếu trong lượt chơi có ít nhất một lần trượt, bảng tổng kết thêm một dòng chú thích cho biết performance score đọc theo lượt đầu.
 
 ### Hai quy tắc bắt buộc
 
@@ -175,12 +239,12 @@ Phân định khi bằng nhau: (1) độ khó trung bình của câu làm sai ca
 ### Ví dụ chạy thật
 
 ```text
-Arena 1 (15 câu · 3 câu/cụm)
+Arena 1 (15 câu · 3 câu/cụm) - đúng 11/15 = 73.3% → PASS
   C1 Khung nền        2/3  = 66.7%
   C2 Standards I–II   1/3  = 33.3%   ← yếu nhất
   C3 Standard III     2/3  = 66.7%
   C4 Standards IV–V   3/3  = 100.0%
-  C5 Standards VI–VII 2/3  = 66.7%
+  C5 Standards VI–VII 3/3  = 73.3%
         ↓  W1 = C2
 Arena 2 — Trap I: 10 câu C2 (5 câu Std I + 5 câu Std II), đúng 7
   C2   8/13 = 61.5%
@@ -203,6 +267,123 @@ Arena 5 — Boss (15 câu)
 
 Diễn giải: C2 vào cửa với 33,3% và ra khỏi hầm ngục ở 66,7%. C3 khởi đầu ổn (66,7%) nhưng tụt xuống 40% khi bị hỏi thêm ở Arena 3 — Trap II bắt đúng chỗ đó và kéo lên 73,3%. **Đây chính là output mà sản phẩm phải chứng minh được.**
 
+### Output chính sau mỗi arena
+- Arena 1: weakness profile 1 + arena score correct (%)
+- Trap I: arena score correct (%)
+- Crossroads: weakness profile 2 + arena score correct (%)
+- Trap II: arena score correct (%)
+- Boss: Bảng kết quả tổng kết cả 5 màn chơi + performance score toàn lượt (nêu chi tiết ở phần dưới)
+
+### Bảng tổng kết xuất hiện sau màn đánh Boss
+
+Ví dụ minh hoạ (Bảng A)
+
+Performance score toàn lượt: 72% (Tỷ lệ đúng có trọng số theo mức khó. Không tính câu dùng vật phẩm vào tử số.)
+| Cụm | Arena 1 | Trap I | Crossroads | Trap II | Boss | Kết luận |
+|---|---|---|---|---|---|---|
+| C2 | 1/3 | 7/10 | 2/2 | -- | 4/5 | Đã cải thiện |
+| C3 | 2/3 | -- | 0/2 | 9/10 | 3/3 | Đã cải thiện |
+| C1 | 2/3 | -- | 1/2 | -- | 4/7 | Cần cải thiện tiếp |
+| C4 | 3/3 | -- | 2/2 | -- | -- | Không kiểm tra lại ở Boss |
+| C5 | 2/3 | -- | 2/2 | -- | -- | Không kiểm tra lại ở Boss |
+
+**Note**: những chỗ ghi `--` là những chỗ trap không nhắm vào và không được hỏi ở boss, không phải người chơi trả lời sai hết 
+
+Để xác định được phần kiến thức mà người học đã cải thiện và cần cải thiện tiếp, nhóm đặt ra các điều kiện chạy theo thứ tự sau:
+
+| # | Điều kiện | Kết luận |
+|---|---|---|
+| 1 | Cụm không được hỏi ở Boss | Không kiểm tra lại ở Boss |
+| 2 | Boss ≥ 70% và mức thay đổi ≥ 0 | **Đã cải thiện** |
+| 3 | Boss < 70% và mức thay đổi > 0 | **Đã cải thiện nhưng chưa đủ** |
+| 4 | Các trường hợp còn lại | **Cần cải thiện tiếp** |
+
+Trong đó:
+
+```text
+mốc chẩn đoán[cụm] = (arena1.correct + crossroads.correct)
+                     ÷ (arena1.attempted + crossroads.attempted)
+
+mức thay đổi[cụm]  = tỷ lệ đúng ở boss - mốc chẩn đoán
+```
+- Mức thay đổi cho thấy xu hướng tăng/giảm của tỷ lệ đúng mà người chơi đạt được sau các vòng chơi. Không hiện ra bảng vì người đọc có thể tự hình dung qua data table những engine phải chạy để phân loại.
+- Mốc chuẩn đoán không tính câu hỏi ở trap vì Trap chỉ nhắm 2 trong 5 cụm. Nếu tính, hai cụm bị nhắm được cộng thêm 10 câu mà ba cụm kia không có, các dòng trong cùng một bảng bị đem so bằng lượng dữ liệu khác nhau.
+
+**Note**: Biết được xu hướng thì chưa đủ, có nghĩa là tăng thì chưa chắc đã nắm được hoàn toàn kiến thức của cụm đó và giảm thì không có nghĩa là người học yếu kiến thức phần đó nên nhóm đặt thêm constraint tỉ lệ đúng ở boss ≥ 70% mới được coi là kiến thức đó đã được cải thiện.
+70% ở Boss ở đây là tỷ lệ đúng phần câu Boss của riêng cụm đó, không phải điểm đỗ/trượt của Arena 5.
+
+Trong bảng A không sử dụng biến `accuracy_cumulative[cụm]`, nhóm chọn làm 1 biến mới tên `accuracy_by_arena[cụm][arena]` để thống kê số lượng câu mà người chơi làm đúng trong mỗi cụm kiến thức ở mỗi arena
+
+Hệ thống lưu **hai chuỗi số chạy song song**, tính từ cùng một tập câu trả lời:
+| Biến | Nội dung | Dùng để |
+|---|---|---|
+| `accuracy_cumulative[cụm]` | Cộng dồn toàn hành trình, gồm cả Trap | Xếp hạng W1, W2, chọn 3 cụm vào Boss |
+| `accuracy_by_arena[cụm][arena]` | Tỷ lệ đúng riêng từng Arena | Bảng tổng kết sau Boss |
+
+#### Cấu trúc dữ liệu
+
+**Với accuracy_by_arena**
+Ví dụ (sử dụng số liệu từ bảng A)
+```js
+accuracy_by_arena = {
+  "C1": {
+    "arena1":     { correct: 2, attempted: 3 },
+    "crossroads": { correct: 1, attempted: 2 },
+    "boss":       { correct: 4, attempted: 7 }
+  },
+  "C2": {
+    "arena1":     { correct: 1, attempted: 3 },
+    "trap1":      { correct: 7, attempted: 10 },
+    "crossroads": { correct: 2, attempted: 2 },
+    "boss":       { correct: 4, attempted: 5 }
+  },
+  "C3": {
+    "arena1":     { correct: 2, attempted: 3 },
+    "crossroads": { correct: 0, attempted: 2 },
+    "trap2":      { correct: 9, attempted: 10 },
+    "boss":       { correct: 3, attempted: 3 }
+  },
+  "C4": {
+    "arena1":     { correct: 3, attempted: 3 },
+    "crossroads": { correct: 2, attempted: 2 }
+  },
+  "C5": {
+    "arena1":     { correct: 2, attempted: 3 },
+    "crossroads": { correct: 2, attempted: 2 }
+  }
+}
+```
+
+Ba quy tắc lưu:
+
+1. Lưu **cặp số**, không lưu phần trăm. Mốc chẩn đoán phải cộng được `(1+2)/(3+2)`; hai phần trăm thì không cộng được. Bảng hiển thị cũng cần mẫu số.
+2. Đếm theo `diagnostic_correct` và `diagnostic_attempted`. Câu dùng vật phẩm bị loại khỏi cả tử số lẫn mẫu số, thống nhất với mục 8.
+3. Arena nào không hỏi cụm đó thì không đặt `attempted: 0`, vì sẽ sinh phép chia cho 0 và điểm 0% giả trên bảng.
+
+Khi người học trượt một Arena và chơi lại: mốc chẩn đoán ghi theo **lượt làm đầu tiên**, phần điểm số và Credit ghi theo **lượt đỗ**. Lượt đầu là lần duy nhất người học chưa đọc lời giải của bộ câu đó. Nếu hai con số khác nhau, bảng tổng kết có một dòng chú thích.
+
+**Với performance score**
+Dùng 1 object riêng không liên quan đến accuracy_by_arena
+Ví dụ (sử dụng số liệu từ bảng A)
+```js
+performance_by_arena = {
+  "arena1":     { points_earned: 21, points_offered: 30 },
+  "trap1":      { points_earned: 12, points_offered: 19 },
+  "crossroads": { points_earned: 13, points_offered: 19 },
+  "trap2":      { points_earned: 17, points_offered: 19 },
+  "boss":       { points_earned: 20, points_offered: 28 }
+}
+
+performance_score = 83 / 115 = 72%
+```
+Quy tắc lưu:
+
+1. `points_earned` cộng điểm độ khó của câu **đúng và không dùng vật phẩm**.
+2. `points_offered` cộng điểm độ khó của **mọi câu đã hỏi**, kể cả câu dùng vật phẩm và câu trả lời sai.
+3. Không chia theo cụm. Điểm trọng số không bao giờ hiển thị theo cụm, nên chia ra rồi cộng lại ngay là thừa. Bảng tổng kết ở phần trên dùng số câu thô của `accuracy_by_arena`, không dùng điểm.
+4. `points_offered` của Arena 1 luôn bằng 30. Nếu engine tính ra số khác, lỗi nằm ở khâu sinh đề Arena 1, không nằm ở khâu tính điểm — dùng làm điểm kiểm tra tự động.
+
+`performance_by_arena` chia theo Arena chứ không lưu thẳng một cặp số tổng, vì hai lý do: kiểm tra được quy tắc 4, và nếu sau này nhóm muốn báo cáo riêng con số Arena 1 (trần điểm cố định 30, không có vật phẩm, so ngang giữa người chơi được trực tiếp) thì dữ liệu đã có sẵn, không phải sửa engine.
 ---
 
 ## 6. MVP Flow
@@ -259,14 +440,15 @@ Arena 2 → 3 → 4  (lặp lại vòng trên)
     ↓
 Arena 5 — Boss
     ↓
-Bảng tổng kết: đối chiếu Arena 1 với Arena 5 theo từng cụm và từng module
+Bảng tổng kết: đối chiếu Baseline (Arena + crossroad) 1 với Arena 5 theo từng cụm và từng module
 ```
 
 ### Đường phụ
 
 - **Trượt một Arena:** vẫn hiện kết quả và lời giải, không cấp Credit, khoá Arena kế tiếp, cho chơi lại với bộ câu rút mới. Không giới hạn số lần.
 - **Không mua vật phẩm nào:** hành trình vẫn hoàn chỉnh — kiểm chứng rằng Shop nằm ngoài logic path chính.
-- **Đúng toàn bộ Arena 1:** không tồn tại cụm yếu nhất, chuyển sang phân định theo thời gian trả lời, kèm thông báo giải thích cách chọn.
+- **Đúng toàn bộ Arena 1:** không tồn tại cụm yếu nhất, chuyển sang phân định theo thời gian trả lời.
+- **Sử dụng vật phẩm thứ 2 trong cùng 1 arena** chặn và hiện bảng "Mỗi arena sử dụng tối đa 1 vật phẩm".
 
 ### Đường lỗi
 
@@ -305,6 +487,13 @@ Số dư khởi đầu: **3 Credit** — vì vật phẩm rẻ nhất giá 3, n�
 
 **Quy tắc quan trọng:** câu có dùng vật phẩm vẫn tính vào `arena_score_correct`(quyết định đỗ/trượt và Credit), nhưng bị loại khỏi `diagnostic_correct` và `diagnostic_attempted` (quyết định cụm yếu). Trả lời đúng nhờ loại bớt phương án không chứng minh người học nắm được cụm đó; đưa vào mẫu sẽ đẩy Accuracy của cụm lên cao giả tạo, cụm đó thoát khỏi vị trí yếu nhất, và Trap bắn sang cụm khác.
 
+### Luật dùng vật phẩm
+
+| # | Luật | Lý do |
+|---|---|---|
+| 1 | **Boss không dùng vật phẩm** | Boss là chặng đo quyết định của bảng tổng kết ở mục 5 |
+| 2 | **Mỗi Arena tối đa 1 vật phẩm** | Chặn việc dồn nhiều vật phẩm vào cùng một cụm, làm rỗng mẫu chẩn đoán của cụm đó |
+| 3 | **Arena 1 không dùng vật phẩm** | Đây là bài chẩn đoán gốc của cả hầm ngục. Toàn bộ dữ liệu về sau bắt nguồn từ 15 câu này |
 ---
 
 ## 9. Ngân hàng câu hỏi
@@ -347,7 +536,7 @@ Phân bổ độ khó trong mỗi module 11 câu: **4 câu mức 1 · 4 câu m�
 
 ### Target Scope
 
-Chủ đề Ethics, 5 cụm / 9 module, ngân hàng 110 câu, đủ 5 Arena. Điểm yếu tính lại sau mỗi Arena. Shop 2 vật phẩm. Bảng chẩn đoán 2 tầng + biểu đồ tiến bộ + giải thích từng câu sai. Lưu tiến trình trên trình duyệt.
+Chủ đề Ethics, 5 cụm / 9 module, ngân hàng 110 câu, đủ 5 Arena. Điểm yếu tính lại sau mỗi Arena. Shop 2 vật phẩm. Bảng chẩn đoán 2 tầng + bảng kết quả + giải thích từng câu sai. Lưu tiến trình trên trình duyệt.
 
 ### Fallback Scope
 
@@ -357,7 +546,7 @@ Vẫn giữ nguyên core flow — **chẩn đoán → sinh đề theo lỗ hổn
 - điểm yếu chỉ tính **một lần** sau Arena 1 rồi khoá cứng cho cả hầm ngục;
 - báo cáo chỉ ở tầng cụm, bỏ bảng chi tiết 9 module;
 - Shop còn 1 vật phẩm;
-- biểu đồ thay bằng bảng số liệu.
+- bảng kết quả.
 
 Fallback không được biến thành một bộ đề trắc nghiệm có chấm điểm. Nếu cơ chế Trap bị cắt, sản phẩm mất toàn bộ lý do tồn tại.
 
@@ -426,6 +615,6 @@ Arena 1 chẩn đoán sinh ra Trap I
 
 ## Câu hỏi mà MVP phải trả lời
 
-> Sau khi đi hết một hầm ngục, tỷ lệ đúng ở những cụm **bị Trap nhắm** có tăng rõ rệt hơn so với những cụm **không bị nhắm** hay không?
+> Với một cụm đã bị Trap nhắm, tỷ lệ đúng ở Boss có cao hơn ở mốc chẩn đoán không?
 
 Nếu có, cơ chế chẩn đoán tạo ra giá trị thật. Nếu không, sản phẩm chỉ là một bộ đề trắc nghiệm được đóng gói đẹp — và nhóm phải sửa cơ chế, không phải thêm tính năng.
