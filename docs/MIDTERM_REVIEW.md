@@ -75,7 +75,7 @@ Không đăng nhập, không API, không dữ liệu thời gian thực.
 
 Sản phẩm **xác định cụm có tỷ lệ đúng thấp nhất trong một phiên 60 câu**. Nó không chẩn đoán năng lực Ethics, không chứng minh Trap cải thiện learning, không dự báo kết quả thi thật.
 
-Bốn điểm dễ gây misunderstanding, ranh giới của `performance_score`, và bảng cỡ mẫu từng chỉ số: [`SOLUTION_STRUCTURE.md` Mục 14](SOLUTION_STRUCTURE.md).
+Bốn điểm dễ gây misunderstanding, boundary của `performance_score`, và bảng cỡ mẫu từng chỉ số: [`SOLUTION_STRUCTURE.md` Mục 14](SOLUTION_STRUCTURE.md).
 
 **Bằng chứng Part B:** [`SOLUTION_STRUCTURE.md` Mục 5.0, Mục 5, Mục 14](SOLUTION_STRUCTURE.md) · [`INPUT_DICTIONARY.md` Mục 3, 4](INPUT_DICTIONARY.md) · [`ASSUMPTIONS.md`](ASSUMPTIONS.md)
 
