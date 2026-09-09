@@ -260,7 +260,7 @@ Arena 1 (15 câu · 3 câu/cụm) - đúng 11/15 = 73.3% → PASS
   C2 Standards I–II   1/3  = 33.3%   ← yếu nhất
   C3 Standard III     2/3  = 66.7%
   C4 Standards IV–V   3/3  = 100.0%
-  C5 Standards VI–VII 3/3  = 73.3%
+  C5 Standards VI–VII 3/3  = 100.0%
         ↓  W1 = C2
 Arena 2 — Trap I: 10 câu C2 (5 câu Std I + 5 câu Std II), đúng 7
   C2   8/13 = 61.5%
@@ -270,7 +270,7 @@ Arena 3 (10 câu · 2 câu/cụm) — đúng 7/10 = 70.0% → PASS
   C2  10/15 = 66.7%
   C3   2/5  = 40.0%   ← yếu nhất, và khác W1
   C4   5/5  = 100.0%
-  C5   4/5  = 80.0%
+  C5   5/5  = 100.0%
         ↓  W2 = C3
 Arena 4 — Trap II: 10 câu C3 (Duties to Clients), đúng 9
   C3  11/15 = 73.3%
@@ -301,7 +301,7 @@ Performance score toàn lượt: 72% (Tỷ lệ đúng có trọng số theo m�
 | C3 | 2/3 | -- | 0/2 | 9/10 | 3/3 | Đã cải thiện |
 | C1 | 2/3 | -- | 1/2 | -- | 4/7 | Cần cải thiện tiếp |
 | C4 | 3/3 | -- | 2/2 | -- | -- | Không kiểm tra lại ở Boss |
-| C5 | 2/3 | -- | 2/2 | -- | -- | Không kiểm tra lại ở Boss |
+| C5 | 3/3 | -- | 2/2 | -- | -- | Không kiểm tra lại ở Boss |
 
 #### Bảng tổng kết nói lên điều gì
 **Nhãn *Đã cải thiện* nghĩa là:** trong phiên chơi này, tỷ lệ đúng của cụm đó ở Boss cao hơn hoặc bằng mốc chẩn đoán, và đạt ít nhất 70% số câu Boss của riêng cụm đó.
@@ -374,7 +374,7 @@ accuracy_by_arena = {
     "crossroads": { correct: 2, attempted: 2 }
   },
   "C5": {
-    "arena1":     { correct: 2, attempted: 3 },
+    "arena1":     { correct: 3, attempted: 3 },
     "crossroads": { correct: 2, attempted: 2 }
   }
 }
