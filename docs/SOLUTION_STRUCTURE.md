@@ -662,3 +662,21 @@ Sản phẩm sinh ra bốn output. Mục này ghi, với từng output, câu nh�
 2. **"Trap đã được chứng minh cải thiện learning."** Sản phẩm chưa có nhóm đối chứng, chưa có người dùng thật, và không tách được tác dụng của Trap khỏi tác dụng của việc đọc lời giải.
 3. **"Difficulty / 5 cụm / ngưỡng 70% theo chuẩn CFA Institute."** Cả ba đều do nhóm tự đặt. Ghi ở `ASSUMPTIONS.md` B1, B4, B8, C2.
 4. **"Kết quả này dự báo điểm thi thật."** Ngân hàng câu hỏi là tình huống giả định do nhóm biên soạn, không phải câu thi.
+
+### Boundary của `performance_score`
+
+`performance_score` là chỉ số duy nhất nhóm tuyên bố **so sánh được giữa hai người chơi**. Vì vậy nó cần ranh giới riêng:
+
+- **So được:** giữa hai người chơi cùng đi hết 5 Arena của sản phẩm này. Cơ sở: cùng số câu, cùng ngân hàng, cùng bảng quy đổi độ khó, và cùng quy tắc loại câu dùng vật phẩm khỏi tử số.
+- **Không so được:** với điểm thi thử ở nơi khác, với điểm CFA mock, hay giữa hai phiên chơi khác chủ đề.
+- **Điều kiện để phát biểu vẫn đứng:** nhãn `difficulty` phải giữ nguyên trong suốt thời gian so sánh. Nếu Hồng chỉnh lại nhãn khó của một câu, mọi `performance_score` tính trước đó không còn so được với con số tính sau đó.
+
+### Boundary của mẫu
+
+| Chỉ số | Cỡ mẫu mỗi cụm | Một câu đáng bao nhiêu |
+|---|---|---|
+| Bảng chẩn đoán sau Arena 1 | 3 câu | 33,3 điểm phần trăm |
+| Mốc chẩn đoán (O4) | 5 câu | 20,0 điểm phần trăm |
+| Boss — slot 7 câu | 7 câu | 14,3 điểm phần trăm |
+| Boss — slot 5 câu | 5 câu | 20,0 điểm phần trăm |
+| Boss — slot 3 câu | 3 câu | 33,3 điểm phần trăm |
