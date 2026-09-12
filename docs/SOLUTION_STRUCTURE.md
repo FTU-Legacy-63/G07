@@ -507,7 +507,6 @@ Số dư khởi đầu: **3 Credit** — vì vật phẩm rẻ nhất giá 3, n�
 | Vật phẩm | Giá | Hiệu ứng |
 |---|---|---|
 | Bùa Loại Trừ | 3 Credit | Loại **1 phương án sai** của câu hiện tại (3 → 2 phương án) |
-| Cuộn Giấy Gợi Ý | 4 Credit | Hiện một dòng gợi ý: Standard nào đang bị áp dụng. Không tiết lộ đáp án |
 
 > Vì đề chỉ có **3 phương án** đúng chuẩn CFA, vật phẩm không thể loại 2 phương án — làm vậy sẽ chỉ còn lại đáp án đúng, biến vật phẩm thành nút cho điểm miễn phí.
 
