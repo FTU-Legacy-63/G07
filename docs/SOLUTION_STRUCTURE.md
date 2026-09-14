@@ -410,6 +410,68 @@ Quy tắc lưu:
 4. `points_offered` của Arena 1 luôn bằng 30. Nếu engine tính ra số khác, lỗi nằm ở khâu sinh đề Arena 1, không nằm ở khâu tính điểm — dùng làm điểm kiểm tra tự động.
 
 `performance_by_arena` chia theo Arena chứ không lưu thẳng một cặp số tổng, vì hai lý do: kiểm tra được quy tắc 4, và nếu sau này nhóm muốn báo cáo riêng con số Arena 1 (trần điểm cố định 30, không có vật phẩm, so ngang giữa người chơi được trực tiếp) thì dữ liệu đã có sẵn, không phải sửa engine.
+
+
+### Next action — từ kết luận sang việc cần làm
+
+Cột kết luận ở bảng trên mới nói **tình trạng** của cụm. Người học đọc xong vẫn chưa biết mở sách ở đâu, vì cụm là đơn vị chẩn đoán, không phải đơn vị nội dung. C1 gộp GIPS với Code of Ethics; C4 gộp Standard IV với Standard V. Biết "C4 cần cải thiện tiếp" không cho biết phải ôn Standard nào trong hai Standard đó.
+
+Đây đúng là chỗ tầng nhãn thứ hai ở Mục 2 phát huy tác dụng: **cụm trả lời yếu mảng nào, module và sub-standard trả lời yếu chỗ nào.**
+
+Quy tắc sinh next action:
+
+1. Chỉ sinh cho cụm rơi vào kết luận **Cần cải thiện tiếp** hoặc **Đã cải thiện nhưng chưa đủ**. Hai kết luận còn lại không cần next action.
+2. Lọc toàn bộ câu người học làm **sai** thuộc cụm đó trong cả lượt chơi, gồm cả câu ở Trap.
+3. Gom theo `module`, xếp theo số câu sai giảm dần. Bằng nhau thì xếp theo thứ tự mã module.
+4. Dưới mỗi module, liệt kê `sub_standard` của các câu sai, không lặp lại.
+5. Không dùng câu dùng vật phẩm làm căn cứ next action. Câu đó không cho biết người học nắm hay không nắm phần kiến thức đó, thống nhất với cách công thức (1) xử lý.
+
+Hình thức hiển thị, đặt ngay dưới dòng của cụm trong bảng:
+
+```text
+C1 · Cần cải thiện tiếp · Boss 4/7
+   Sai nhiều nhất: GIPS (3 câu sai) · Code of Ethics (1 câu sai)
+   Sub-standard cần ôn: [liệt kê từ các câu đã sai]
+```
+
+**Ranh giới của next action.** Next action chỉ được trỏ vào phần nội dung người học **đã làm sai trong lượt này**. Không sinh lời khuyên về thời lượng ôn, thứ tự ôn giữa các cụm, hay dự đoán kết quả nếu ôn. Sản phẩm không có dữ liệu cho những câu đó, và viết ra là vượt khỏi ranh giới claim mà toàn bộ tài liệu này đang giữ.
+
+Dữ liệu để sinh next action đã có sẵn: `module` và `sub_standard` là hai field bắt buộc của mỗi câu trong ngân hàng, theo định dạng ở Mục 2. Không phải bổ sung dữ liệu mới, chỉ phải giữ lại `module` và `sub_standard` của từng câu sai trong lịch sử lượt chơi.
+
+---
+
+### Limitattion
+
+Bảng tổng kết là output chính của sản phẩm, nên phải nói rõ nó **không** kết luận được điều gì. Bốn giới hạn dưới đây đều là hệ quả trực tiếp của thiết kế, không phải khiếm khuyết cần sửa.
+
+**1. Ranh giới claim.** Bảng cho biết cụm nào có tỷ lệ đúng thấp nhất trong lượt chơi 60 câu này. Bảng không kết luận về năng lực Ethics của người học. Cách diễn đạt này phải giống nhau ở mọi chỗ trong sản phẩm và mọi file tài liệu.
+
+**2. Các dòng trong bảng không có cùng lượng dữ liệu.** Số câu tối đa mà một cụm được hỏi phụ thuộc vào việc cụm đó có bị Trap nhắm và có vào Boss hay không:
+
+| Trường hợp của cụm | Số câu được hỏi | Cách tính |
+|---|---|---|
+| Bị Trap nhắm và vào Boss | 20 – 22 | 3 (Arena 1) + 10 (Trap) + 2 (Crossroads) + 5 hoặc 7 (Boss) |
+| Không bị Trap nhắm nhưng vào Boss | 8 – 12 | 3 + 2 + 3 hoặc 5 hoặc 7 |
+| Không bị Trap nhắm, không vào Boss | 5 | 3 + 2 |
+
+Chênh lệch cao nhất là hơn bốn lần. Hai dòng trong cùng một bảng vì vậy không được đem so trực tiếp như hai con số ngang hàng. Đây là lý do cột kết luận dùng bốn điều kiện phân loại chứ không xếp hạng các cụm với nhau.
+
+**3. Cụm xếp thứ ba ở Boss chỉ được hỏi 3 câu.** Với 3 câu, ngưỡng 70% của điều kiện 2 và 3 thực chất là phải đúng cả ba, vì 2/3 = 66,7%. Kết luận của cụm đó nhạy hơn hẳn so với cụm được hỏi 7 câu:
+
+| Số câu Boss của cụm | Số câu đúng tối thiểu để đạt 70% | Tỷ lệ thực tế |
+|---|---|---|
+| 7 | 5 | 71,4% |
+| 5 | 4 | 80,0% |
+| 3 | 3 | 100% |
+
+Một câu sai ở cụm 3 câu đủ để đẩy kết luận từ **Đã cải thiện** xuống **Cần cải thiện tiếp**. Đây là cái giá phải trả của phân bổ 7/5/3 — đổi độ tin cậy của cụm ít yếu hơn lấy dung lượng cho cụm yếu nhất, và là lựa chọn có chủ đích.
+
+**4. Chơi lại sẽ lặp câu.** Ngân hàng 110 câu ở Mục 9 chỉ đủ cho đúng một lượt chơi sạch. Từ lượt thứ hai trở đi người học gặp lại câu đã biết đáp án, nên tỷ lệ đúng của lượt sau không so được với lượt đầu. Đây cũng là lý do mốc chẩn đoán và `performance_score` đọc theo lượt làm đầu tiên.
+
+Khối chú thích đặt cố định ở cuối bảng tổng kết:
+
+> Kết quả phản ánh tỷ lệ đúng trong lượt chơi 60 câu này, không phải kết luận về năng lực Ethics. Các cụm không được hỏi cùng số câu: cụm bị Trap nhắm có tới 22 câu, cụm không bị nhắm và không vào Boss chỉ có 5 câu. Cụm được hỏi 3 câu ở Boss phải đúng cả ba mới đạt ngưỡng 70%.
+
 ---
 
 ## 6. MVP Flow
