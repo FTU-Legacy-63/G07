@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CFA QUEST</title>
+  <link rel="stylesheet" href="cfa_dungeon_ui_v10_skipfix_updated.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">CFA QUEST</div>
+  <div class="hud">
+    <span>Điểm <b id="score">0</b></span>
+    <span>Tín dụng <b id="credits">3</b></span>
+    <span>Accuracy <b id="accuracy">0%</b></span>
+    <button class="danger-btn" onclick="resetRun()">RESET</button>
+  </div>
+</header>
+
+<main>
+  <section id="home" class="screen active">
+    <div class="hero panel">
+      <div class="eyebrow">ETHICS DIAGNOSTIC · CFA QUEST</div>
+      <h1>Chẩn đoán năng lực<br><em>Ethics</em></h1>
+      <p>Hoàn thành từng Arena theo đúng thứ tự. Hệ thống tự chọn cụm yếu nhất, mở Trap, Crossroads và Boss dựa trên kết quả của bạn.</p>
+      <div class="rules-grid">
+        <div><b>70%</b><span>Ngưỡng đạt Arena / Boss</span></div>
+        <div><b>3</b><span>Tín dụng khởi đầu</span></div>
+        <div><b>3</b><span>Chi phí mỗi vật phẩm</span></div>
+        <div><b>110</b><span>Câu hỏi trong BANK</span></div>
+      </div>
+      <button class="primary-btn" onclick="startRun()">BẮT ĐẦU QUEST</button>
+      <p id="bankStatus" class="status"></p>
+      <label class="file-loader">Nạp ethics_bank_110.json<input id="bankFile" type="file" accept="application/json"></label>
+    </div>
+  </section>
+
+  <section id="dashboard" class="screen">
+    <div class="section-head">
+      <div><div class="eyebrow">QUEST BOARD</div><h2>Tiến trình chẩn đoán</h2></div>
+      <button class="secondary-btn" onclick="openShop()">VẬT PHẨM</button>
+    </div>
+    <div id="stageGrid" class="stage-grid"></div>
+    <div class="dashboard-grid">
+      <div class="panel compact"><h3>Quy ước màu</h3><p><span class="legend blue"></span> Ô nhập đáp án / vật phẩm</p><p><span class="legend red"></span> Cảnh báo hệ thống</p><p><span class="legend yellow"></span> Kết quả chốt</p><p><span class="legend gray"></span> Chưa mở / bị khóa</p></div>
+      <div class="panel compact"><h3>Chẩn đoán hiện tại</h3><div id="diagnostic"></div></div>
+    </div>
+  </section>
+
+  <section id="quiz" class="screen">
+    <div class="quiz-shell">
+      <div class="section-head">
+        <div><div class="eyebrow" id="quizStage"></div><h2 id="quizTitle"></h2></div>
+        <div class="quiz-count" id="quizCount"></div>
+      </div>
+      <div class="progress"><i id="progress"></i></div>
+      <div class="quiz-grid">
+        <article class="panel question-card">
+          <div class="meta"><span id="qCluster"></span><span id="qDifficulty"></span></div>
+          <h3 id="question"></h3>
+          <div id="answers" class="answers"></div>
+          <div id="feedback" class="feedback hidden"></div>
+          <button id="nextBtn" class="primary-btn hidden" onclick="nextQuestion()">CÂU TIẾP →</button>
+        </article>
+        <aside class="panel side-panel">
+          <div class="stat"><span>Cụm hiện tại</span><b id="sideCluster">—</b></div>
+          <div class="stat"><span>Đúng</span><b id="sideCorrect">0</b></div>
+          <div class="stat"><span>Tỷ lệ</span><b id="sideRate">0%</b></div>
+          <div class="stat"><span>Tín dụng</span><b id="sideCredits">3</b></div>
+          <hr>
+          <div id="itemBox"></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="interstitial" class="screen">
+    <div class="panel modal-card">
+      <div class="eyebrow" id="interEyebrow">SYSTEM</div>
+      <h1 id="interTitle"></h1>
+      <p id="interText"></p>
+      <div id="interData" class="result-box"></div>
+      <button id="interBtn" class="primary-btn">TIẾP TỤC</button>
+    </div>
+  </section>
+
+  <section id="shop" class="screen">
+    <div class="section-head"><div><div class="eyebrow">ITEMS</div><h2>Vật phẩm</h2></div><button class="secondary-btn" onclick="showDashboard()">← QUAY LẠI</button></div>
+    <div class="shop-note panel">Tín dụng khởi đầu: <b>3</b>. Chi phí mỗi vật phẩm: <b>3</b>. Arena 1 và Boss bị khóa sử dụng vật phẩm theo quy ước của đề.</div>
+    <div id="shopGrid" class="shop-grid"></div>
+  </section>
+
+  <section id="report" class="screen">
+    <div class="panel report-card">
+      <div class="eyebrow">O4 · RUN REPORT</div>
+      <h1>Diagnostic Report</h1>
+      <p id="reportSub"></p>
+      <div class="metrics" id="reportMetrics"></div>
+      <h3>Accuracy by Arena</h3><div id="arenaReport" class="table-wrap"></div>
+      <h3>Mốc chẩn đoán & mức thay đổi</h3><div id="milestones" class="milestones"></div>
+      <h3>Kết luận từng cụm</h3><div id="clusterReport" class="cluster-report"></div>
+      <div class="performance-final"><span>PERFORMANCE SCORE</span><b id="performanceScore">0</b></div>
+      <button class="primary-btn" onclick="resetRun()">TẠO LƯỢT CHƠI MỚI</button>
+    </div>
+  </section>
+</main>
+<div id="toast" role="status"></div>
+<script src="cfa_dungeon_ui_v10_skipfix_updated.js"></script>
+</body>
+</html>
