@@ -192,16 +192,9 @@ Lúc sản phẩm chạy, `sub_standard` không xuất hiện ở bất kỳ mà
 
 ---
 
-## 8. Chủ sở hữu
+## 8. Owner
 
-| Nội dung | Người chịu trách nhiệm |
-|---|---|
-| File này, và việc đồng bộ với `SOLUTION_STRUCTURE.md` | Quỳnh |
-| Nghĩa và chất lượng các field trong ngân hàng câu hỏi (Mục 2, Mục 6) | Hồng |
-| State variables và cách tính (Mục 3, Mục 4) | Mô tả state variables và ba công thức (Mục 3, 4): Quỳnh — Triển khai và test: Minh |
-| Cơ chế sinh Arena đọc đúng các field ở Mục 2, Mục 3 | Trang |
-| Nhãn hiển thị trên giao diện không được đổi nghĩa của field | Khôi |
-| Phạm vi và ưu tiên khi phải cắt field | Quỳnh |
+Xem phân công chi tiết tại [WEEK5_CHECKPOINT Mục 10](WEEK5_CHECKPOINT.md#10-ownership-v%C3%A0-integration-evidence).
 
 ---
 
