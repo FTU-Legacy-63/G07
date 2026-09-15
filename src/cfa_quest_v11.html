@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CFA Quest — Ethics (demo v11)</title>
+  <!-- Giao diện cũ dùng lại nguyên, file v11 chỉ bổ sung phần mới -->
+  <link rel="stylesheet" href="cfa_dungeon_ui_v10_skipfix_updated.css">
+  <link rel="stylesheet" href="cfa_quest_v11.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">CFA QUEST</div>
+  <div class="hud">
+    <span>Credit <b id="hudCredits">3</b></span>
+    <span>Arena <b id="hudStage">—</b></span>
+    <span>Vật phẩm <b id="hudItems">0 loại trừ, 0 gợi ý</b></span>
+    <button type="button" class="danger-btn" id="resetBtn">Reset</button>
+  </div>
+</header>
+
+<main>
+  <!-- Màn đầu -->
+  <section id="home" class="screen active">
+    <div class="hero panel">
+      <div class="eyebrow">Ethics · CFA Level I</div>
+      <h1>Tìm cụm Ethics bạn đang yếu</h1>
+      <p>Arena 1 là bài chẩn đoán 15 câu. Các Arena sau được sinh từ chính những câu bạn làm sai: Trap nhắm vào cụm yếu nhất, Boss hỏi nhiều nhất ở cụm còn yếu.</p>
+      <div class="rules-grid">
+        <div><b>70%</b><span>Ngưỡng đỗ mọi Arena</span></div>
+        <div><b>3</b><span>Credit khởi đầu</span></div>
+        <div><b>3 / 4</b><span>Giá Bùa Loại Trừ / Cuộn Giấy Gợi Ý</span></div>
+        <div><b>60</b><span>Câu cho một lượt không trượt</span></div>
+      </div>
+      <button type="button" class="primary-btn" id="startBtn">Bắt đầu lượt chơi</button>
+      <p id="bankStatus" class="status"></p>
+      <label class="file-loader">Nạp ethics_bank_110.json<input id="bankFile" type="file" accept="application/json"></label>
+    </div>
+  </section>
+
+  <!-- Bảng tiến trình -->
+  <section id="dashboard" class="screen">
+    <div class="section-head">
+      <div><div class="eyebrow">Tiến trình</div><h2>Hầm ngục 5 Arena</h2></div>
+      <button type="button" class="secondary-btn" id="shopBtn">Vào Shop</button>
+    </div>
+    <div id="stageGrid" class="stage-grid"></div>
+    <div class="panel compact targets"><h3>Cụm bị nhắm</h3><div id="dashTargets"></div></div>
+    <div class="dashboard-grid">
+      <div class="panel compact"><h3>Bảng chẩn đoán 5 cụm / 9 module</h3><div id="dashDiag"></div></div>
+      <div class="panel compact"><h3>Tỷ lệ đúng qua từng Arena</h3><div id="dashChart"></div></div>
+    </div>
+  </section>
+
+  <!-- Làm bài -->
+  <section id="quiz" class="screen">
+    <div class="quiz-shell">
+      <div class="section-head">
+        <div><div class="eyebrow" id="quizArena"></div><h2 id="quizTitle"></h2></div>
+        <div class="quiz-count" id="quizCount"></div>
+      </div>
+      <div class="progress"><i id="progress"></i></div>
+      <div class="quiz-grid">
+        <article class="panel question-card">
+          <div class="meta"><span id="qDifficulty"></span><span id="qReused" class="hidden">Câu đã gặp, phương án đã xáo</span></div>
+          <h3 id="qStem"></h3>
+          <p id="qHintLine" class="hint-line hidden"></p>
+          <div id="qOptions" class="answers"></div>
+          <p id="qMsg" class="q-msg" role="alert"></p>
+          <div id="feedback" class="feedback hidden"></div>
+          <button type="button" id="confirmBtn" class="primary-btn">Xác nhận</button>
+          <button type="button" id="nextBtn" class="primary-btn hidden">Câu tiếp</button>
+        </article>
+        <aside class="panel side-panel">
+          <div class="stat"><span>Đã xác nhận</span><b id="sideProgress">0</b></div>
+          <div class="stat"><span>Credit</span><b id="sideCredits">3</b></div>
+          <hr>
+          <div id="itemBox"></div>
+          <hr>
+          <button type="button" class="secondary-btn exit-btn" id="exitBtn">Thoát Arena</button>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kết quả sau mỗi Arena -->
+  <section id="result" class="screen">
+    <div class="panel report-card">
+      <div id="resultBody"></div>
+      <div id="resultActions" class="btn-row"></div>
+    </div>
+  </section>
+
+  <!-- Shop -->
+  <section id="shop" class="screen">
+    <div class="section-head">
+      <div><div class="eyebrow">Shop</div><h2>Vật phẩm</h2></div>
+      <button type="button" class="secondary-btn" id="shopBack">Quay lại</button>
+    </div>
+    <div class="shop-note panel">Số dư: <b id="shopCredits">3</b> Credit. Không dùng vật phẩm ở Arena 1 và Boss. Mỗi Arena dùng tối đa 1 vật phẩm. Câu dùng vật phẩm vẫn tính điểm đỗ/trượt nhưng không tính vào bảng chẩn đoán.</div>
+    <div id="shopGrid" class="shop-grid"></div>
+  </section>
+
+  <!-- Bảng tổng kết sau Boss -->
+  <section id="report" class="screen">
+    <div class="panel report-card">
+      <div id="reportBody"></div>
+      <div class="btn-row">
+        <button type="button" class="secondary-btn" id="reportBack">Về bảng tiến trình</button>
+        <button type="button" class="primary-btn" id="newRunBtn">Tạo lượt chơi mới</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Hộp thông báo chặn (vật phẩm thứ 2, hết câu, huỷ lượt...) -->
+<div id="noticeOverlay" class="notice-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+  <div class="panel notice-card">
+    <h3 id="noticeTitle"></h3>
+    <p id="noticeText"></p>
+    <button type="button" class="primary-btn" id="noticeOk">Đã hiểu</button>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script src="cfa_quest_v11_bank.js"></script>
+<script src="cfa_quest_v11.js"></script>
+</body>
+</html>
