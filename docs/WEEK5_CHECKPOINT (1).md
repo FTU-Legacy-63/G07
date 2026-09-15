@@ -241,13 +241,11 @@ Trạng thái build thực tế của từng màn: nhóm điền trước buổi
 
 | Hạng mục | Người chịu trách nhiệm | Loại đóng góp |
 |---|---|---|
-| Thiết kế user flow, feature scope, tài liệu | Quỳnh | thiết kế + viết tài liệu |
+| Thiết kế user flow, feature scope, tài liệu, các công thức tính điểm, biến trạng thái | Quỳnh | code + logic |
 | Ngân hàng 110 câu, lời giải, lý do gây nhiễu | Hồng | nội dung |
-| Logic sinh Arena, lọc ngân hàng theo cụm, kiểm tra ràng buộc | Trang | logic |
-| Bộ đếm điểm, biến trạng thái, triển khai | Minh | code |
+| Logic sinh Arena, lọc ngân hàng theo cụm, kiểm tra ràng buộc | Trang | logic + code |
+| Cơ chế shop và vật phẩm | Minh | logic + code |
 | Giao diện, kiểm thử đường lỗi, đối chiếu chéo các file | Khôi | UI + QA |
-
-Đề bài nhắc: feature ownership không có nghĩa cả feature do một người làm, và claim phải đúng loại đóng góp. Trước khi commit, đối chiếu bảng này với log commit thật; chỗ nào là tích hợp nhiều người thì ghi là tích hợp.
 
 ---
 
