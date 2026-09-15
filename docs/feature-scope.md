@@ -104,5 +104,5 @@ Nguồn: Mục 10. Ghi lại ở đây để phân biệt với optional — opt
 | Cơ chế sinh Arena, lọc ngân hàng theo cụm, ràng buộc W2 khác W1 | Trang | logic |
 | Ngân hàng 110 câu, lời giải, lý do gây nhiễu | Hồng | nội dung |
 | Giao diện, kiểm thử đường lỗi, đối chiếu chéo các file | Khôi, Minh | UI + QA |
-| Phạm vi tính năng, user flow, tài liệu, Ba chỉ số, biến trạng thái, triển khai | Quỳnh | thiết kế + viết tài liệu + logic|
+| Phạm vi tính năng, user flow, tài liệu, các công thức tính toán | Quỳnh | thiết kế + logic|
 
