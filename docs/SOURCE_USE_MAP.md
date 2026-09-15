@@ -132,12 +132,4 @@ Hiện nhóm mới có hypothesis và kế hoạch observation. Câu trả lời
 
 ## 7. Ownership
 
-| Nội dung | Owner |
-|---|---|
-| Source register / traceability | Quỳnh |
-| Question-bank content + taxonomy | Hồng |
-| Runtime input + validation | Minh |
-| Arena generation | Trang |
-| Scoring & reporting rules (Source 5b) | Quỳnh, Minh |
-| UI event capture + QA + hiển thị O4 | Khôi |
-| Problem evidence collection | Trang, Khôi |
+Xem phân công chi tiết tại [WEEK5_CHECKPOINT Mục 10](WEEK5_CHECKPOINT.md#10-ownership-v%C3%A0-integration-evidence).
