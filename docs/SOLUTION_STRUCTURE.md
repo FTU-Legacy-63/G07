@@ -195,7 +195,7 @@ Trong công thức này, tính cả những câu mà người chơi sử dụng 
 (3) performance_score = Σ điểm độ khó của các câu ĐÚNG và KHÔNG dùng vật phẩm ÷ Σ điểm độ khó của TOÀN BỘ câu đã được hỏi
 ```
 
-Công thức (3) dùng để phân biệt hai người chơi có cùng `arena_score_correct` nhưng làm đúng ở mức khó khác nhau. Tính một lần cho cả lượt chơi 5 arena, hiển thị ở màn tổng kết sau Boss vì độ khó sẽ khác nhau giữa các màn và giữa các người chơi với nhau nên khi gộp lại sự chênh lệch độ khó được triệt tiêu. Con số cuối cùng có thể được so giữa những người chơi khác nhau
+Công thức (3) dùng để phân biệt hai người chơi có cùng `arena_score_correct` nhưng làm đúng ở mức khó khác nhau. Tính một lần cho cả lượt chơi 5 arena, hiển thị ở màn tổng kết sau Boss vì độ khó sẽ khác nhau giữa các màn và giữa các người chơi với nhau nên khi gộp lại sự chênh lệch độ khó giảm bớt. Con số cuối cùng có thể được so giữa những người chơi khác nhau
 
 Điểm độ khó lấy thẳng từ field `difficulty` của ngân hàng câu hỏi:
 
