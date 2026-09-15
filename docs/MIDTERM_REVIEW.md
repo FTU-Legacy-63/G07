@@ -154,6 +154,8 @@ Kết quả dự đoán:
 
 ## Part E · Individual work output and next steps
 
+> Bảng dưới là bản nộp giữa kỳ. Phân công đã được cập nhật và cụ thể hoá tại [WEEK5_CHECKPOINT Mục 10](WEEK5_CHECKPOINT.md#10-ownership-v%C3%A0-integration-evidence).
+
 **Nguyên tắc:** một dòng chỉ hợp lệ khi có đủ ba vế — sản phẩm cụ thể, file/commit truy được, và có người khác đang dùng nó. Chức danh không phải đóng góp.
 
 | Người | Sản phẩm cụ thể | File | Ai đang dùng sản phẩm đó | Việc tiếp theo |
