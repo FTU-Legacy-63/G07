@@ -34,7 +34,7 @@ Sản phẩm có **bốn** output. Cột "Ảnh hưởng output" luôn trỏ v�
 | `selected_option` | Chỉ số phương án người học chọn cho một câu. Chỉ ghi nhận sau khi bấm Xác nhận; không cho đổi lại | int, 0–2 | Người dùng | O1, O2, O3, O4 |
 | `time_to_answer` | Số giây tính từ lúc câu hiện lên màn hình đến lúc bấm Xác nhận. **Chỉ đo, không giới hạn.** Không dùng để chấm điểm | int, giây | Hệ thống đo (timestamp render → timestamp submit) | O2 — chỉ chạy khi hai cụm bằng Accuracy và bằng cả độ khó trung bình |
 | `item_used` | Câu này có dùng vật phẩm (Bùa Loại Trừ hoặc Cuộn Giấy Gợi Ý) hay không | boolean | Người dùng | O1 — quyết định câu có vào mẫu chẩn đoán hay không; O4 — quyết định câu có vào tử số `performance_score` hay không |
-| `item_type_used` | Loại vật phẩm đã dùng ở câu đó, nếu có | enum: `none` / `eliminate` / `hint` | Người dùng | O3 — hiển thị lại trong bảng lời giải |
+| `item_type_used` | Loại vật phẩm đã dùng ở câu đó, nếu có | enum: `none` / `eliminate` | Người dùng | O3 — hiển thị lại trong bảng lời giải |
 
 **Lưu ý về `time_to_answer`:** Mục 10 của `SOLUTION_STRUCTURE.md` xếp "giới hạn thời gian mỗi câu" vào Out of Scope. Không mâu thuẫn — sản phẩm **đo** thời gian nhưng **không đặt hạn**. Người học không bị đếm ngược, không bị trừ điểm vì chậm.
 
