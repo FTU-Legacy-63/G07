@@ -65,7 +65,7 @@ Nguồn chung: `ethics_bank_110.json`, do nhóm tự biên soạn, gắn nhãn t
 | `options` | Ba phương án trả lời, đúng chuẩn CFA Level I | mảng 3 string | O3 |
 | `answer` | Chỉ số phương án đúng trong `options` | int, 0–2 | O1, O2, O3, O4 |
 | `distractor_reason` | Lỗi tư duy dẫn tới từng phương án sai. Phần tử ở vị trí `answer` để rỗng | mảng 3 string | O3 — nội dung giải thích câu sai |
-| `hint` | Một dòng gợi ý: Standard nào đang bị áp dụng. Không tiết lộ đáp án | string | O3 — chỉ hiện khi mua Cuộn Giấy Gợi Ý (4 Credit) |
+| `hint` | Một dòng gợi ý: Standard nào đang bị áp dụng. Không tiết lộ đáp án | string | Bản hiện tại của sản phẩm chưa sử dụng feature này |
 | `explanation` | Lời giải: vì sao đáp án đúng, vì sao các phương án khác sai, và điều kiện nào sẽ làm kết luận đổi chiều | string | O3 |
 
 > **`difficulty` đã đổi vai từ Week 3.** Bản trước dùng nó cho hai việc nội bộ (cân bằng Arena 1, tie-break) và không hiện ra màn hình. Bản hiện hành dùng nó làm **trọng số điểm** cho `performance_score` — một con số hiển thị công khai ở màn tổng kết. Bảng quy đổi: `{1: 1, 2: 2, 3: 3}`. Vì đây là nhãn chủ quan do nhóm tự gắn, giới hạn của việc dùng nó làm trọng số phải được đọc kèm `ASSUMPTIONS.md` mục **C2** và **B11**.
