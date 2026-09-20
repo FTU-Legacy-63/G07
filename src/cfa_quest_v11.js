@@ -51,7 +51,7 @@ const MODULE_NAMES = {
   S7: 'VII. Responsibilities as CFA Member/Candidate'
 };
 
-// Mục 4 +  (luật dùng vật phẩm)
+// Mục 4 + Mục 8 (luật dùng vật phẩm)
 const ARENAS = [
   { id: 'arena1',     name: 'Arena 1 · The Gate', size: 15, itemsAllowed: false },
   { id: 'trap1',      name: 'Trap I',             size: 10, itemsAllowed: true },
@@ -792,11 +792,6 @@ function useItem(id) {
     b.classList.add('eliminated');
     if (RUN.selected === drop) { RUN.selected = null; b.classList.remove('selected'); }
     toast('Đã dùng Bùa Loại Trừ.');
-  }
-  if (id === 'hint') {
-    $('qHintLine').textContent = `Standard đang áp dụng: ${MODULE_NAMES[q.module]} (${q.subStandard}).`;
-    $('qHintLine').classList.remove('hidden');
-    toast('Đã dùng Cuộn Giấy Gợi Ý.');
   }
   renderItemBox();
   updateHUD();
