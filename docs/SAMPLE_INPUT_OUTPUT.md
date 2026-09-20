@@ -304,7 +304,7 @@ Giả sử ở **Crossroads** (Arena được phép dùng vật phẩm, tối đ
 
 | Test | Input | Expected process | Expected output | Actual | Issue |
 |---|---|---|---|---|---|
-| T1 — item exclusion | Crossroads, 1 câu C1 dùng hint và đúng | Arena score tính cả; `accuracy_by_arena` loại khỏi tử và mẫu | Arena 7/10; `accuracy_by_arena["C1"]["crossroads"] = {0,1}` | Chờ code | — |
+| T1 — item exclusion | Crossroads, 1 câu C1 dùng bùa loại trừ và đúng | Arena score tính cả; `accuracy_by_arena` loại khỏi tử và mẫu | Arena 7/10; `accuracy_by_arena["C1"]["crossroads"] = {0,1}` | Chờ code | — |
 | T2 — weakest cluster | Accuracy C1 66,7 · C2 33,3 · C3 66,7 · C4 100 · C5 66,7 | sort tăng dần | W1 = C2 | Chờ code | — |
 | T3 — pass threshold | 10/15 đúng | 66,7% < 70% | FAIL, +0 Credit, khoá Arena 2 | Chờ code | — |
 | T4 — exact pass edge | 7/10 đúng | 70% | PASS | Chờ code | — |
@@ -333,7 +333,7 @@ Giả sử ở **Crossroads** (Arena được phép dùng vật phẩm, tối đ
 | `selected_option` | integer 0–2 | chặn submit |
 | `time_to_answer` | number ≥ 0 | timestamp lỗi: lưu `null`, không dùng time tie-break |
 | `item_used` | boolean | mặc định `false` chỉ khi UI xác nhận chưa dùng vật phẩm |
-| `item_type_used` | `none`, `eliminate`, `hint` | phải khớp với `item_used` |
+| `item_type_used` | `none`, `eliminate` | phải khớp với `item_used` |
 | `answer` | integer 0–2; chỉ đọc từ bank | bank validation fail |
 | `cluster` | C1–C5 | bank validation fail |
 | `module` | GIPS, CODE, S1–S7 | bank validation fail |
