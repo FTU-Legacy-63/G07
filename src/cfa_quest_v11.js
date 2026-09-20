@@ -1,8 +1,6 @@
 'use strict';
 /* =============================================================================
    CFA Quest — Ethics · demo v11
-   Viết lại logic của cfa_dungeon_ui_v10_skipfix_updated.js để khớp
-   SOLUTION_STRUCTURE.md. Mỗi khối ghi mục tương ứng trong tài liệu đó.
 
    File đi kèm:
    - cfa_quest_v11.html        (khung màn hình)
@@ -53,7 +51,7 @@ const MODULE_NAMES = {
   S7: 'VII. Responsibilities as CFA Member/Candidate'
 };
 
-// Mục 4 + Mục 8 (luật dùng vật phẩm)
+// Mục 4 +  (luật dùng vật phẩm)
 const ARENAS = [
   { id: 'arena1',     name: 'Arena 1 · The Gate', size: 15, itemsAllowed: false },
   { id: 'trap1',      name: 'Trap I',             size: 10, itemsAllowed: true },
@@ -64,10 +62,9 @@ const ARENAS = [
 const ARENA_INDEX = Object.fromEntries(ARENAS.map((a, i) => [a.id, i]));
 const BOSS_SPLIT = [7, 5, 3];   // Mục 4: 3 cụm yếu nhất, yếu nhất nhận 7 câu
 
-// Mục 8 (Shop): đúng 2 vật phẩm
+// Mục 8 (Shop): đúng 1 vật phẩm
 const ITEMS = {
   eliminate: { name: 'Bùa Loại Trừ', cost: 3, desc: 'Loại 1 phương án sai của câu đang làm (3 còn 2 phương án).' },
-  hint:      { name: 'Cuộn Giấy Gợi Ý', cost: 4, desc: 'Hiện Standard đang được áp dụng trong câu. Không tiết lộ đáp án.' }
 };
 
 
@@ -191,7 +188,7 @@ function freshState() {
     runNo: 0,
     stage: 0,                                   // chỉ số Arena kế tiếp cần đỗ
     credits: CONFIG.startCredits,
-    inventory: { eliminate: 0, hint: 0 },
+    inventory: { eliminate: 0 },
     w1: null, w1Why: '',
     w2: null, w2Why: '',
     bossPlan: null, bossWhy: '',
@@ -514,7 +511,7 @@ function closeNotice() { $('noticeOverlay').classList.add('hidden'); }
 function updateHUD() {
   $('hudCredits').textContent = S.credits;
   $('hudStage').textContent = !S.started ? '—' : S.finished ? 'Đã vượt Boss' : ARENAS[S.stage].name;
-  $('hudItems').textContent = `${S.inventory.eliminate} loại trừ, ${S.inventory.hint} gợi ý`;
+  $('hudItems').textContent = `${S.inventory.eliminate} Bùa Loại Trừ`;
 }
 
 function arenaDesc(id) {
@@ -696,7 +693,6 @@ function renderQuestion() {
   $('qDifficulty').textContent = `Mức khó ${q.difficulty}`;
   $('qReused').classList.toggle('hidden', !q.reused);
   $('qStem').textContent = q.stem;
-  $('qHintLine').classList.add('hidden');
   $('qMsg').textContent = '';
   $('feedback').classList.add('hidden');
   $('nextBtn').classList.add('hidden');
