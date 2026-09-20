@@ -70,7 +70,7 @@ Hiện nhóm mới có hypothesis và kế hoạch observation. Câu trả lời
 | `module` | Source 1 + rule Source 4 | Có | O1, O2 coverage |
 | `difficulty` | Source 1 | Có | O2 (cân bằng, tie-break); **O4 (trọng số `performance_score`)** |
 | `stem`, `options`, `answer` | Source 1 | Có | O1/O3 |
-| `distractor_reason`, `hint`, `explanation` | Source 1 | Có | O3 |
+| `distractor_reason`, `explanation` | Source 1 | Có | O3 |
 | `sub_standard` | Source 1 + taxonomy Source 3 | **Không** | authoring/coverage |
 | `topic`, `item_type` | Source 1 | **Không** | contextual |
 | Công thức (1) `accuracy_cumulative` | Source 5b | Có | O1, O2 |
