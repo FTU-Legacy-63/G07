@@ -309,7 +309,7 @@ Giả sử ở **Crossroads** (Arena được phép dùng vật phẩm, tối đ
 | T3 — pass threshold | 10/15 đúng | 66,7% < 70% | FAIL, +0 Credit, khoá Arena 2 | Chờ code | — |
 | T4 — exact pass edge | 7/10 đúng | 70% | PASS | Chờ code | — |
 | T5 — invalid option | `selected_option = 3` | validation reject | không ghi response / không chuyển câu | Chờ code | — |
-| T6 — invalid item state | `item_used=false`, `item_type_used="hint"` | validation reject | không được vào scoring | Chờ code | Cần chốt implementation |
+| T6 — invalid item state | `item_used=false`, `item_type_used="eliminate"` | validation reject | không được vào scoring | Chờ code | Cần chốt implementation |
 | T7 — duplicate question | id đã có trong `used_question_ids` | filter trước random | không xuất hiện lại nếu pool còn câu mới | Chờ code | — |
 | T8 — W2 exclusion | sau Crossroads, W1 (C2) vẫn thấp nhất | rank ứng viên nhưng loại W1 | W2 là cụm yếu nhất **còn lại** | Chờ code | Cần sample riêng, sample Mục 5 không chạm luật này |
 | **T9 — Arena 1 no item** | record Arena 1 có `item_used = true` | validation reject ở tầng ghi record | record bị từ chối, không chỉ ẩn nút trên UI | Chờ code | — |
@@ -343,7 +343,7 @@ Giả sử ở **Crossroads** (Arena được phép dùng vật phẩm, tối đ
 ### Cross-field validation
 
 - `item_used = false` ⇒ `item_type_used = "none"`.
-- `item_used = true` ⇒ `item_type_used ∈ {"eliminate","hint"}`.
+- `item_used = true` ⇒ `item_type_used ∈ {"eliminate"}`.
 - `arena ∈ {"arena1","boss"}` ⇒ `item_used = false`. *(mới)*
 - Trong cùng một `arena` và cùng `attempt_index`, tối đa **một** record có `item_used = true`. *(mới)*
 - `answer < len(options)`.
