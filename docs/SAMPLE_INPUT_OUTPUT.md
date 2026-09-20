@@ -286,7 +286,7 @@ Và, độc lập với việc trượt hay không:
 
 ## 8. Biến thể — minh hoạ cơ chế loại câu dùng vật phẩm
 
-Giả sử ở **Crossroads** (Arena được phép dùng vật phẩm, tối đa 1 câu), người học dùng Cuộn Giấy Gợi Ý ở một câu thuộc C1 và trả lời đúng.
+Giả sử ở **Crossroads** (Arena được phép dùng vật phẩm, tối đa 1 câu), người học dùng Bùa loại trừ ở một câu thuộc C1 và trả lời đúng.
 
 | Chỉ số | Không dùng vật phẩm | Dùng vật phẩm ở 1 câu C1 |
 |---|---|---|
