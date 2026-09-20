@@ -177,18 +177,17 @@ Lúc sản phẩm chạy, `sub_standard` không xuất hiện ở bất kỳ mà
 |---|---|---|---|
 | 1 | Viết lại công thức Accuracy ở Mục 5 `SOLUTION_STRUCTURE.md`, ghi điều kiện loại câu dùng vật phẩm ngay tại công thức | Quỳnh | **Xong** — Mục 5, công thức (1) |
 | 2 | Bổ sung `time_to_answer` vào danh sách Input Mục 1 `SOLUTION_STRUCTURE.md` | Quỳnh | **Xong** |
-| 3 | Quyết định `item_type`: sửa nhãn cho khớp nội dung hay xoá khỏi JSON | Hồng | **Xong** — vẫn để nguyên trạng ở Mục 5 file này |
-| 4 | Xác nhận engine đo `time_to_answer` bằng timestamp render và submit | Minh | Khi dựng khung engine |
-| 5 | Đặt tên biến trong code khớp file này | Minh, Trang | Khi dựng khung engine |
+| 3 | Xác nhận engine đo `time_to_answer` bằng timestamp render và submit | Minh | Khi dựng khung engine |
+| 4 | Đặt tên biến trong code khớp file này | Minh, Trang | Khi dựng khung engine |
 
 ## 7b. Việc phát sinh từ bản `SOLUTION_STRUCTURE.md` mới
 
 | # | Việc | Người | Hạn |
 |---|---|---|---|
-| 6 | Đổi tên `accuracy` → `accuracy_cumulative` ở mọi chỗ trong repo, kể cả comment code | Minh, Trang | Trước buổi code đầu tiên |
-| 7 | Bổ sung validation: mọi record thuộc Arena 1 và Boss phải có `item_used = false`; mỗi Arena tối đa 1 record có `item_used = true` | Minh | Cùng đợt #6 |
-| 8 | Bổ sung `validate.html`: kiểm tra worst case cụm W1 tiêu thụ đúng 22 câu (3+10+2+7) mà bank không cạn | Trang | Trước integration |
-| 9 | Xác nhận cách ghi khi người chơi trượt: `accuracy_by_arena` và `performance_by_arena` ghi theo `attempt_index = 1`; `arena_score_correct` và Credit ghi theo lượt đỗ | Minh | Trước buổi code đầu tiên |
+| 5 | Đổi tên `accuracy` → `accuracy_cumulative` ở mọi chỗ trong repo, kể cả comment code | Minh, Trang | Trước buổi code đầu tiên |
+| 6 | Bổ sung validation: mọi record thuộc Arena 1 và Boss phải có `item_used = false`; mỗi Arena tối đa 1 record có `item_used = true` | Minh | Cùng đợt #6 |
+| 7 | Bổ sung `validate.html`: kiểm tra worst case cụm W1 tiêu thụ đúng 22 câu (3+10+2+7) mà bank không cạn | Trang | Trước integration |
+| 8 | Xác nhận cách ghi khi người chơi trượt: `accuracy_by_arena` và `performance_by_arena` ghi theo `attempt_index = 1`; `arena_score_correct` và Credit ghi theo lượt đỗ | Minh | Trước buổi code đầu tiên |
 
 ---
 
