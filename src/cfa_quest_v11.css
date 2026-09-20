@@ -1,0 +1,87 @@
+/* CFA Quest demo v11 — chỉ bổ sung cho các thành phần mới.
+   Màu, font, panel, nút... lấy từ cfa_dungeon_ui_v10_skipfix_updated.css. */
+
+/* Chọn rồi mới xác nhận */
+.ans.selected { border-color: var(--blue); background: var(--blue-soft); box-shadow: inset 3px 0 0 var(--blue); }
+.ans.eliminated { opacity: .35; text-decoration: line-through; }
+.ans:focus-visible, button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+#confirmBtn, #nextBtn { margin-top: 16px; }
+.q-msg { min-height: 1.4em; margin: 10px 0 0; color: var(--red); font-size: 13px; }
+.hint-line { background: var(--yellow-soft); border-left: 4px solid var(--yellow); border-radius: 8px; padding: 10px 12px; color: #66531b; font-size: 13px; margin: 0 0 14px; }
+.meta #qReused { color: var(--red); }
+.item-card + .item-card { margin-top: 10px; }
+.item-card button:disabled { opacity: .5; cursor: not-allowed; }
+.exit-btn { width: 100%; }
+.stage .try { margin-top: 8px; font-weight: 700; }
+
+/* Bảng */
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; margin: 10px 0; }
+table.diag { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.diag th, table.diag td { padding: 9px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+table.diag thead th { background: #f4f6fa; font-size: 12px; }
+table.diag tbody tr:last-child th, table.diag tbody tr:last-child td { border-bottom: 0; }
+table.diag tr.sub th { padding-left: 28px; font-weight: 400; color: var(--muted); }
+table.diag tr.sub td { color: var(--muted); }
+table.diag tr.hl th, table.diag tr.hl td { background: var(--red-soft); }
+.verdict.good { color: var(--green); font-weight: 700; }
+.verdict.mid { color: #9a6b00; font-weight: 700; }
+.verdict.weak { color: var(--red); font-weight: 700; }
+.verdict.na { color: var(--muted); }
+.note { font-size: 12px; color: var(--muted); margin: 6px 0 18px; }
+
+/* Biểu đồ tiến bộ */
+.chart-wrap { overflow-x: auto; }
+.chart-wrap svg { width: 100%; min-width: 480px; height: auto; display: block; }
+.chart-wrap .grid { stroke: var(--line); stroke-width: 1; }
+.chart-wrap .grid.threshold { stroke: var(--gray); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.chart-wrap .axis { font-size: 11px; fill: var(--muted); }
+.chart-wrap .end-label { font-size: 12px; font-weight: 700; }
+
+/* Màn kết quả */
+.report-card h3 { margin-top: 28px; }
+.result-score { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding: 16px 20px; border-radius: 12px; margin: 10px 0 14px; }
+.result-score b { font-size: 40px; }
+.result-score.pass { background: var(--green-soft); border: 1px solid #9bd8c0; }
+.result-score.fail { background: var(--red-soft); border: 1px solid #efb0b8; }
+.announce { background: var(--blue-soft); border: 1px solid #c4d5fb; border-radius: 12px; padding: 14px 18px; margin: 18px 0; }
+.announce h3 { margin: 0 0 6px; font-size: 15px; }
+.announce p { margin: 0; color: var(--ink); }
+.warn-box { background: var(--yellow-soft); border: 1px solid #ecd788; border-radius: 10px; padding: 12px 14px; font-size: 13px; margin: 12px 0; color: #66531b; }
+.review { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin: 8px 0; font-size: 13px; }
+.review summary { cursor: pointer; font-weight: 700; }
+.review .stem { color: var(--ink); }
+.review .reason { color: #8a3340; }
+.review .explain { background: #f7f9fc; border-radius: 8px; padding: 10px; }
+.review pre { white-space: pre-wrap; font-size: 12px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 800; border-radius: 6px; padding: 2px 6px; margin-right: 4px; }
+.tag.wrong { background: var(--red-soft); color: var(--red); }
+.tag.right { background: var(--green-soft); color: var(--green); }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 24px; }
+.performance-final small { font-size: 11px; color: var(--muted); font-weight: 400; }
+
+/* Shop */
+.shop-grid { grid-template-columns: repeat(2, 1fr); }
+.shop-item button:disabled { opacity: .45; cursor: not-allowed; }
+.shop-item .lack { color: var(--red); font-size: 12px; margin: 8px 0 0; }
+
+/* Bảng tiến trình */
+.targets { margin-top: 14px; }
+.targets p { margin: 6px 0; }
+
+/* Hộp thông báo */
+.notice-overlay { position: fixed; inset: 0; background: rgba(24, 34, 56, .45); display: flex; align-items: center; justify-content: center; z-index: 60; padding: 20px; }
+.notice-card { max-width: 460px; width: 100%; padding: 26px; }
+.notice-card p { white-space: pre-line; color: var(--ink); }
+
+@media (max-width: 800px) {
+  .shop-grid { grid-template-columns: 1fr; }
+  .btn-row { justify-content: stretch; }
+  .btn-row button { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+/* Chữ phương án dễ đọc hơn, số câu không xuống dòng */
+.ans { font-weight: 500; line-height: 1.5; }
+.quiz-count { white-space: nowrap; }
