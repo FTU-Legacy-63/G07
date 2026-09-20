@@ -88,7 +88,6 @@ tools/
 1. `accuracy_cumulative` gồm cả câu Trap, nên cụm được Trap luyện tốt có thể rơi khỏi Boss và không được đo lại. Giữ cơ chế và báo cáo cả hai vế, hay đổi sang xếp hạng Boss bằng mốc chẩn đoán? (`ASSUMPTIONS.md` B10)
 2. Ngưỡng 70% ở O4 chặt không đều trên slot 7/5/3 câu — slot 3 câu thành ra phải đúng tuyệt đối. Giữ, hay đổi sang luật "số câu sai tối đa"? (`ASSUMPTIONS.md` B8)
 3. Chưa có problem evidence thật. Kế hoạch observation đã có nhưng chưa thực hiện. (`SOURCE_USE_MAP.md` Source 6, 7)
-4. `item_type` trong JSON có nhãn chưa khớp nội dung — sửa hay xoá? (`INPUT_DICTIONARY.md` Mục 7)
 
 ---
 
