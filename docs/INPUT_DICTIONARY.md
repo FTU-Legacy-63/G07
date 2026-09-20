@@ -157,7 +157,7 @@ Sản phẩm đếm cùng một tập câu trả lời bằng **ba** công thứ
 | Field | Vì sao giữ |
 |---|---|
 | `topic` | Hằng số `"ETHICS"` ở cả 110 câu. Chỉ có nghĩa nếu sau này thêm chủ đề khác (FSA, Quantitative...). Hiện tại không có nhánh code nào đọc nó |
-| `item_type` | Nhãn `concept` / `vignette`. Không có logic nào đọc |
+| `item_type` | Nhãn `concept` / `vignette`. Không ảnh hưởng output |
 
 ---
 
@@ -177,7 +177,7 @@ Lúc sản phẩm chạy, `sub_standard` không xuất hiện ở bất kỳ mà
 |---|---|---|---|
 | 1 | Viết lại công thức Accuracy ở Mục 5 `SOLUTION_STRUCTURE.md`, ghi điều kiện loại câu dùng vật phẩm ngay tại công thức | Quỳnh | **Xong** — Mục 5, công thức (1) |
 | 2 | Bổ sung `time_to_answer` vào danh sách Input Mục 1 `SOLUTION_STRUCTURE.md` | Quỳnh | **Xong** |
-| 3 | Quyết định `item_type`: sửa nhãn cho khớp nội dung hay xoá khỏi JSON | Hồng | **Chưa** — vẫn để nguyên trạng ở Mục 5 file này |
+| 3 | Quyết định `item_type`: sửa nhãn cho khớp nội dung hay xoá khỏi JSON | Hồng | **Xong** — vẫn để nguyên trạng ở Mục 5 file này |
 | 4 | Xác nhận engine đo `time_to_answer` bằng timestamp render và submit | Minh | Khi dựng khung engine |
 | 5 | Đặt tên biến trong code khớp file này | Minh, Trang | Khi dựng khung engine |
 
