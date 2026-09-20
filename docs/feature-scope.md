@@ -52,7 +52,7 @@ Không tạo ra giá trị mới, nhưng thiếu thì main feature khó dùng ho
 | Optional feature | Vì sao xếp optional |
 |---|---|
 | Shop | Mục 7 đã kiểm chứng sẵn: không mua vật phẩm nào thì hành trình vẫn hoàn chỉnh |
-| Vật phẩm thứ hai — Cuộn Giấy Gợi Ý | Fallback Scope ở Mục 10 rút Shop còn 1 vật phẩm |
+| Vật phẩm thứ hai — Cuộn Giấy Gợi Ý | Fallback Scope ở Mục 10 rút Shop còn 1 vật phẩm, hint dùng cho phiên bản sau |
 | Bảng chi tiết tầng 9 module | Fallback Scope bỏ bảng này, chỉ báo cáo ở tầng cụm |
 | Tính lại điểm yếu sau **mỗi** Arena | Fallback Scope chỉ tính một lần sau Arena 1 rồi khoá cứng cả hầm ngục |
 
