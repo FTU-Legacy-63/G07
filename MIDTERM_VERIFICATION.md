@@ -61,4 +61,4 @@ The table keeps the task split the team already agreed on. Each row answers thre
 - **Minh:** designed the Credit and item system. Can calculate the Credit earned at each score level and explain why the elimination item removes only one option.
 - **Khôi:** built the interface. Can click through the demo to show the error messages, and explain what "--" means and why the table shows 4/5 instead of a percentage.
 
-The last column matters most. The instructor can ask any member to do exactly what is written there, so each member should rehearse beforehand.
+
