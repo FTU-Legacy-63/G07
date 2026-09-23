@@ -8,7 +8,7 @@
 
 Thí sinh tự ôn CFA Level I môn Ethics biết mình sai bao nhiêu câu, nhưng không biết sai tập trung ở Standard nào — nên lần luyện sau vẫn làm dàn trải như lần trước.
 
-**CFA Quest là một hầm ngục 5 đấu trường, trong đó chỉ Arena 1 có đề cố định. Bốn Arena còn lại được sinh ra từ chính dữ liệu sai của người học.** Hệ thống đo tỷ lệ đúng theo 5 cụm nội dung, tìm cụm thấp nhất, rồi lọc ngân hàng 110 câu để hỏi lại đúng phần đó.
+**CFA Quest là một hầm ngục 5 đấu trường, trong đó chỉ Arena 1 có đề cố định. Bốn Arena còn lại được sinh ra từ chính dữ liệu sai của người học.** Hệ thống đo tỷ lệ đúng theo 5 cụm nội dung, tìm cụm thấp nhất, rồi lọc ngân hàng 170 câu để hỏi lại đúng phần đó.
 
 Người học không tự chọn mình luyện gì. Dữ liệu sai của họ chọn hộ.
 
@@ -52,8 +52,7 @@ Ngưỡng 70%, bảng ánh xạ 9 module → 5 cụm, và nhãn độ khó 1–3
 ```text
 README.md                      ← bạn đang ở đây
 data/
-  ethics_bank_110.json         ngân hàng 110 câu, nguồn dữ liệu duy nhất
-  questions.js                 bản nhúng của file trên, để chạy không cần server
+  ethics_bank_170.json         ngân hàng 170 câu, nguồn dữ liệu duy nhất
 docs/
   SOLUTION_STRUCTURE.md        tài liệu lõi: core flow, ba công thức, O4, claim boundary
   INPUT_DICTIONARY.md          nghĩa từng field, ba bộ đếm, quy tắc đặt tên biến
@@ -73,7 +72,7 @@ tools/
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Ngân hàng 110 câu | Xong, đã validate cấu trúc |
+| Ngân hàng 170 câu | Xong, đã validate cấu trúc |
 | Đặc tả logic (3 công thức, O1–O4) | Xong |
 | Sample tính tay dự đoán được output | Xong |
 | Claim boundary | Xong |
@@ -93,4 +92,4 @@ tools/
 
 ## Bản quyền
 
-Toàn bộ 110 câu hỏi, tình huống, lời giải và lý do gây nhiễu do nhóm tự biên soạn. Tình huống là tình huống giả định, không trích nguyên văn tài liệu CFA Institute hay GIPS Standards. Tên Standard được dùng cho mục đích phân loại học thuật. Không có tài liệu nguồn thương mại nào trong repo hoặc trong lịch sử commit.
+Toàn bộ 170 câu hỏi, tình huống, lời giải và lý do gây nhiễu do nhóm tự biên soạn. Tình huống là tình huống giả định, không trích nguyên văn tài liệu CFA Institute hay GIPS Standards. Tên Standard được dùng cho mục đích phân loại học thuật. Không có tài liệu nguồn thương mại nào trong repo hoặc trong lịch sử commit.
