@@ -95,7 +95,14 @@ W4/
 | Observation/interview người dùng thật | **Chưa có** — problem evidence vẫn là open item |
 
 ---
+## Revision
 
+| Ngày | Thay đổi | Lý do |
+|---|---|---|
+| 20/09 | Gỡ vật phẩm Cuộn Giấy Gợi Ý, chỉ giữ Bùa Loại Trừ (3 Credit) | Scope freeze Week 6 |
+| 23/09 | Ngân hàng 110 → 170 câu (34 câu/cụm) | Góp ý cải thiện ngân hàng câu hỏi sau Week 5 |
+
+---
 ## Open questions
 
 1. `accuracy_cumulative` gồm cả câu Trap, nên cụm được Trap luyện tốt có thể rơi khỏi Boss và không được đo lại. Giữ cơ chế và báo cáo cả hai vế, hay đổi sang xếp hạng Boss bằng mốc chẩn đoán? (`ASSUMPTIONS.md` B10)
