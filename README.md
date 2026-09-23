@@ -51,17 +51,31 @@ Ngưỡng 70%, bảng ánh xạ 9 module → 5 cụm, và nhãn độ khó 1–3
 
 ```text
 README.md                      ← bạn đang ở đây
+PROJECT PROPOSAL.md
+MIDTERM_VERIFICATION.md
 data/
-  ethics_bank_170.json         ngân hàng 170 câu, nguồn dữ liệu duy nhất
+  ethics_bank_170.json         ngân hàng 170 câu (34 câu × 5 cụm), nguồn dữ liệu gốc
+src/
+  cfa_quest_v11.html           file mở để chạy sản phẩm
+  cfa_quest_v11.js             engine: sinh đề, chấm điểm, xếp hạng cụm, bảng tổng kết
+  cfa_quest_v11_bank.js        bản nhúng của data/ethics_bank_170.json, chỉ dùng khi mở bằng file://
+  cfa_quest_v11.css
+  cfa_dungeon_ui_v10_skipfix_updated.css   giao diện nền dùng lại từ v10
 docs/
   SOLUTION_STRUCTURE.md        tài liệu lõi: core flow, ba công thức, O4, claim boundary
   INPUT_DICTIONARY.md          nghĩa từng field, ba bộ đếm, quy tắc đặt tên biến
   ASSUMPTIONS.md               giả định, rủi ro, câu không được biến thành claim
   SOURCE_USE_MAP.md            nguồn nào cấp gì, traceability từng field
   SAMPLE_INPUT_OUTPUT.md       sample tính tay, 16 test case, validation
+  user-flow.md                 đường chính, đường phụ, đường lỗi
+  feature-scope.md             tính năng chính, phụ, phần đã hoãn
   MIDTERM_REVIEW.md            tổng hợp Part A–E cho giữa kỳ
+  WEEK5_CHECKPOINT.md
 tools/
-  validate.html                công cụ QA offline cho ngân hàng câu hỏi
+  validate_question_bank.html  công cụ QA offline cho ngân hàng câu hỏi
+W4/
+  CFA_Quest_user_flow.xlsm     workbook minh hoạ một lượt chơi, kèm VBA
+  VBA_CFA_Quest.bas
 ```
 
 **Dữ liệu nhúng trong `.js` chứ không fetch JSON** — để người chấm mở file bằng cách bấm đúp là chạy được, không cần dựng local server.
