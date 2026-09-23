@@ -157,7 +157,7 @@ function applyBank(raw) {
 
 async function loadBank() {
   try {
-    const r = await fetch('ethics_bank_110.json', { cache: 'no-store' });
+    const r = await fetch('../data/ethics_bank_170.json', { cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     applyBank(await r.json());
   } catch {
