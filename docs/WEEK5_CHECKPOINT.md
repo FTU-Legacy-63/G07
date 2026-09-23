@@ -285,20 +285,14 @@ docs/
   user-flow.md                mới — happy / alternative / error path
   feature-scope.md            mới — main, supporting, core, optional
 src/                          mới — working interface draft
-  index.html
-  style.css
-  app.js
+cfa_quest_v11.html           file mở để chạy sản phẩm
+  cfa_quest_v11.js             engine: sinh đề, chấm điểm, xếp hạng cụm, bảng tổng kết
+  cfa_quest_v11_bank.js        bản nhúng của data/ethics_bank_170.json, chỉ dùng khi mở bằng file://
+  cfa_quest_v11.css
+  cfa_dungeon_ui_v10_skipfix_updated.css   giao diện nền dùng lại từ v10
 tools/
   validate.html               công cụ QA offline cho ngân hàng câu hỏi
 ```
-
-Ba quy ước đi kèm:
-
-1. **`src/index.html` là file để mở.** Đặt tên `index.html` để người chấm mở thẳng, không phải hỏi mở file nào.
-2. **Ngân hàng câu hỏi chỉ nằm ở `data/`.** Không nhân bản `questions.js` sang `src/`. Hai bản ở hai chỗ là nguồn lệch dữ liệu chắc chắn sẽ xảy ra.
-3. **Mỗi nội dung chỉ có một file là nguồn.** File checkpoint này trỏ sang `user-flow.md` và `feature-scope.md` chứ không chép lại, để không tạo ra mâu thuẫn giữa các file khi sửa.
-
----
 
 ## 13. Đối chiếu danh sách lỗi thường gặp (Mục 14 đề bài)
 
