@@ -6,7 +6,7 @@
    - cfa_quest_v11.html        (khung màn hình)
    - cfa_dungeon_ui_v10_skipfix_updated.css  (giao diện cũ, dùng lại nguyên)
    - cfa_quest_v11.css         (vài style mới: bảng chẩn đoán, biểu đồ, hộp thông báo)
-   - cfa_quest_v11_bank.js     (ngân hàng nhúng, sinh tự động từ ethics_bank_110.json)
+   - cfa_quest_v11_bank.js     (ngân hàng nhúng, sinh tự động từ ethics_bank_170.json)
    ============================================================================= */
 
 /* ---------- 1. Cấu hình (Mục 4, 5, 8) ---------- */
@@ -166,7 +166,7 @@ async function loadBank() {
       applyBank(window.CFA_EMBEDDED_BANK);
     } else {
       const el = $('bankStatus');
-      el.textContent = 'Chưa nạp được ethics_bank_110.json. Dùng nút nạp file bên dưới hoặc chạy bằng local server.';
+      el.textContent = 'Chưa nạp được ethics_bank_170.json. Dùng nút nạp file bên dưới hoặc chạy bằng local server.';
       el.className = 'status error';
     }
   }
@@ -556,7 +556,7 @@ const CLUSTER_STYLE = {
 function progressChartHTML() {
   const done = ARENAS.filter(a => S.attempts[a.id].length > 0);
   if (!done.length) return '<p class="muted">Biểu đồ hiện sau khi hoàn thành Arena 1.</p>';
-  const W = 660, H = 270, L = 46, R = 110, T = 18, B = 40;
+  const W = 660, H = 270, L = 46, R = 170, T = 18, B = 40;
   const x = i => done.length === 1 ? L + (W - L - R) / 2 : L + i * (W - L - R) / (done.length - 1);
   const y = v => T + (1 - v) * (H - T - B);
   let svg = '';
@@ -634,7 +634,7 @@ function renderDashboard() {
 
 /* ---------- 10. Làm bài (Mục 1 Input, Mục 7 đường lỗi, Mục 8 luật vật phẩm) ---------- */
 function startRun() {
-  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_110.json hợp lệ trước khi bắt đầu.'); return; }
+  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_170.json hợp lệ trước khi bắt đầu.'); return; }
   if (S.started && !S.finished && !confirm('Bắt đầu lượt mới sẽ xoá lượt đang chơi. Tiếp tục?')) return;
   const runNo = Number(store.get(CONFIG.runCounterKey) || 0) + 1;
   store.set(CONFIG.runCounterKey, String(runNo));
@@ -648,7 +648,7 @@ function startRun() {
 
 function startArena() {
   if (!S.started || S.finished) return;
-  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_110.json hợp lệ ở màn hình đầu.'); return; }
+  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_170.json hợp lệ ở màn hình đầu.'); return; }
   const arena = ARENAS[S.stage];
   const ctx = makeDrawContext();
   const qs = buildArena(arena.id, ctx);
