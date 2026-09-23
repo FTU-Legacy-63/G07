@@ -90,8 +90,8 @@ W4/
 | Đặc tả logic (3 công thức, O1–O4) | Xong |
 | Sample tính tay dự đoán được output | Xong |
 | Claim boundary | Xong |
-| Engine JavaScript | Chưa bắt đầu |
-| Giao diện | Chưa bắt đầu |
+| Engine JavaScript | Xong |
+| Giao diện | Đã bắt đầu |
 | Observation/interview người dùng thật | **Chưa có** — problem evidence vẫn là open item |
 
 ---
