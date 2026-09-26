@@ -66,36 +66,4 @@ Nơi ghi mọi lỗi của sản phẩm: code demo, ngân hàng câu hỏi, tài
 | BUG-V10-22 | Quỳnh | Không có bước Xác nhận, bấm phương án là nộp luôn | `app.js` 162 `renderQuestion()`, 164 `answer()` | Bấm vào một phương án | Chọn phương án rồi bấm Xác nhận; chặn chuyển câu khi chưa chọn (Mục 1, Mục 7 đường lỗi) | Bấm phương án là nộp ngay. Phần chặn chuyển câu thì khớp | Minor | Quỳnh | Đã sửa | Khôi |
 | BUG-V10-23 | Quỳnh | Không báo còn thiếu bao nhiêu Credit | `app.js` 174 `renderShop()` | Tiêu hết Credit → mở Vật phẩm | Vô hiệu hoá nút Mua và báo còn thiếu bao nhiêu (Mục 7 đường lỗi) | Nút Mua bị vô hiệu hoá nhưng không có thông báo | Minor | Quỳnh | Đã sửa | Khôi |
 
-### Hướng dẫn xác nhận trên v11
-
-Người xác nhận mở bản hiện tại `src/cfa_quest_v11.html`, làm đúng thao tác dưới đây, đối chiếu với cột Expected ở bảng trên. Khớp thì đổi trạng thái thành "Đã xác nhận – dd/mm", kèm mã test trong `testing.md` nếu có. Không khớp thì mở bug mới ở Phần B, ghi mã bug cũ vào cột Test liên quan.
-
-Một số bước cần xem dữ liệu gốc: mở Console của trình duyệt (F12) rồi gõ `CFAQ.state` để xem toàn bộ bản ghi, hoặc `CFAQ.ranking()` để xem thứ hạng cụm hiện tại.
-
-| Mã bug | Người xác nhận | Cách kiểm nhanh trên v11 |
-|---|---|---|
-| BUG-V10-01 | Minh | Mua Bùa Loại Trừ, dùng ở Trap I. Còn 2 phương án, chọn và Xác nhận được, sang câu tiếp bình thường |
-| BUG-V10-02 | Minh | Dùng Bùa ở một câu, trả lời. `CFAQ.state.records` có `item: "eliminate"` ở câu đó; `CFAQ.ranking()` không đếm câu đó |
-| BUG-V10-03 | Trang | Sau Crossroads, tính tay tỷ lệ cộng dồn Arena 1 + Trap I + Crossroads, so với dòng giải thích W2 trên màn kết quả |
-| BUG-V10-04 | Trang | Làm đúng cả 15 câu Arena 1. Màn kết quả phải ghi phân định theo thời gian trả lời, kèm số giây từng cụm |
-| BUG-V10-05 | Trang | Chơi hết lượt, không trượt. Không mã câu nào lặp lại trong `CFAQ.state.records` |
-| BUG-V10-06 | Khôi | Bảng A có đủ 5 Arena dạng đúng/đã hỏi, ô "--", cột Kết luận. Tính tay kết luận 1 cụm theo 4 điều kiện |
-| BUG-V10-07 | Minh | Làm sai 4/10 Trap I. Màn kết quả báo trượt, 0 Credit, Crossroads khoá, có nút chơi lại |
-| BUG-V10-08 | Minh | Làm 13/15 Arena 1: nhận 3 Credit, số dư 6. Vượt Boss lần đầu: thêm +5 Credit |
-| BUG-V10-09 | Minh | Trượt Trap I rồi làm lại. Bảng tổng kết có dòng chú thích đọc theo lượt đầu; bảng "Các lượt làm Arena" có cả 2 lượt |
-| BUG-V10-10 | Minh | Shop chỉ có Bùa Loại Trừ, giá 3. Dùng Bùa chỉ mất 1 phương án |
-| BUG-V10-11 | Khôi | Có Bùa, vào Crossroads: ô vật phẩm cho dùng |
-| BUG-V10-12 | Khôi | Có 2 Bùa. Dùng lần 2 trên cùng câu: báo "mỗi câu tối đa 1". Dùng ở câu sau cùng Arena: báo "mỗi arena tối đa 1" |
-| BUG-V10-13 | Minh | So số "điểm độ khó" trên bảng tổng kết với tổng tính tay từ `CFAQ.state.performance_by_arena`. Arena 1 có points_offered = 30 |
-| BUG-V10-14 | Trang | Ở Arena 1, cụm C2, C4, C5 phải có câu của cả hai module. Lượt chơi mới thì module nhận 2 câu đổi sang module kia |
-| BUG-V10-15 | Trang | Trap I và Trap II chia 5/5 theo module (C3 thì cả 10 câu S3) |
-| BUG-V10-16 | Trang | Boss hỏi 7/5/3 câu theo thứ tự cụm trên màn kết quả Trap II |
-| BUG-V10-17 | Khôi | Arena 1 không tô đúng/sai và không hiện lời giải khi đang làm |
-| BUG-V10-18 | Hồng | Sau mỗi Arena có màn kết quả với đủ các phần ở Expected. Lời giải và lý do gây nhiễu của câu sai khớp nội dung ngân hàng. Có nút vào Shop |
-| BUG-V10-19 | Khôi | Làm 3 câu Trap I, bấm "Thoát Arena" (hoặc tải lại trang). Hiện thông báo huỷ lượt; `CFAQ.state.records` không có 3 câu đó |
-| BUG-V10-20 | Hồng | Bảng chẩn đoán có đủ 9 module, tên module khớp ngân hàng. Có biểu đồ tỷ lệ đúng theo Arena |
-| BUG-V10-21 | Hồng | Trượt Trap I nhiều lần đến khi cụm hết câu mới. Câu lặp có nhãn "Câu đã gặp", thứ tự phương án bị xáo, có thông báo |
-| BUG-V10-22 | Khôi | Bấm phương án chưa sang câu. Bấm Xác nhận khi chưa chọn thì hiện nhắc |
-| BUG-V10-23 | Khôi | Khi Credit dưới 3, nút Mua mờ và có dòng "Còn thiếu … Credit" |
-
 ---
