@@ -23,7 +23,7 @@
 |*23/9*|Laptop |Chrome |Link (GitHub Pages)|OK ||
 |*23/9*|Laptop |Edge|Link (GitHub Pages)|OK||
 |*23/9*|Điện thoại - *Hệ điều hành IOS*|Safari|Link (GitHub Pages)|OK ||
-|*23/9*|Laptop — *(model)*|*_*|Offline (double-click html)|OK ||
+|*23/9*|Laptop|*_*|Offline (double-click html)|OK ||
 
 ## 4. Vấn đề phát sinh khi deploy (nếu có)
 
