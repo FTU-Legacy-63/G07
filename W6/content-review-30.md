@@ -72,7 +72,4 @@
 
 **Không có bug nội dung cần ghi nhận trong sample 30 câu mới nhất.**
 
-## Lưu ý ngoài sample 30 câu
-
-Trong lúc đối chiếu bank hiện tại, có một lỗi cũ đáng ghi riêng để team sửa dù nó **không thuộc 30 câu mới nhất**:
 
