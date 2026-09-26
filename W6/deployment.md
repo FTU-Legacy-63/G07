@@ -6,7 +6,7 @@
 
 ## 2. Chạy offline 
 
-1. Vào repo G07 → nút **Code** → **Download ZIP**, hoặc giải nén file backup ở Mục 5. Không dùng "Save link as" trên trang GitHub, cách đó chỉ tải về trang web của GitHub.
+1. Vào repo G07 → nút **Code** → **Download ZIP**
 2. Giải nén, mở thư mục `src/`. Thư mục phải có đủ **5 file**:
    - `cfa_quest_v11.html`
    - `cfa_quest_v11.js`
