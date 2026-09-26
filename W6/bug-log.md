@@ -19,7 +19,7 @@ Nơi ghi mọi lỗi của sản phẩm: code demo, ngân hàng câu hỏi, tài
 | Mới | Vừa ghi, chưa có người sửa |
 | Đang sửa | Đã có người nhận sửa |
 | Đã sửa – chờ xác nhận | Người sửa đã commit, ghi kèm mã commit |
-| Đã xác nhận | Người xác nhận đã chạy lại trên bản hiện tại, kết quả khớp Expected. Ghi kèm ngày |
+| Đã xác nhận | Người xác nhận đã chạy lại trên bản hiện tại, kết quả khớp Expected |
 | Ghi thành limitation | Không sửa trong phạm vi môn học, đã ghi vào `limitations.md` |
 
 **Quy tắc**
