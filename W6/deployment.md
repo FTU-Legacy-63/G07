@@ -3,6 +3,7 @@
 ## 1. Link sản phẩm
 
 - **Live (GitHub Pages):** [cfa_quest_v11.html](https://ftu-legacy-63.github.io/G07/src/cfa_quest_v11.html)
+- **Bản dự phòng (backup):** [src.zip](https://drive.google.com/drive/folders/1zZfHQ60kuk0ciy06HxzRen1JURKaRrX0?usp=sharing)
 
 ## 2. Chạy offline 
 
