@@ -105,8 +105,6 @@ Cách kiểm tra: trích đúng các hàm trên từ `src/cfa_quest_v11.js` và 
 
 Nguồn: validation ở tầng ghi response record (không chỉ ẩn nút UI). Case T-I01–T-I03 tái dùng nguyên văn từ `docs/SAMPLE_INPUT_OUTPUT.md` Mục 9 (T9, T10, T11).
 
-## 5. T-I — Thao tác sai
-
 ### 5.1. Phạm vi kiểm thử
 
 Nhóm T-I kiểm tra các trường hợp người dùng thực hiện thao tác không hợp lệ hoặc không được phép:
