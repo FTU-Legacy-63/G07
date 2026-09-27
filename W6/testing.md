@@ -103,7 +103,7 @@ Cách kiểm tra: trích đúng các hàm trên từ `src/cfa_quest_v11.js` và 
 
 ## 5. T-I — Thao tác sai
 
-Nguồn: validation ở tầng ghi response record (không chỉ ẩn nút UI). Case T-I01–T-I03 tái dùng nguyên văn từ `docs/SAMPLE_INPUT_OUTPUT.md` Mục 9 (T9, T10, T11).
+Quy ước: Các kết quả Actual dưới đây được xác nhận trên bản deploy và đối chiếu với cơ chế xử lý trong cfa_quest_v11.js. 
 
 ### 5.1. Phạm vi kiểm thử
 
