@@ -105,8 +105,146 @@ Cách kiểm tra: trích đúng các hàm trên từ `src/cfa_quest_v11.js` và 
 
 Nguồn: validation ở tầng ghi response record (không chỉ ẩn nút UI). Case T-I01–T-I03 tái dùng nguyên văn từ `docs/SAMPLE_INPUT_OUTPUT.md` Mục 9 (T9, T10, T11).
 
+## 5. T-I — Thao tác sai
+
+### 5.1. Phạm vi kiểm thử
+
+Nhóm T-I kiểm tra các trường hợp người dùng thực hiện thao tác không hợp lệ hoặc không được phép:
+
+- Xác nhận khi chưa chọn đáp án.
+- Thoát giữa Arena.
+- Reset khi đang làm dở Arena.
+- Reset tại Dashboard.
+- Nạp file JSON không hợp lệ.
+- Mua Bùa khi không đủ Credit.
+- Sử dụng Bùa Loại Trừ lần thứ hai trong cùng một Arena.
+
+### 5.2. Kết quả kiểm thử
+
 | ID | Case | Input | Expected | Actual | Status | Author | Fix owner | Verifier |
 |---|---|---|---|---|---|---|---|---|
+| T-I01 | Xác nhận khi chưa chọn đáp án | Trong Arena, không chọn phương án và bấm **Xác nhận** | Hiển thị: **"Chọn một phương án trước khi bấm Xác nhận."** | Hệ thống hiển thị đúng thông báo dưới các phương án (`qMsg`). | ✅ Pass | Khoi | — | — |
+| T-I02 | Thoát giữa Arena | Đang làm Arena, đã sử dụng Bùa, sau đó chọn thoát | Hiển thị xác nhận thoát; lượt hiện tại bị huỷ và vật phẩm đã dùng trong lượt được hoàn lại | Hộp thoại hiển thị đúng nội dung. Sau khi xác nhận thoát, lượt bị huỷ và Bùa được hoàn lại vào kho. | ✅ Pass | Khoi | — | — |
+| T-I03a | Reset khi đang làm dở Arena | Đang ở giữa một Arena và bấm **Reset** | Hiển thị: **"Đang làm dở một Arena. Reset sẽ xoá toàn bộ lượt chơi. Tiếp tục?"** | Hộp thoại hiển thị đúng nội dung và yêu cầu xác nhận trước khi reset. | ✅ Pass | Khoi | — | — |
+| T-I03b | Reset tại Dashboard | Không có Arena đang làm dở, từ Dashboard bấm **Reset** | Hiển thị: **"Reset sẽ xoá toàn bộ dữ liệu lượt chơi hiện tại. Tiếp tục?"** | Hộp thoại hiển thị đúng nội dung. | ✅ Pass | Khoi | — | — |
+| T-I04 | Nạp file JSON không hợp lệ | Tại màn đầu, nạp một file `.json` không hợp lệ | Hiển thị toast dạng: **"File JSON lỗi: [nội dung lỗi parse]"** | Toast lỗi xuất hiện với nội dung lỗi parse tương ứng và tự biến mất sau khoảng 2,6 giây. | ✅ Pass | Khoi | — | — |
+| T-I05 | Mua Bùa khi không đủ Credit | Số dư dưới mức Credit yêu cầu để mua Bùa | Nút **Mua** bị khoá và hiển thị số Credit còn thiếu | Khi số dư là 0 Credit, nút **Mua** bị disabled và hiển thị **"Còn thiếu 3 Credit"**. | ✅ Pass | Khoi | — | — |
+| T-I06 | Sử dụng Bùa lần thứ hai trong cùng Arena | Trong một Arena cho phép vật phẩm, đã dùng một Bùa rồi tiếp tục bấm dùng Bùa lần nữa | Hiển thị modal: **"Không dùng thêm được"** với nội dung **"Mỗi arena sử dụng tối đa 1 vật phẩm."** | Modal hiển thị đúng tiêu đề và nội dung; hệ thống không cho phép sử dụng Bùa lần thứ hai trong cùng Arena. | ✅ Pass | Khoi | — | — |
+
+---
+
+## 2. Chi tiết kết quả
+
+### T-I01 — Xác nhận khi chưa chọn đáp án
+
+**Cơ chế:** Dòng thông báo inline ngay dưới các phương án (`qMsg`).
+
+**Actual:** Khi người dùng bấm **Xác nhận** mà chưa chọn đáp án, hệ thống hiển thị:
+
+> "Chọn một phương án trước khi bấm Xác nhận."
+
+**Kết luận:** ✅ Pass — hành vi thực tế khớp với Expected.
+
+---
+
+### T-I02 — Thoát giữa Arena
+
+**Cơ chế:** Hộp thoại `confirm()` của trình duyệt.
+
+**Actual:** Hệ thống hiển thị:
+
+> "Thoát giữa Arena sẽ huỷ lượt này. Các câu đã làm không được lưu, vật phẩm đã dùng trong lượt này được hoàn lại. Thoát?"
+
+Sau khi xác nhận thoát, lượt Arena được huỷ và Bùa đã sử dụng trong lượt được hoàn lại vào kho.
+
+**Kết luận:** ✅ Pass — thông báo, huỷ lượt và hoàn vật phẩm đều hoạt động đúng.
+
+---
+
+### T-I03a — Reset khi đang làm dở Arena
+
+**Cơ chế:** Hộp thoại `confirm()` của trình duyệt.
+
+**Actual:** Hệ thống hiển thị:
+
+> "Đang làm dở một Arena. Reset sẽ xoá toàn bộ lượt chơi. Tiếp tục?"
+
+**Kết luận:** ✅ Pass — hành vi thực tế khớp với Expected.
+
+---
+
+### T-I03b — Reset tại Dashboard
+
+**Cơ chế:** Hộp thoại `confirm()` của trình duyệt.
+
+**Actual:** Khi không có Arena đang làm dở và người dùng bấm **Reset**, hệ thống hiển thị:
+
+> "Reset sẽ xoá toàn bộ dữ liệu lượt chơi hiện tại. Tiếp tục?"
+
+**Kết luận:** ✅ Pass — hệ thống sử dụng đúng thông báo dành riêng cho trạng thái Dashboard.
+
+---
+
+### T-I04 — Nạp file JSON không hợp lệ
+
+**Cơ chế:** Toast thông báo lỗi ở góc dưới màn hình.
+
+**Actual:** Khi người dùng nạp file JSON không hợp lệ, hệ thống hiển thị thông báo theo dạng:
+
+> "File JSON lỗi: [nội dung lỗi parse]"
+
+Toast tự động biến mất sau khoảng 2,6 giây.
+
+**Kết luận:** ✅ Pass — lỗi được bắt và hiển thị đúng cơ chế.
+
+---
+
+### T-I05 — Mua Bùa khi không đủ Credit
+
+**Cơ chế:** Nút **Mua** bị disabled và hiển thị thông báo lỗi inline.
+
+**Actual:** Khi số dư là 0 Credit:
+
+> "Còn thiếu 3 Credit"
+
+Nút **Mua** bị khoá và người dùng không thể thực hiện giao dịch.
+
+**Kết luận:** ✅ Pass — hệ thống chặn giao dịch khi không đủ Credit.
+
+---
+
+### T-I06 — Sử dụng Bùa lần thứ hai trong cùng Arena
+
+**Cơ chế:** Modal popup thông qua `notice()`.
+
+**Actual:** Khi người dùng đã sử dụng một Bùa trong Arena và tiếp tục sử dụng Bùa lần thứ hai, hệ thống hiển thị:
+
+**Tiêu đề:** "Không dùng thêm được"
+
+**Nội dung:**
+
+> "Mỗi arena sử dụng tối đa 1 vật phẩm."
+
+Hệ thống không thực hiện lần sử dụng thứ hai.
+
+**Kết luận:** ✅ Pass — giới hạn tối đa một vật phẩm mỗi Arena được áp dụng đúng.
+
+---
+
+## 3. Bảng tổng kết
+
+| ID | Case | Cơ chế |
+|---|---|---|
+| T-I01 | Xác nhận khi chưa chọn đáp án | Inline text |
+| T-I02 | Thoát giữa Arena | Browser confirm |
+| T-I03a | Reset giữa Arena | Browser confirm |
+| T-I03b | Reset tại Dashboard | Browser confirm |
+| T-I04 | Nạp JSON không hợp lệ | Toast |
+| T-I05 | Mua Bùa khi thiếu Credit | Disabled button + inline text |
+| T-I06 | Dùng Bùa lần thứ hai trong Arena | Modal notice |
+
+**Kết luận tổng thể:** Nhóm T-I gồm **7 test case/nhánh kiểm thử** (T-I01, T-I02, T-I03a, T-I03b, T-I04, T-I05 và T-I06). Tất cả đều đạt **Pass**.
+
 
 
 
