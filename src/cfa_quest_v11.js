@@ -54,18 +54,24 @@ const MODULE_NAMES = {
 // Mục 4 + Mục 8 (luật dùng vật phẩm)
 const ARENAS = [
   { id: 'arena1',     name: 'Arena 1 · The Gate', size: 15, itemsAllowed: false },
-  { id: 'trap1',      name: 'Trap I',             size: 10, itemsAllowed: true },
-  { id: 'crossroads', name: 'The Crossroads',     size: 10, itemsAllowed: true },
-  { id: 'trap2',      name: 'Trap II',            size: 10, itemsAllowed: true },
+  { id: 'trap1',      name: 'Arena 2',            size: 10, itemsAllowed: true },   // trước 28/09: Trap I
+  { id: 'crossroads', name: 'Arena 3',            size: 10, itemsAllowed: true },   // trước 28/09: The Crossroads
+  { id: 'trap2',      name: 'Arena 4',            size: 10, itemsAllowed: true },   // trước 28/09: Trap II
   { id: 'boss',       name: 'Boss',               size: 15, itemsAllowed: false }
 ];
 const ARENA_INDEX = Object.fromEntries(ARENAS.map((a, i) => [a.id, i]));
+// Tên hiển thị của Arena theo mã nội bộ. Đổi tên thì chỉ sửa mảng ARENAS ở trên.
+const NAME = id => ARENAS[ARENA_INDEX[id]].name;
 const BOSS_SPLIT = [7, 5, 3];   // Mục 4: 3 cụm yếu nhất, yếu nhất nhận 7 câu
 
 // Mục 8 (Shop): đúng 1 vật phẩm
 const ITEMS = {
   eliminate: { name: 'Bùa Loại Trừ', cost: 3, desc: 'Loại 1 phương án sai của câu đang làm (3 còn 2 phương án).' },
 };
+// Vật phẩm đã bỏ ở tuần 6 nhưng có thể còn trong tiến trình lưu từ bản cũ trên trình duyệt
+const RETIRED_ITEMS = { hint: 'Cuộn Giấy Gợi Ý (bản cũ)' };
+// Tên vật phẩm để hiển thị; không bao giờ lỗi kể cả khi gặp mã vật phẩm lạ
+function itemName(id) { return ITEMS[id]?.name ?? RETIRED_ITEMS[id] ?? String(id); }
 
 
 /* ---------- 2. Ngẫu nhiên có thể cố định seed (phục vụ kiểm thử, demo lặp lại được) ---------- */
@@ -194,7 +200,7 @@ function freshState() {
     bossPlan: null, bossWhy: '',
     usedIds: [],                                // câu đã xuất hiện trong lượt chơi
     // Mỗi câu đã xác nhận là một bản ghi:
-    // { arena, attempt, qid, cluster, module, difficulty, choice, answer, correct, item, timeMs, reused }
+    // { arena, attempt, qid, cluster, module, difficulty, choice, answer, correct, item, timeMs, reused, order }
     records: [],
     attempts: { arena1: [], trap1: [], crossroads: [], trap2: [], boss: [] },
     accuracy_by_arena: {},                      // dựng lại từ records sau mỗi Arena
@@ -250,6 +256,7 @@ function takeQuestion(ctx, q, reused) {
     options: order.map(i => q.options[i]),
     distractorReason: order.map(i => q.distractorReason[i] ?? ''),
     answer: order.indexOf(q.answer),
+    order,                       // lưu thứ tự đã xáo để màn xem lại hiện đúng A/B/C
     reused: true
   };
 }
@@ -336,9 +343,9 @@ function drawCluster(ctx, cluster, n, label) {
 function buildArena(id, ctx) {
   switch (id) {
     case 'arena1':     return buildArena1(ctx);
-    case 'trap1':      return shuffle(drawCluster(ctx, S.w1, 10, 'Trap I'));
-    case 'crossroads': return shuffle(CLUSTERS.flatMap(c => drawCluster(ctx, c, 2, 'Crossroads')));
-    case 'trap2':      return shuffle(drawCluster(ctx, S.w2, 10, 'Trap II'));
+    case 'trap1':      return shuffle(drawCluster(ctx, S.w1, 10, NAME('trap1')));
+    case 'crossroads': return shuffle(CLUSTERS.flatMap(c => drawCluster(ctx, c, 2, NAME('crossroads'))));
+    case 'trap2':      return shuffle(drawCluster(ctx, S.w2, 10, NAME('trap2')));
     case 'boss':       return shuffle(S.bossPlan.flatMap(p => drawCluster(ctx, p.cluster, p.count, 'Boss')));
     default:           return [];
   }
@@ -527,8 +534,8 @@ function arenaDesc(id) {
 
 
 /* ---------- 8. Bảng chẩn đoán 2 tầng và biểu đồ (Mục 1 Output, Mục 6, Mục 10) ---------- */
-function diagnosticTableHTML(highlight) {
-  const recs = diagnosticRecords();
+function diagnosticTableHTML(highlight, upto = Infinity) {
+  const recs = diagnosticRecords(upto);
   if (!recs.length) return '<p class="muted">Bảng chẩn đoán hiện sau khi hoàn thành Arena 1.</p>';
   const cs = clusterStats(recs);
   const ms = moduleStats(recs);
@@ -553,8 +560,8 @@ const CLUSTER_STYLE = {
   C5: { color: '#7a4fc4', dash: '4 2' }
 };
 
-function progressChartHTML() {
-  const done = ARENAS.filter(a => S.attempts[a.id].length > 0);
+function progressChartHTML(upto = Infinity) {
+  const done = ARENAS.filter((a, i) => i <= upto && S.attempts[a.id].length > 0);
   if (!done.length) return '<p class="muted">Biểu đồ hiện sau khi hoàn thành Arena 1.</p>';
   const W = 660, H = 270, L = 46, R = 170, T = 18, B = 40;
   const x = i => done.length === 1 ? L + (W - L - R) / 2 : L + i * (W - L - R) / (done.length - 1);
@@ -591,6 +598,15 @@ function progressChartHTML() {
 
 
 /* ---------- 9. Màn bảng tiến trình ---------- */
+// Từ 28/09 bảng tiến trình chỉ còn 6 ô. Bảng chẩn đoán, biểu đồ và cụm bị nhắm
+// xem ở màn kết quả ngay sau mỗi Arena, hoặc bấm lại ô Arena đã đỗ (reviewArena).
+function makeClickable(card, fn) {
+  card.setAttribute('role', 'button');
+  card.tabIndex = 0;
+  card.addEventListener('click', fn);
+  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
+}
+
 function renderDashboard() {
   updateHUD();
   const grid = $('stageGrid');
@@ -601,34 +617,23 @@ function renderDashboard() {
     const tries = S.attempts[a.id];
     const lastTry = tries[tries.length - 1];
     const card = document.createElement('div');
-    card.className = 'stage panel ' + (done ? 'done' : active ? 'active' : 'locked');
+    card.className = 'stage panel ' + (done ? 'done reviewable' : active ? 'active' : 'locked');
     card.innerHTML = `<span class="num">${i + 1}/6</span><span class="badge">${done ? 'Đã đỗ' : active ? (tries.length ? 'Chơi lại' : 'Mở') : 'Khoá'}</span>
       <h3>${esc(a.name)}</h3><p>${esc(arenaDesc(a.id))}</p>
-      ${lastTry ? `<p class="try">Lượt ${lastTry.attempt}: ${lastTry.correct}/${lastTry.total}, ${lastTry.passed ? 'đỗ' : 'trượt'}</p>` : ''}`;
-    if (active) {
-      card.setAttribute('role', 'button');
-      card.tabIndex = 0;
-      card.addEventListener('click', startArena);
-      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startArena(); } });
+      ${lastTry ? `<p class="try">Lượt ${lastTry.attempt}: ${lastTry.correct}/${lastTry.total}, ${lastTry.passed ? 'đỗ' : 'trượt'}</p>` : ''}
+      ${done ? '<p class="review-link">Xem lại kết quả ›</p>' : ''}`;
+    if (active) makeClickable(card, startArena);
+    else if (done) {
+      card.setAttribute('aria-label', `Xem lại kết quả ${a.name}`);
+      makeClickable(card, () => { reviewArena(a.id); show('result'); });
     }
     grid.appendChild(card);
   });
   const rep = document.createElement('div');
   rep.className = 'stage panel ' + (S.finished ? 'active' : 'locked');
   rep.innerHTML = `<span class="num">6/6</span><span class="badge">${S.finished ? 'Mở' : 'Khoá'}</span><h3>Bảng tổng kết</h3><p>So mốc chẩn đoán với Boss theo từng cụm</p>`;
-  if (S.finished) {
-    rep.setAttribute('role', 'button');
-    rep.tabIndex = 0;
-    rep.addEventListener('click', () => { renderReport(); show('report'); });
-  }
+  if (S.finished) makeClickable(rep, () => { openReport(); });
   grid.appendChild(rep);
-
-  $('dashTargets').innerHTML = `
-    <p><b>W1:</b> ${S.w1 ? esc(S.w1Why) : 'chưa xác định (sau khi đỗ Arena 1)'}</p>
-    <p><b>W2:</b> ${S.w2 ? esc(S.w2Why) : 'chưa xác định (sau khi đỗ Crossroads)'}</p>
-    <p><b>Boss:</b> ${S.bossPlan ? esc(S.bossWhy) : 'chưa xác định (sau khi đỗ Trap II)'}</p>`;
-  $('dashDiag').innerHTML = diagnosticTableHTML([S.w1, S.w2].filter(Boolean));
-  $('dashChart').innerHTML = progressChartHTML();
 }
 
 
@@ -687,10 +692,8 @@ function renderQuestion() {
   RUN.itemOnQuestion = null;
   RUN.locked = false;
   $('quizArena').textContent = RUN.attempt > 1 ? `${RUN.arena.name} · lượt ${RUN.attempt}` : RUN.arena.name;
-  $('quizTitle').textContent = arenaDesc(RUN.arena.id);
   $('quizCount').textContent = `${RUN.qi + 1} / ${RUN.qs.length}`;
   $('progress').style.width = (RUN.qi / RUN.qs.length * 100) + '%';
-  $('qDifficulty').textContent = `Mức khó ${q.difficulty}`;
   $('qReused').classList.toggle('hidden', !q.reused);
   $('qStem').textContent = q.stem;
   $('qMsg').textContent = '';
@@ -737,7 +740,8 @@ function confirmAnswer() {
     arena: RUN.arena.id, attempt: RUN.attempt, qid: q.id,
     cluster: q.cluster, module: q.module, difficulty: q.difficulty,
     choice: RUN.selected, answer: q.answer, correct,
-    item: RUN.itemOnQuestion, timeMs, reused: !!q.reused
+    item: RUN.itemOnQuestion, timeMs, reused: !!q.reused,
+    order: q.reused ? q.order : null
   });
   RUN.locked = true;
   if (CONFIG.showFeedbackImmediately && RUN.arena.id !== 'arena1') {
@@ -771,7 +775,7 @@ function renderItemBox() {
     const owned = S.inventory[id];
     return `<div class="item-card"><b>${esc(it.name)}</b> <span>(đang có ${owned})</span><p>${esc(it.desc)}</p>
       <button type="button" data-item="${id}" ${owned ? '' : 'disabled'}>${owned ? 'Dùng cho câu này' : 'Chưa có'}</button></div>`;
-  }).join('') + `<p class="note">Mỗi Arena dùng tối đa 1 vật phẩm.${RUN.itemUsedInArena ? ` Đã dùng: ${esc(ITEMS[RUN.itemUsedInArena].name)}.` : ''}</p>`;
+  }).join('') + `<p class="note">Mỗi Arena dùng tối đa 1 vật phẩm.${RUN.itemUsedInArena ? ` Đã dùng: ${esc(itemName(RUN.itemUsedInArena))}.` : ''}</p>`;
   box.querySelectorAll('button[data-item]').forEach(b => b.addEventListener('click', () => useItem(b.dataset.item)));
 }
 
@@ -856,6 +860,38 @@ function finishArena() {
 
 
 /* ---------- 11. Màn kết quả sau mỗi Arena (Mục 7 đường chính, Mục 5 output sau mỗi arena) ---------- */
+// Thông báo "Arena kế tiếp" sau khi đỗ một Arena (dùng chung cho màn kết quả và màn xem lại)
+function announceAfter(id) {
+  if (id === 'arena1') return `${S.w1Why} ${NAME('trap1')} sẽ gồm 10 câu của ${S.w1}.`;
+  if (id === 'trap1') return `${NAME('crossroads')} sẽ hỏi 2 câu mỗi cụm để cập nhật bảng chẩn đoán.`;
+  if (id === 'crossroads') return `${S.w2Why} ${NAME('trap2')} sẽ gồm 10 câu của ${S.w2}.`;
+  if (id === 'trap2') return `Boss sẽ hỏi ${S.bossWhy}`;
+  if (id === 'boss') return 'Bạn đã vượt Boss. Bảng tổng kết đã mở.';
+  return '';
+}
+
+// Danh sách giải thích câu sai. Mỗi phần tử { r: bản ghi câu trả lời, q: câu hỏi đúng thứ tự phương án đã hiện }
+function wrongAnswersHTML(wrong) {
+  let html = `<h3>Giải thích câu sai (${wrong.length})</h3>`;
+  if (!wrong.length) return html + '<p class="muted">Không có câu sai trong Arena này.</p>';
+  wrong.forEach(({ r, q }, k) => {
+    if (!q) {
+      html += `<p class="note">Câu ${esc(r.qid)} không còn trong ngân hàng đang nạp nên không hiện được giải thích.</p>`;
+      return;
+    }
+    const known = q.orderKnown !== false;          // false: câu lấy lại lưu từ bản cũ, không biết thứ tự đã xáo
+    const reason = known ? q.distractorReason[r.choice] : '';
+    html += `<details class="review" ${k === 0 ? 'open' : ''}>
+      <summary>${esc(q.cluster)} · ${esc(MODULE_NAMES[q.module])} · mức ${q.difficulty}${r.item ? ` · đã dùng ${esc(itemName(r.item))}` : ''}</summary>
+      <p class="stem">${esc(q.stem)}</p>
+      ${known ? `<p><span class="tag wrong">Bạn chọn</span> ${'ABC'[r.choice]}. ${esc(q.options[r.choice])}</p>` : '<p class="note">Câu lấy lại từ bản lưu cũ: không khôi phục được phương án bạn đã chọn.</p>'}
+      ${reason ? `<p class="reason">Vì sao dễ chọn nhầm: ${esc(reason)}</p>` : ''}
+      <p><span class="tag right">Đáp án</span> ${known ? 'ABC'[q.answer] + '. ' : ''}${esc(q.options[q.answer])}</p>
+      <p class="explain">${esc(q.explanation)}</p>
+    </details>`;
+  });
+  return html;
+}
 function renderResult() {
   const L = LAST;
   const a = L.arena;
@@ -876,33 +912,12 @@ function renderResult() {
   if (L.attempt > 1) html += '<p class="note">Lượt này tính cho đỗ/trượt và Credit. Bảng chẩn đoán và performance score vẫn giữ theo lượt làm đầu tiên.</p>';
   if (L.notices.length) html += `<div class="warn-box">${L.notices.map(esc).join('<br>')}</div>`;
 
-  if (L.passed) {
-    let announce = '';
-    if (a.id === 'arena1') announce = `${S.w1Why} Trap I sẽ gồm 10 câu của ${S.w1}.`;
-    if (a.id === 'trap1') announce = 'The Crossroads sẽ hỏi 2 câu mỗi cụm để cập nhật bảng chẩn đoán.';
-    if (a.id === 'crossroads') announce = `${S.w2Why} Trap II sẽ gồm 10 câu của ${S.w2}.`;
-    if (a.id === 'trap2') announce = `Boss sẽ hỏi ${S.bossWhy}`;
-    if (a.id === 'boss') announce = 'Bạn đã vượt Boss. Bảng tổng kết đã mở.';
-    html += `<div class="announce"><h3>Arena kế tiếp</h3><p>${esc(announce)}</p></div>`;
-  }
+  if (L.passed) html += `<div class="announce"><h3>Arena kế tiếp</h3><p>${esc(announceAfter(a.id))}</p></div>`;
 
   html += `<h3>Bảng chẩn đoán</h3>${diagnosticTableHTML([S.w1, S.w2].filter(Boolean))}`;
   html += `<h3>Tỷ lệ đúng của các cụm qua từng Arena</h3>${progressChartHTML()}`;
 
-  const wrong = L.answers.map((r, i) => ({ r, q: L.qs[i] })).filter(x => !x.r.correct);
-  html += `<h3>Giải thích câu sai (${wrong.length})</h3>`;
-  if (!wrong.length) html += '<p class="muted">Không có câu sai trong Arena này.</p>';
-  wrong.forEach(({ r, q }, k) => {
-    const reason = q.distractorReason[r.choice];
-    html += `<details class="review" ${k === 0 ? 'open' : ''}>
-      <summary>${esc(q.cluster)} · ${esc(MODULE_NAMES[q.module])} · mức ${q.difficulty}${r.item ? ` · đã dùng ${esc(ITEMS[r.item].name)}` : ''}</summary>
-      <p class="stem">${esc(q.stem)}</p>
-      <p><span class="tag wrong">Bạn chọn</span> ${'ABC'[r.choice]}. ${esc(q.options[r.choice])}</p>
-      ${reason ? `<p class="reason">Vì sao dễ chọn nhầm: ${esc(reason)}</p>` : ''}
-      <p><span class="tag right">Đáp án</span> ${'ABC'[q.answer]}. ${esc(q.options[q.answer])}</p>
-      <p class="explain">${esc(q.explanation)}</p>
-    </details>`;
-  });
+  html += wrongAnswersHTML(L.answers.map((r, i) => ({ r, q: L.qs[i] })).filter(x => !x.r.correct));
   $('resultBody').innerHTML = html;
 
   const actions = $('resultActions');
@@ -916,12 +931,70 @@ function renderResult() {
     actions.appendChild(b);
   };
   if (L.passed && a.id === 'boss') {
-    addBtn('Xem bảng tổng kết', 'primary-btn', () => { renderReport(); show('report'); });
+    addBtn('Xem bảng tổng kết', 'primary-btn', () => { openReport(); });
   } else {
     addBtn('Vào Shop', 'secondary-btn', () => openShop('result'));
     addBtn('Về bảng tiến trình', 'secondary-btn', () => { renderDashboard(); show('dashboard'); });
     addBtn(L.passed ? `Vào ${next.name}` : `Chơi lại ${a.name}`, 'primary-btn', startArena);
   }
+}
+
+
+/* ---------- 11b. Xem lại Arena đã đỗ (bấm ô trên bảng tiến trình) ---------- */
+// Dựng lại câu hỏi đúng thứ tự phương án người chơi đã thấy, từ mã câu và thứ tự xáo đã lưu
+function questionAsShown(r, byId) {
+  const q = byId.get(r.qid);
+  if (!q) return null;
+  if (!r.reused) return q;
+  if (!Array.isArray(r.order)) return { ...q, orderKnown: false };
+  return {
+    ...q,
+    options: r.order.map(i => q.options[i]),
+    distractorReason: r.order.map(i => q.distractorReason[i] ?? ''),
+    answer: r.order.indexOf(q.answer)
+  };
+}
+
+// Số liệu hiện đúng như lúc vừa đỗ Arena đó: bảng chẩn đoán và biểu đồ chỉ tính tới hết Arena này
+function reviewArena(id) {
+  const idx = ARENA_INDEX[id];
+  const a = ARENAS[idx];
+  const tries = S.attempts[id];
+  const t = [...tries].reverse().find(x => x.passed) || tries[tries.length - 1];
+  if (!t) return;
+
+  let html = `<div class="eyebrow">Xem lại${tries.length > 1 ? ` · lượt ${t.attempt}` : ''}</div>
+    <h1>${esc(a.name)}</h1>
+    <div class="result-score ${t.passed ? 'pass' : 'fail'}">
+      <b>${fmtPct(t.correct, t.total)}</b>
+      <span>${t.correct}/${t.total} câu đúng · ${t.passed ? 'Đỗ' : 'Trượt'}</span>
+    </div>
+    <p>Nhận <b>${t.credit} Credit</b>${t.bossBonus ? ` và thưởng vượt Boss lần đầu <b>+${t.bossBonus}</b>` : ''}${t.itemUsed ? `. Đã dùng ${esc(itemName(t.itemUsed))}` : ''}.</p>`;
+  if (tries.length > 1) {
+    const earlier = tries.filter(x => x !== t).map(x => `lượt ${x.attempt}: ${x.correct}/${x.total}, ${x.passed ? 'đỗ' : 'trượt'}`).join('; ');
+    html += `<p class="note">Các lượt khác: ${esc(earlier)}. Bảng chẩn đoán vẫn tính theo lượt làm đầu tiên.</p>`;
+  }
+  if (t.passed) html += `<div class="announce"><h3>Arena kế tiếp</h3><p>${esc(announceAfter(id))}</p></div>`;
+
+  const targets = idx >= ARENA_INDEX.crossroads ? [S.w1, S.w2] : [S.w1];
+  html += `<h3>Bảng chẩn đoán sau ${esc(a.name)}</h3>${diagnosticTableHTML(targets.filter(Boolean), idx)}`;
+  html += `<h3>Tỷ lệ đúng của các cụm tới hết ${esc(a.name)}</h3>${progressChartHTML(idx)}`;
+
+  const byId = new Map(BANK.map(q => [q.id, q]));
+  const wrong = S.records
+    .filter(r => r.arena === id && r.attempt === t.attempt && !r.correct)
+    .map(r => ({ r, q: questionAsShown(r, byId) }));
+  html += wrongAnswersHTML(wrong);
+  $('resultBody').innerHTML = html;
+
+  const actions = $('resultActions');
+  actions.innerHTML = '';
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'primary-btn';
+  b.textContent = 'Về bảng tiến trình';
+  b.addEventListener('click', () => { renderDashboard(); show('dashboard'); });
+  actions.appendChild(b);
 }
 
 
@@ -964,6 +1037,21 @@ function closeShop() {
 
 
 /* ---------- 13. Bảng tổng kết sau Boss (Mục 5 Bảng A, Mục 7) ---------- */
+// Luôn mở màn bảng tổng kết. Nếu dựng bảng bị lỗi thì hiện lỗi ngay trên màn hình
+// (kèm dữ liệu lượt chơi để nhóm gửi lại), thay vì bấm vào không có phản hồi gì.
+function openReport() {
+  show('report');
+  try {
+    renderReport();
+  } catch (err) {
+    console.error(err);
+    $('reportBody').innerHTML = `<div class="eyebrow">Bảng tổng kết</div><h1>Không dựng được bảng tổng kết</h1>
+      <div class="warn-box">Lỗi: ${esc(err && err.message)}<br><small>${esc(err && err.stack ? err.stack.split('\n').slice(0, 3).join(' | ') : '')}</small></div>
+      <p class="note">Chụp màn hình này gửi nhóm. Dữ liệu lượt chơi bên dưới giúp tái hiện lỗi.</p>
+      <details class="review"><summary>Dữ liệu lượt chơi</summary><pre>${esc(JSON.stringify(S))}</pre></details>`;
+  }
+}
+
 function renderReport() {
   const abya = S.accuracy_by_arena;
   const perf = S.performance_by_arena;
@@ -990,20 +1078,20 @@ function renderReport() {
     rows += `<tr><th scope="row">${c}</th>${cells}<td class="verdict ${k.cls}">${k.text}</td></tr>`;
   });
   html += `<h3>Bảng A · Kết quả theo cụm</h3>
-    <div class="tbl-wrap"><table class="diag"><thead><tr><th>Cụm</th><th>Arena 1</th><th>Trap I</th><th>Crossroads</th><th>Trap II</th><th>Boss</th><th>Kết luận</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="tbl-wrap"><table class="diag"><thead><tr><th>Cụm</th>${ARENAS.map(a => `<th>${esc(a.name.replace(' · The Gate', ''))}</th>`).join('')}<th>Kết luận</th></tr></thead><tbody>${rows}</tbody></table></div>
     <p class="note">Ô "--" là Arena không hỏi cụm đó, không phải trả lời sai hết. Số liệu tính theo lượt làm đầu tiên, không gồm câu dùng vật phẩm.</p>`;
 
   // Câu hỏi MVP phải trả lời
   const targeted = [S.w1, S.w2].filter(Boolean);
-  html += '<h3>Cụm bị Trap nhắm có tiến bộ ở Boss không?</h3><div class="milestones">';
+  html += `<h3>Cụm yếu được luyện ở ${NAME('trap1')} và ${NAME('trap2')} có tiến bộ ở Boss không?</h3><div class="milestones">`;
   targeted.forEach(c => {
     const k = conclude(c);
-    const trap = c === S.w1 ? 'Trap I' : 'Trap II';
+    const trap = c === S.w1 ? NAME('trap1') : NAME('trap2');
     html += k.cls === 'na'
       ? `<div class="milestone"><b>${c}</b> (${trap}): không nằm trong 3 cụm yếu nhất lúc vào Boss nên không có câu Boss. Lượt này không trả lời được câu hỏi cho cụm này.</div>`
       : `<div class="milestone"><b>${c}</b> (${trap}): mốc chẩn đoán ${k.baseC}/${k.baseA} = ${fmtPct(k.baseC, k.baseA)}, Boss ${k.bossC}/${k.bossA} = ${fmtPct(k.bossC, k.bossA)}. Kết luận: ${k.text}.</div>`;
   });
-  html += '</div><p class="note">Mốc chẩn đoán = Arena 1 + Crossroads. Kết luận chỉ nói về lượt chơi này, mẫu mỗi cụm còn nhỏ.</p>';
+  html += `</div><p class="note">Mốc chẩn đoán = Arena 1 + ${NAME('crossroads')}. Kết luận chỉ nói về lượt chơi này, mẫu mỗi cụm còn nhỏ.</p>`;
 
   // Chi tiết 9 module
   const firstNoItem = S.records.filter(r => r.attempt === 1 && !r.item);
@@ -1021,7 +1109,7 @@ function renderReport() {
   // Các lượt làm
   let arows = '';
   ARENAS.forEach(a => S.attempts[a.id].forEach(t => {
-    arows += `<tr><th scope="row">${esc(a.name)}</th><td>${t.attempt}</td><td>${t.correct}/${t.total} (${fmtPct(t.correct, t.total)})</td><td>${t.passed ? 'Đỗ' : 'Trượt'}</td><td>${t.credit + t.bossBonus}</td><td>${t.itemUsed ? esc(ITEMS[t.itemUsed].name) : '--'}</td></tr>`;
+    arows += `<tr><th scope="row">${esc(a.name)}</th><td>${t.attempt}</td><td>${t.correct}/${t.total} (${fmtPct(t.correct, t.total)})</td><td>${t.passed ? 'Đỗ' : 'Trượt'}</td><td>${t.credit + t.bossBonus}</td><td>${t.itemUsed ? esc(itemName(t.itemUsed)) : '--'}</td></tr>`;
   }));
   html += `<h3>Các lượt làm Arena</h3><div class="tbl-wrap"><table class="diag"><thead><tr><th>Arena</th><th>Lượt</th><th>Điểm</th><th>Kết quả</th><th>Credit</th><th>Vật phẩm</th></tr></thead><tbody>${arows}</tbody></table></div>`;
 
