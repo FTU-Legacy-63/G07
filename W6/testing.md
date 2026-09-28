@@ -121,13 +121,13 @@ Nhóm T-I kiểm tra các trường hợp người dùng thực hiện thao tác
 
 | ID | Case | Input | Expected | Actual | Status | Author | Fix owner | Verifier |
 |---|---|---|---|---|---|---|---|---|
-| T-I01 | Xác nhận khi chưa chọn đáp án | Trong Arena, không chọn phương án và bấm **Xác nhận** | Hiển thị: **"Chọn một phương án trước khi bấm Xác nhận."** | Hệ thống hiển thị đúng thông báo dưới các phương án (`qMsg`). | ✅ Pass | Khoi | — | — |
-| T-I02 | Thoát giữa Arena | Đang làm Arena, đã sử dụng Bùa, sau đó chọn thoát | Hiển thị xác nhận thoát; lượt hiện tại bị huỷ và vật phẩm đã dùng trong lượt được hoàn lại | Hộp thoại hiển thị đúng nội dung. Sau khi xác nhận thoát, lượt bị huỷ và Bùa được hoàn lại vào kho. | ✅ Pass | Khoi | — | — |
-| T-I03a | Reset khi đang làm dở Arena | Đang ở giữa một Arena và bấm **Reset** | Hiển thị: **"Đang làm dở một Arena. Reset sẽ xoá toàn bộ lượt chơi. Tiếp tục?"** | Hộp thoại hiển thị đúng nội dung và yêu cầu xác nhận trước khi reset. | ✅ Pass | Khoi | — | — |
-| T-I03b | Reset tại Dashboard | Không có Arena đang làm dở, từ Dashboard bấm **Reset** | Hiển thị: **"Reset sẽ xoá toàn bộ dữ liệu lượt chơi hiện tại. Tiếp tục?"** | Hộp thoại hiển thị đúng nội dung. | ✅ Pass | Khoi | — | — |
-| T-I04 | Nạp file JSON không hợp lệ | Tại màn đầu, nạp một file `.json` không hợp lệ | Hiển thị toast dạng: **"File JSON lỗi: [nội dung lỗi parse]"** | Toast lỗi xuất hiện với nội dung lỗi parse tương ứng và tự biến mất sau khoảng 2,6 giây. | ✅ Pass | Khoi | — | — |
-| T-I05 | Mua Bùa khi không đủ Credit | Số dư dưới mức Credit yêu cầu để mua Bùa | Nút **Mua** bị khoá và hiển thị số Credit còn thiếu | Khi số dư là 0 Credit, nút **Mua** bị disabled và hiển thị **"Còn thiếu 3 Credit"**. | ✅ Pass | Khoi | — | — |
-| T-I06 | Sử dụng Bùa lần thứ hai trong cùng Arena | Trong một Arena cho phép vật phẩm, đã dùng một Bùa rồi tiếp tục bấm dùng Bùa lần nữa | Hiển thị modal: **"Không dùng thêm được"** với nội dung **"Mỗi arena sử dụng tối đa 1 vật phẩm."** | Modal hiển thị đúng tiêu đề và nội dung; hệ thống không cho phép sử dụng Bùa lần thứ hai trong cùng Arena. | ✅ Pass | Khoi | — | — |
+| T-I01 | Xác nhận khi chưa chọn đáp án | Trong Arena, không chọn phương án và bấm **Xác nhận** | Hiển thị: **"Chọn một phương án trước khi bấm Xác nhận."** | Hệ thống hiển thị đúng thông báo dưới các phương án (`qMsg`). | ✅ Pass | Khoi | — | Hồng |
+| T-I02 | Thoát giữa Arena | Đang làm Arena, đã sử dụng Bùa, sau đó chọn thoát | Hiển thị xác nhận thoát; lượt hiện tại bị huỷ và vật phẩm đã dùng trong lượt được hoàn lại | Hộp thoại hiển thị đúng nội dung. Sau khi xác nhận thoát, lượt bị huỷ và Bùa được hoàn lại vào kho. | ✅ Pass | Khoi | — | Hồng |
+| T-I03a | Reset khi đang làm dở Arena | Đang ở giữa một Arena và bấm **Reset** | Hiển thị: **"Đang làm dở một Arena. Reset sẽ xoá toàn bộ lượt chơi. Tiếp tục?"** | Hộp thoại hiển thị đúng nội dung và yêu cầu xác nhận trước khi reset. | ✅ Pass | Khoi | — | Hồng |
+| T-I03b | Reset tại Dashboard | Không có Arena đang làm dở, từ Dashboard bấm **Reset** | Hiển thị: **"Reset sẽ xoá toàn bộ dữ liệu lượt chơi hiện tại. Tiếp tục?"** | Hộp thoại hiển thị đúng nội dung. | ✅ Pass | Khoi | — | Hồng |
+| T-I04 | Nạp file JSON không hợp lệ | Tại màn đầu, nạp một file `.json` không hợp lệ | Hiển thị toast dạng: **"File JSON lỗi: [nội dung lỗi parse]"** | Toast lỗi xuất hiện với nội dung lỗi parse tương ứng và tự biến mất sau khoảng 2,6 giây. | ✅ Pass | Khoi | — | Hồng |
+| T-I05 | Mua Bùa khi không đủ Credit | Số dư dưới mức Credit yêu cầu để mua Bùa | Nút **Mua** bị khoá và hiển thị số Credit còn thiếu | Khi số dư là 0 Credit, nút **Mua** bị disabled và hiển thị **"Còn thiếu 3 Credit"**. | ✅ Pass | Khoi | — | Hồng |
+| T-I06 | Sử dụng Bùa lần thứ hai trong cùng Arena | Trong một Arena cho phép vật phẩm, đã dùng một Bùa rồi tiếp tục bấm dùng Bùa lần nữa | Hiển thị modal: **"Không dùng thêm được"** với nội dung **"Mỗi arena sử dụng tối đa 1 vật phẩm."** | Modal hiển thị đúng tiêu đề và nội dung; hệ thống không cho phép sử dụng Bùa lần thứ hai trong cùng Arena. | ✅ Pass | Khoi | — | Hồng |
 
 ---
 
