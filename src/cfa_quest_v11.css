@@ -85,3 +85,9 @@ table.diag tr.hl th, table.diag tr.hl td { background: var(--red-soft); }
 /* Chữ phương án dễ đọc hơn, số câu không xuống dòng */
 .ans { font-weight: 500; line-height: 1.5; }
 .quiz-count { white-space: nowrap; }
+
+/* Ô Arena đã đỗ: bấm để xem lại kết quả (28/09) */
+.stage.done.reviewable { cursor: pointer; }
+.stage.done.reviewable:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(31, 157, 112, .14); }
+.stage.done.reviewable:focus { outline: 2px solid var(--green); outline-offset: 3px; }
+.stage .review-link { margin-top: 6px; font-weight: 700; color: var(--green); }
