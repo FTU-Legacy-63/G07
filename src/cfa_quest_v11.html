@@ -20,19 +20,16 @@
 </header>
 
 <main>
-  <!-- Màn đầu -->
+  <!-- Màn đầu (main menu): chỉ một nút Bắt đầu.
+       Sau này có ảnh cánh cổng thì chỉ sửa CSS của .gate-btn, không đụng HTML/JS. -->
   <section id="home" class="screen active">
-    <div class="hero panel">
-      <div class="eyebrow">Ethics · CFA Level I</div>
-      <h1>Tìm cụm Ethics bạn đang yếu</h1>
-      <p>Arena 1 là bài chẩn đoán 15 câu. Các Arena sau được sinh từ chính những câu bạn làm sai: Arena 2 và Arena 4 nhắm vào cụm yếu nhất và yếu thứ hai, Boss hỏi nhiều nhất ở cụm còn yếu.</p>
-      <div class="rules-grid">
-        <div><b>70%</b><span>Ngưỡng đỗ mọi Arena</span></div>
-        <div><b>3</b><span>Credit khởi đầu</span></div>
-        <div><b>3</b><span>Giá Bùa Loại Trừ</span></div>
-        <div><b>60</b><span>Câu cho một lượt không trượt</span></div>
-      </div>
-      <button type="button" class="primary-btn" id="startBtn">Bắt đầu lượt chơi</button>
+    <div class="menu">
+      <button type="button" class="gate-btn" id="startBtn" aria-label="Bắt đầu">
+        <span class="gate-label">Bắt đầu</span>
+      </button>
+    </div>
+    <!-- Giữ lại cho kiểm thử (deployment.md bước 4, testing.md T-I04), thu nhỏ ở cuối màn -->
+    <div class="menu-foot">
       <p id="bankStatus" class="status"></p>
       <label class="file-loader">Nạp ethics_bank_170.json<input id="bankFile" type="file" accept="application/json"></label>
     </div>
