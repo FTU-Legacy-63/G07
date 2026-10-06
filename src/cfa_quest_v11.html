@@ -3,10 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CFA Quest — Ethics (demo v11)</title>
+  <title>CFA Quest — Ethics (demo v12)</title>
   <!-- Giao diện cũ dùng lại nguyên, file v11 chỉ bổ sung phần mới -->
   <link rel="stylesheet" href="cfa_dungeon_ui_v10_skipfix_updated.css">
   <link rel="stylesheet" href="cfa_quest_v11.css">
+  <!-- v12: đồng hồ, ô World Quest, khoá Boss -->
+  <link rel="stylesheet" href="cfa_quest_v12.css">
 </head>
 <body>
 <header class="topbar">
@@ -38,7 +40,7 @@
   <!-- Bảng tiến trình -->
   <section id="dashboard" class="screen">
     <div class="section-head">
-      <div><div class="eyebrow">Tiến trình</div><h2>Hầm ngục 5 Arena</h2></div>
+      <div><div class="eyebrow">Tiến trình</div><h2>Hầm ngục 5 Arena</h2><p class="dash-note">Ngưỡng đỗ tăng dần 70% → 90%. Arena 3, 4 và Boss có đồng hồ, quá giờ bị trừ Credit. Boss phải mở bằng 15 Credit.</p></div>
       <button type="button" class="secondary-btn" id="shopBtn">Vào Shop</button>
     </div>
     <div id="stageGrid" class="stage-grid"></div>
@@ -49,7 +51,7 @@
     <div class="quiz-shell">
       <div class="section-head">
         <div><div class="eyebrow" id="quizArena"></div></div>
-        <div class="quiz-count" id="quizCount"></div>
+        <div class="quiz-right"><div id="qTimer" class="q-timer hidden" role="timer" aria-live="off"></div><div class="quiz-count" id="quizCount"></div></div>
       </div>
       <div class="progress"><i id="progress"></i></div>
       <div class="quiz-grid">
@@ -88,7 +90,7 @@
       <div><div class="eyebrow">Shop</div><h2>Vật phẩm</h2></div>
       <button type="button" class="secondary-btn" id="shopBack">Quay lại</button>
     </div>
-    <div class="shop-note panel">Số dư: <b id="shopCredits">3</b> Credit. Không dùng vật phẩm ở Arena 1 và Boss. Mỗi Arena dùng tối đa 1 vật phẩm. Câu dùng vật phẩm vẫn tính điểm đỗ/trượt nhưng không tính vào bảng chẩn đoán.</div>
+    <div class="shop-note panel">Số dư: <b id="shopCredits">3</b> Credit. Không dùng vật phẩm ở Arena 1 và World Quest. Mỗi Arena (kể cả Boss) dùng tối đa 1 vật phẩm. Credit mua vật phẩm cũng là Credit để mở Boss (15 Credit). Câu dùng vật phẩm vẫn tính điểm đỗ/trượt nhưng không tính vào bảng chẩn đoán.</div>
     <div id="shopGrid" class="shop-grid"></div>
   </section>
 
@@ -109,7 +111,7 @@
   <div class="panel notice-card">
     <h3 id="noticeTitle"></h3>
     <p id="noticeText"></p>
-    <button type="button" class="primary-btn" id="noticeOk">Đã hiểu</button>
+    <div class="notice-actions"><button type="button" class="secondary-btn hidden" id="noticeCancel">Huỷ</button><button type="button" class="primary-btn" id="noticeOk">Đã hiểu</button></div>
   </div>
 </div>
 <div id="toast" role="status"></div>
