@@ -1,32 +1,67 @@
 'use strict';
 /* =============================================================================
-   CFA Quest — Ethics · demo v11
+   CFA Quest — Ethics · demo v12 (tăng độ khó theo góp ý của thầy, luật chốt 06/10/2026)
 
    File đi kèm:
-   - cfa_quest_v11.html        (khung màn hình)
+   - cfa_quest_v12.html        (khung màn hình)
    - cfa_dungeon_ui_v10_skipfix_updated.css  (giao diện cũ, dùng lại nguyên)
-   - cfa_quest_v11.css         (vài style mới: bảng chẩn đoán, biểu đồ, hộp thông báo)
+   - cfa_quest_v11.css         (style của v11: bảng chẩn đoán, biểu đồ, hộp thông báo)
+   - cfa_quest_v12.css         (style mới của v12: đồng hồ, ô World Quest, khoá Boss)
    - cfa_quest_v11_bank.js     (ngân hàng nhúng, sinh tự động từ ethics_bank_170.json)
+
+   Thay đổi so với v11 (chi tiết: tài liệu "CFA Quest — Thiết kế độ khó mới (tuần 7)"):
+   - Ngưỡng đỗ theo round 70/75/75/85/90%
+   - Tỉ lệ dễ/vừa/khó riêng cho Arena 2, 3, 4 và Boss
+   - Đồng hồ mỗi câu ở Arena 3, 4, Boss; quá giờ trừ Credit
+   - Boss khoá, mở bằng 15 Credit; Boss được dùng 1 Bùa
+   - World Quest: 15 câu ôn 3 cụm yếu nhất để kiếm thêm Credit
    ============================================================================= */
 
 /* ---------- 1. Cấu hình (Mục 4, 5, 8) ---------- */
 const CONFIG = {
-  passPercent: 70,               // Mục 8: ngưỡng đỗ >= 70% cho mọi Arena
+  // Ngưỡng đỗ theo round (luật v12). Xét trên arena_score_correct, tính cả câu dùng Bùa.
+  passPercentByArena: { arena1: 70, trap1: 75, crossroads: 75, trap2: 85, boss: 90 },
+  // Nhãn "Đã cải thiện" ở bảng tổng kết vẫn dùng mốc 70% như v11 (luật 15)
+  diagnosticPassPercent: 70,
   startCredits: 3,               // Mục 8: số dư khởi đầu
-  creditTiers: [                 // Mục 8: Credit theo kết quả Arena (xét từ trên xuống)
+  creditTiers: [                 // Mục 8: Credit khi đỗ Arena (xét từ trên xuống), giữ như v11
     { minPercent: 90, credit: 4 },
     { minPercent: 80, credit: 3 },
     { minPercent: 70, credit: 2 }
   ],
   bossFirstClearBonus: 5,        // Mục 8: vượt Boss lần đầu +5 Credit
+  // Đồng hồ mỗi câu (giây). Round không có trong danh sách thì không có đồng hồ.
+  timeLimitSec: { crossroads: 100, trap2: 80, boss: 60 },
+  penaltyStepSec: 10,            // mỗi 10 giây quá giờ (làm tròn lên) trừ 1 Credit
+  bossUnlockCost: 15,            // trả 1 lần để mở Boss
+  questPerCluster: 5,            // World Quest: 5 câu x 3 cụm yếu nhất
+  questTiers: [                  // World Quest không có ngưỡng đỗ, chỉ thưởng theo bậc
+    { minPercent: 90, credit: 4 },
+    { minPercent: 80, credit: 3 },
+    { minPercent: 60, credit: 2 }
+  ],
   // Mục 7 chỉ ghi rõ Arena 1 không hiện đúng/sai ngay. Để false thì mọi Arena
   // đều chờ tới màn kết quả mới hiện. Đổi thành true nếu nhóm muốn Trap/Crossroads
   // hiện đáp án ngay sau từng câu (Arena 1 luôn không hiện).
   showFeedbackImmediately: false,
-  storageKey: 'cfaQuestV11',
-  inProgressKey: 'cfaQuestV11_inProgress',
-  runCounterKey: 'cfaQuestV11_runCount'
+  // Khoá lưu mới: tiến trình v11 còn trên trình duyệt không làm hỏng v12
+  storageKey: 'cfaQuestV12',
+  inProgressKey: 'cfaQuestV12_inProgress',
+  runCounterKey: 'cfaQuestV12_runCount'
 };
+
+// Tỉ lệ dễ/vừa/khó quy ra số câu (luật 5, 6). Khoá là mức khó 1/2/3.
+const DIFFICULTY_MIX = {
+  trap1: { 1: 4, 2: 4, 3: 2 },
+  crossroads: { 1: 2, 2: 5, 3: 3 },     // chia cho 5 cụm, mỗi cụm 2 câu
+  trap2: { 1: 2, 2: 4, 3: 4 }
+};
+// Boss 2/4/9, chia theo thứ tự cụm yếu nhất → yếu thứ ba (7/5/3 câu)
+const BOSS_MIX = [
+  { 1: 1, 2: 2, 3: 4 },
+  { 1: 1, 2: 1, 3: 3 },
+  { 1: 0, 2: 1, 3: 2 }
+];
 
 const DIFFICULTY_POINTS = { 1: 1, 2: 2, 3: 3 };   // Mục 5, công thức (3)
 
@@ -57,8 +92,10 @@ const ARENAS = [
   { id: 'trap1',      name: 'Arena 2',            size: 10, itemsAllowed: true },   // trước 28/09: Trap I
   { id: 'crossroads', name: 'Arena 3',            size: 10, itemsAllowed: true },   // trước 28/09: The Crossroads
   { id: 'trap2',      name: 'Arena 4',            size: 10, itemsAllowed: true },   // trước 28/09: Trap II
-  { id: 'boss',       name: 'Boss',               size: 15, itemsAllowed: false }
+  { id: 'boss',       name: 'Boss',               size: 15, itemsAllowed: true }    // v12: Boss được dùng 1 Bùa
 ];
+// World Quest không nằm trong chuỗi 5 Arena: không có ngưỡng đỗ, không vào dữ liệu chẩn đoán
+const QUEST = { id: 'quest', name: 'World Quest', size: 15, itemsAllowed: false, isQuest: true };
 const ARENA_INDEX = Object.fromEntries(ARENAS.map((a, i) => [a.id, i]));
 // Tên hiển thị của Arena theo mã nội bộ. Đổi tên thì chỉ sửa mảng ARENAS ở trên.
 const NAME = id => ARENAS[ARENA_INDEX[id]].name;
@@ -188,7 +225,7 @@ const store = {
 
 function freshState() {
   return {
-    version: 11,
+    version: 12,
     started: false,
     finished: false,
     runNo: 0,
@@ -207,7 +244,13 @@ function freshState() {
     performance_by_arena: {},                   // dựng lại từ records sau mỗi Arena
     bankLog: [],                                // log thiếu câu để nhóm bổ sung ngân hàng
     hadFailure: false,
-    bossClearedOnce: false
+    bossClearedOnce: false,
+    // v12
+    bossUnlocked: false,                        // đã trả 15 Credit mở Boss
+    questUsedIds: [],                           // câu đã ra ở World Quest: Boss không hỏi lại
+    questRecords: [],                           // câu trả lời ở Quest, tách khỏi records (không vào chẩn đoán)
+    questRuns: [],                              // { n, correct, total, credit, at }
+    quits: []                                   // các lần thoát giữa chừng: { arena, penalty, at }
   };
 }
 
@@ -216,7 +259,7 @@ function loadState() {
   if (raw === null) return { state: freshState(), problem: null };
   try {
     const x = JSON.parse(raw);
-    if (!x || x.version !== 11) throw new Error('sai phiên bản');
+    if (!x || x.version !== 12) throw new Error('sai phiên bản');
     return { state: Object.assign(freshState(), x), problem: null };
   } catch {
     store.del(CONFIG.storageKey);
@@ -237,13 +280,19 @@ let shopReturn = 'dashboard';
 
 
 /* ---------- 5. Sinh đề (Mục 2 ba quy tắc phủ module, Mục 4, Mục 7 đường lỗi) ---------- */
-function makeDrawContext() {
-  return { used: new Set(S.usedIds), taken: new Set(), log: [], notices: [] };
+// banned: câu tuyệt đối không được bốc (Boss loại các câu đã ra ở World Quest, luật 12)
+function makeDrawContext(banned = []) {
+  return { used: new Set(S.usedIds), taken: new Set(), banned: new Set(banned), log: [], notices: [], reused: {} };
 }
 
 // Câu chưa từng xuất hiện trong lượt chơi và chưa bốc vào Arena này
 function freshPool(ctx, filter) {
-  return BANK.filter(q => filter(q) && !ctx.used.has(q.id) && !ctx.taken.has(q.id));
+  return BANK.filter(q => filter(q) && !ctx.used.has(q.id) && !ctx.taken.has(q.id) && !ctx.banned.has(q.id));
+}
+
+// Câu đã gặp trong lượt chơi (dùng khi hết câu mới), chưa bốc vào Arena này
+function seenPool(ctx, filter) {
+  return BANK.filter(q => filter(q) && ctx.used.has(q.id) && !ctx.taken.has(q.id) && !ctx.banned.has(q.id));
 }
 
 // Câu lấy lại thì xáo thứ tự phương án (Mục 7, Mục 9)
@@ -302,53 +351,104 @@ function buildArena1(ctx) {
   return qs;
 }
 
-// Bốc n câu của một cụm, chia đều cho các module trong cụm (Mục 2 quy tắc 2)
-function drawCluster(ctx, cluster, n, label) {
-  const modules = CLUSTER_INFO[cluster].modules;
-  const base = Math.floor(n / modules.length);
-  const rest = n - base * modules.length;
-  const quota = Object.fromEntries(modules.map(m => [m, base]));
-  // Câu dư chia cho module còn nhiều câu mới hơn; bằng nhau thì theo thứ tự module
-  [...modules]
-    .sort((a, b) => freshPool(ctx, q => q.module === b).length - freshPool(ctx, q => q.module === a).length)
-    .slice(0, rest)
-    .forEach(m => { quota[m]++; });
+// v12: bốc câu của một cụm theo số câu từng mức khó, ví dụ { 1: 4, 2: 4, 3: 2 }.
+// Mức khó nhất bốc trước (câu khó ít nhất trong ngân hàng). Trong mỗi mức, ưu tiên
+// module đang có ít câu hơn để vẫn rải đều module (Mục 2 quy tắc 2).
+// Hết câu mới đúng mức khó thì (luật đã chốt, tài liệu mục 4):
+//   1) lấy câu cùng mức khó đã gặp trong lượt chơi (xáo lại phương án)
+//   2) hết nữa thì hạ một mức (khó → vừa, vừa → dễ; dễ thì lên vừa), mới trước, đã gặp sau
+//   3) vẫn thiếu thì lấy bất kỳ câu nào của cụm. Mỗi lần như vậy đều ghi log.
+const STEP_DOWN = { 3: 2, 2: 1, 1: 2 };
 
+function drawMix(ctx, cluster, mix, label) {
+  const modules = CLUSTER_INFO[cluster].modules;
+  const perModule = Object.fromEntries(modules.map(m => [m, 0]));
   const out = [];
-  let shortage = 0;
-  modules.forEach(m => {
-    const got = shuffle(freshPool(ctx, q => q.module === m)).slice(0, quota[m]);
-    got.forEach(q => out.push(takeQuestion(ctx, q, false)));
-    if (got.length < quota[m]) {
-      const miss = quota[m] - got.length;
-      shortage += miss;
-      ctx.log.push(`${label}: module ${m} thiếu ${miss} câu mới để chia đều, bù bằng module khác trong ${cluster}`);
+  const pickFresh = filter => {
+    // module ít câu nhất trước; bằng nhau thì ngẫu nhiên
+    const order = shuffle(modules).sort((a, b) => perModule[a] - perModule[b]);
+    for (const m of order) {
+      const q = shuffle(freshPool(ctx, x => x.module === m && filter(x)))[0];
+      if (q) return q;
+    }
+    return null;
+  };
+  const pickSeen = filter => shuffle(seenPool(ctx, x => x.cluster === cluster && filter(x)))[0] || null;
+  const take = (q, reused) => {
+    perModule[q.module] = (perModule[q.module] || 0) + 1;
+    if (reused) ctx.reused[cluster] = (ctx.reused[cluster] || 0) + 1;
+    out.push(takeQuestion(ctx, q, reused));
+  };
+
+  [3, 2, 1].forEach(d => {
+    for (let k = 0; k < (mix[d] || 0); k++) {
+      const down = STEP_DOWN[d];
+      let q = pickFresh(x => x.difficulty === d);
+      if (q) { take(q, false); continue; }
+      q = pickSeen(x => x.difficulty === d);
+      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mới mức ${d}, lấy lại câu mức ${d} đã gặp (${q.id})`); take(q, true); continue; }
+      q = pickFresh(x => x.difficulty === down);
+      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mức ${d}, hạ xuống câu mới mức ${down} (${q.id})`); take(q, false); continue; }
+      q = pickSeen(x => x.difficulty === down);
+      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mức ${d}, hạ xuống câu đã gặp mức ${down} (${q.id})`); take(q, true); continue; }
+      q = pickFresh(() => true);
+      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mức ${d} và ${down}, lấy câu mới mức ${q.difficulty} (${q.id})`); take(q, false); continue; }
+      q = pickSeen(() => true);
+      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mức ${d} và ${down}, lấy câu đã gặp mức ${q.difficulty} (${q.id})`); take(q, true); continue; }
+      ctx.log.push(`${label}: ${cluster} không đủ câu kể cả khi lấy lại`);
     }
   });
-  if (shortage > 0) {
-    const got = shuffle(freshPool(ctx, q => q.cluster === cluster)).slice(0, shortage);
-    got.forEach(q => out.push(takeQuestion(ctx, q, false)));
-    shortage -= got.length;
-  }
-  if (shortage > 0) {
-    const got = shuffle(BANK.filter(q => q.cluster === cluster && !ctx.taken.has(q.id))).slice(0, shortage);
-    got.forEach(q => out.push(takeQuestion(ctx, q, true)));
-    if (got.length) ctx.notices.push(`Cụm ${cluster} đã hết câu mới: lấy lại ${got.length} câu đã gặp, thứ tự phương án đã được xáo lại.`);
-    shortage -= got.length;
-  }
-  if (shortage > 0) ctx.log.push(`${label}: ${cluster} không đủ câu kể cả khi lấy lại`);
   return out;
 }
 
+function reusedNotice(ctx) {
+  Object.entries(ctx.reused).forEach(([c, n]) => {
+    ctx.notices.push(`Cụm ${c} đã hết câu mới ở mức khó cần bốc: lấy lại ${n} câu đã gặp, thứ tự phương án đã được xáo lại.`);
+  });
+}
+
+// Arena 3: 2 câu mỗi cụm, cả round đủ 2 dễ / 5 vừa / 3 khó. Mức khó chia ngẫu nhiên cho các cụm.
+function buildCrossroads(ctx) {
+  const slots = shuffle(Object.entries(DIFFICULTY_MIX.crossroads).flatMap(([d, n]) => Array(n).fill(Number(d))));
+  return CLUSTERS.flatMap((c, i) => {
+    const mix = {};
+    [slots[2 * i], slots[2 * i + 1]].forEach(d => { mix[d] = (mix[d] || 0) + 1; });
+    return drawMix(ctx, c, mix, NAME('crossroads'));
+  });
+}
+
 function buildArena(id, ctx) {
+  let qs;
   switch (id) {
     case 'arena1':     return buildArena1(ctx);
-    case 'trap1':      return shuffle(drawCluster(ctx, S.w1, 10, NAME('trap1')));
-    case 'crossroads': return shuffle(CLUSTERS.flatMap(c => drawCluster(ctx, c, 2, NAME('crossroads'))));
-    case 'trap2':      return shuffle(drawCluster(ctx, S.w2, 10, NAME('trap2')));
-    case 'boss':       return shuffle(S.bossPlan.flatMap(p => drawCluster(ctx, p.cluster, p.count, 'Boss')));
+    case 'trap1':      qs = drawMix(ctx, S.w1, DIFFICULTY_MIX.trap1, NAME('trap1')); break;
+    case 'crossroads': qs = buildCrossroads(ctx); break;
+    case 'trap2':      qs = drawMix(ctx, S.w2, DIFFICULTY_MIX.trap2, NAME('trap2')); break;
+    case 'boss':       qs = S.bossPlan.flatMap((p, i) => drawMix(ctx, p.cluster, BOSS_MIX[i], 'Boss')); break;
     default:           return [];
   }
+  reusedNotice(ctx);
+  return shuffle(qs);
+}
+
+// World Quest (luật 12, 13): 5 câu mỗi cụm trong 3 cụm yếu nhất, độ khó ngẫu nhiên.
+// Ưu tiên câu đã gặp (ở Arena 1–4 hoặc Quest trước); thiếu mới lấy câu mới.
+// Câu nào đã ra ở Quest thì ghi vào questUsedIds để Boss không hỏi lại.
+function buildQuest(ctx) {
+  const seen = new Set([...S.usedIds, ...S.questUsedIds]);
+  const qs = [];
+  S.bossPlan.forEach(({ cluster }) => {
+    const old = shuffle(BANK.filter(q => q.cluster === cluster && seen.has(q.id)));
+    const got = old.slice(0, CONFIG.questPerCluster);
+    got.forEach(q => qs.push(takeQuestion(ctx, q, true)));      // câu cũ: xáo phương án
+    const need = CONFIG.questPerCluster - got.length;
+    if (need > 0) {
+      const fresh = shuffle(BANK.filter(q => q.cluster === cluster && !seen.has(q.id) && !ctx.taken.has(q.id))).slice(0, need);
+      fresh.forEach(q => qs.push(takeQuestion(ctx, q, false)));
+      if (fresh.length) ctx.log.push(`World Quest: ${cluster} chưa đủ câu đã gặp, lấy thêm ${fresh.length} câu mới (Boss sẽ không hỏi lại các câu này)`);
+    }
+  });
+  return shuffle(qs);
 }
 
 
@@ -444,12 +544,28 @@ function explainPick(ranked, label) {
   return `${tied.join(', ')} bằng tỷ lệ đúng (${statText(first)}). Phân định theo ${TIE_STEPS[step].label}${detail}: ${label} = ${first.cluster}.`;
 }
 
-function passed(correct, total) { return correct * 100 >= total * CONFIG.passPercent; }
+// Ngưỡng đỗ của từng round (v12)
+function passPercentFor(arenaId) { return CONFIG.passPercentByArena[arenaId]; }
+function passed(correct, total, arenaId) { return correct * 100 >= total * passPercentFor(arenaId); }
+function needToPass(total, arenaId) { return Math.ceil(total * passPercentFor(arenaId) / 100); }
 
-function creditFor(correct, total) {
-  for (const t of CONFIG.creditTiers) if (correct * 100 >= total * t.minPercent) return t.credit;
+function tierCredit(tiers, correct, total) {
+  for (const t of tiers) if (correct * 100 >= total * t.minPercent) return t.credit;
   return 0;
 }
+function creditFor(correct, total) { return tierCredit(CONFIG.creditTiers, correct, total); }
+function questCredit(correct, total) { return tierCredit(CONFIG.questTiers, correct, total); }
+
+// Đồng hồ và phạt quá giờ (luật 1–5). Thời gian tính theo giây tròn đã trôi qua,
+// khớp với số giây hiện trên đồng hồ: trả lời ở giây thứ 100 của giới hạn 100 giây không bị phạt.
+function timeLimitFor(arenaId) { return CONFIG.timeLimitSec[arenaId] || 0; }
+function overtimeSec(timeMs, arenaId) {
+  const limit = timeLimitFor(arenaId);
+  if (!limit) return 0;
+  return Math.max(0, Math.floor(timeMs / 1000) - limit);
+}
+function penaltyFor(overSec) { return overSec > 0 ? Math.ceil(overSec / CONFIG.penaltyStepSec) : 0; }
+function sumPenalty(answers) { return answers.reduce((s, a) => s + (a.penalty || 0), 0); }
 
 // accuracy_by_arena[cụm][arena] = { correct, attempted } — Mục 5, ba quy tắc lưu
 function buildAccuracyByArena() {
@@ -481,7 +597,8 @@ function conclude(cluster) {
   if (!d.boss) return { text: 'Không kiểm tra lại ở Boss', cls: 'na' };
   const baseC = (d.arena1?.correct || 0) + (d.crossroads?.correct || 0);
   const baseA = (d.arena1?.attempted || 0) + (d.crossroads?.attempted || 0);
-  const bossOk = passed(d.boss.correct, d.boss.attempted);
+  // Nhãn cụm dùng mốc chẩn đoán 70%, không dùng ngưỡng đỗ 90% của Boss (luật 15)
+  const bossOk = d.boss.correct * 100 >= d.boss.attempted * CONFIG.diagnosticPassPercent;
   const change = Math.sign(d.boss.correct * baseA - baseC * d.boss.attempted);   // dấu của (Boss − mốc)
   const detail = { baseC, baseA, bossC: d.boss.correct, bossA: d.boss.attempted };
   if (bossOk && change >= 0) return { text: 'Đã cải thiện', cls: 'good', ...detail };
@@ -507,13 +624,36 @@ function toast(text) {
   clearTimeout(toast.timer);
   toast.timer = setTimeout(() => x.classList.remove('show'), 2600);
 }
-function notice(title, text) {
+// Hộp thông báo dùng chung cho thông báo một nút (notice) và hỏi xác nhận hai nút (ask).
+// ask() thay cho confirm() của trình duyệt ở các bước mới của v12 (mở Boss, thoát Arena).
+let noticeResolve = null;
+function openOverlay(title, text, okLabel, cancelLabel) {
   $('noticeTitle').textContent = title;
   $('noticeText').textContent = text;
+  $('noticeOk').textContent = okLabel;
+  $('noticeCancel').textContent = cancelLabel || '';
+  $('noticeCancel').classList.toggle('hidden', !cancelLabel);
   $('noticeOverlay').classList.remove('hidden');
   $('noticeOk').focus();
 }
-function closeNotice() { $('noticeOverlay').classList.add('hidden'); }
+function notice(title, text) {
+  noticeResolve = null;
+  openOverlay(title, text, 'Đã hiểu', null);
+}
+function ask(title, text, okLabel = 'Đồng ý', cancelLabel = 'Huỷ') {
+  return new Promise(resolve => {
+    noticeResolve = resolve;
+    openOverlay(title, text, okLabel, cancelLabel);
+  });
+}
+function closeNotice(answer = true) {
+  $('noticeOverlay').classList.add('hidden');
+  const r = noticeResolve;
+  noticeResolve = null;
+  // Thông báo hiện ngay khi vào Arena: đồng hồ câu đầu chỉ chạy sau khi đóng thông báo
+  if (RUN && RUN.waitNotice) { RUN.waitNotice = false; RUN.shownAt = performance.now(); }
+  if (r) r(answer);
+}
 
 function updateHUD() {
   $('hudCredits').textContent = S.credits;
@@ -521,13 +661,20 @@ function updateHUD() {
   $('hudItems').textContent = `${S.inventory.eliminate} Bùa Loại Trừ`;
 }
 
+// Dòng luật ngắn trên ô Arena: số câu cần đúng và đồng hồ
+function arenaRule(a) {
+  const need = needToPass(a.size, a.id);
+  const t = timeLimitFor(a.id);
+  return `Cần ${need}/${a.size} (${passPercentFor(a.id)}%)` + (t ? ` · ${t} giây/câu` : '');
+}
+
 function arenaDesc(id) {
   switch (id) {
     case 'arena1': return '15 câu, 3 câu mỗi cụm, phủ 9 module, đủ 3 mức khó';
-    case 'trap1': return S.w1 ? `10 câu cụm ${S.w1}, chia đều theo module` : '10 câu của cụm yếu nhất (W1)';
-    case 'crossroads': return '10 câu, 2 câu mỗi cụm';
-    case 'trap2': return S.w2 ? `10 câu cụm ${S.w2}, chia đều theo module` : '10 câu của cụm yếu thứ hai (W2)';
-    case 'boss': return S.bossPlan ? `15 câu: ${S.bossPlan.map(p => `${p.cluster} ${p.count}`).join(', ')}` : '15 câu, 7/5/3 cho 3 cụm yếu nhất';
+    case 'trap1': return (S.w1 ? `10 câu cụm ${S.w1}` : '10 câu của cụm yếu nhất (W1)') + ', dễ/vừa/khó 4/4/2';
+    case 'crossroads': return '10 câu, 2 câu mỗi cụm, dễ/vừa/khó 2/5/3';
+    case 'trap2': return (S.w2 ? `10 câu cụm ${S.w2}` : '10 câu của cụm yếu thứ hai (W2)') + ', dễ/vừa/khó 2/4/4';
+    case 'boss': return (S.bossPlan ? `15 câu: ${S.bossPlan.map(p => `${p.cluster} ${p.count}`).join(', ')}` : '15 câu, 7/5/3 cho 3 cụm yếu nhất') + ', dễ/vừa/khó 2/4/9';
     default: return '';
   }
 }
@@ -593,7 +740,7 @@ function progressChartHTML(upto = Infinity) {
   for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
   ends.forEach(e => { svg += `<text class="end-label" x="${W - R + 10}" y="${e.y + 4}" fill="${e.color}">${esc(e.text)}</text>`; });
   return `<div class="chart-wrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Tỷ lệ đúng cộng dồn của 5 cụm qua các Arena">${svg}</svg></div>
-  <p class="note">Mỗi điểm là tỷ lệ đúng cộng dồn của cụm tính tới hết Arena đó. Đường nét đứt màu xám là mốc 70%.</p>`;
+  <p class="note">Mỗi điểm là tỷ lệ đúng cộng dồn của cụm tính tới hết Arena đó. Đường nét đứt màu xám là mốc chẩn đoán 70% dùng cho nhãn ở bảng tổng kết, không phải ngưỡng đỗ của từng Arena.</p>`;
 }
 
 
@@ -607,22 +754,43 @@ function makeClickable(card, fn) {
   card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
 }
 
+// v12: 7 ô — Arena 1–4, World Quest, Boss, Bảng tổng kết
+const TOTAL_CARDS = 7;
+const BOSS_INDEX = ARENA_INDEX.boss;
+
+function questOpen() { return S.started && S.stage >= BOSS_INDEX && !!S.bossPlan; }
+
 function renderDashboard() {
   updateHUD();
   const grid = $('stageGrid');
   grid.innerHTML = '';
+  let num = 0;
   ARENAS.forEach((a, i) => {
+    if (a.id === 'boss') grid.appendChild(questCard(++num));
+    num++;
     const done = S.stage > i;
-    const active = S.started && !S.finished && S.stage === i;
+    const reachable = S.started && !S.finished && S.stage === i;
+    const bossLocked = a.id === 'boss' && reachable && !S.bossUnlocked;
+    const active = reachable && !bossLocked;
     const tries = S.attempts[a.id];
     const lastTry = tries[tries.length - 1];
     const card = document.createElement('div');
-    card.className = 'stage panel ' + (done ? 'done reviewable' : active ? 'active' : 'locked');
-    card.innerHTML = `<span class="num">${i + 1}/6</span><span class="badge">${done ? 'Đã đỗ' : active ? (tries.length ? 'Chơi lại' : 'Mở') : 'Khoá'}</span>
+    card.className = 'stage panel ' + (done ? 'done reviewable' : active ? 'active' : bossLocked ? 'boss-gate' : 'locked');
+    let extra = '';
+    if (bossLocked) {
+      const lack = CONFIG.bossUnlockCost - S.credits;
+      extra = `<p class="gate-line">Mở khoá: <b>${CONFIG.bossUnlockCost} Credit</b> · bạn có ${S.credits}</p>`
+        + (lack > 0 ? `<p class="gate-lack">Còn thiếu ${lack} Credit. Chơi World Quest để kiếm thêm.</p>` : '<p class="gate-ok">Đủ Credit, bấm để mở khoá</p>');
+    }
+    const badge = done ? 'Đã đỗ' : active ? (tries.length ? 'Chơi lại' : 'Mở') : bossLocked ? 'Cần mở khoá' : 'Khoá';
+    card.innerHTML = `<span class="num">${num}/${TOTAL_CARDS}</span><span class="badge">${badge}</span>
       <h3>${esc(a.name)}</h3><p>${esc(arenaDesc(a.id))}</p>
+      <p class="rule-line">${esc(arenaRule(a))}</p>
+      ${extra}
       ${lastTry ? `<p class="try">Lượt ${lastTry.attempt}: ${lastTry.correct}/${lastTry.total}, ${lastTry.passed ? 'đỗ' : 'trượt'}</p>` : ''}
       ${done ? '<p class="review-link">Xem lại kết quả ›</p>' : ''}`;
     if (active) makeClickable(card, startArena);
+    else if (bossLocked) makeClickable(card, unlockBoss);
     else if (done) {
       card.setAttribute('aria-label', `Xem lại kết quả ${a.name}`);
       makeClickable(card, () => { reviewArena(a.id); show('result'); });
@@ -631,9 +799,48 @@ function renderDashboard() {
   });
   const rep = document.createElement('div');
   rep.className = 'stage panel ' + (S.finished ? 'active' : 'locked');
-  rep.innerHTML = `<span class="num">6/6</span><span class="badge">${S.finished ? 'Mở' : 'Khoá'}</span><h3>Bảng tổng kết</h3><p>So mốc chẩn đoán với Boss theo từng cụm</p>`;
+  rep.innerHTML = `<span class="num">${TOTAL_CARDS}/${TOTAL_CARDS}</span><span class="badge">${S.finished ? 'Mở' : 'Khoá'}</span><h3>Bảng tổng kết</h3><p>So mốc chẩn đoán với Boss theo từng cụm</p>`;
   if (S.finished) makeClickable(rep, () => { openReport(); });
   grid.appendChild(rep);
+}
+
+function questCard(num) {
+  const open = questOpen();
+  const runs = S.questRuns;
+  const last = runs[runs.length - 1];
+  const card = document.createElement('div');
+  card.className = 'stage panel quest-card ' + (open ? 'active' : 'locked');
+  const clusters = S.bossPlan ? S.bossPlan.map(p => p.cluster).join(', ') : '3 cụm yếu nhất';
+  card.innerHTML = `<span class="num">${num}/${TOTAL_CARDS}</span><span class="badge">${open ? (runs.length ? 'Chơi tiếp' : 'Mở') : 'Khoá'}</span>
+    <h3>${esc(QUEST.name)}</h3><p>${esc(`15 câu ôn ${clusters}, 5 câu mỗi cụm`)}</p>
+    <p class="rule-line">Không đồng hồ · thưởng 0 đến +4 Credit</p>
+    ${open ? '' : '<p class="rule-line">Mở sau khi đỗ Arena 4</p>'}
+    ${last ? `<p class="try">Đã chơi ${runs.length} lần · lần cuối ${last.correct}/${last.total}, +${last.credit}</p>` : ''}`;
+  if (open) makeClickable(card, startQuest);
+  return card;
+}
+
+// Mở khoá Boss bằng Credit (luật 8, 9): trả 1 lần, trượt Boss chơi lại không trả thêm
+async function unlockBoss() {
+  if (!S.started || S.finished || S.stage !== BOSS_INDEX || S.bossUnlocked) return;
+  const cost = CONFIG.bossUnlockCost;
+  if (S.credits < cost) {
+    const go = await ask('Chưa đủ Credit mở Boss',
+      `Mở Boss cần ${cost} Credit, bạn đang có ${S.credits}. Chơi World Quest để kiếm thêm Credit.`,
+      'Chơi World Quest', 'Để sau');
+    if (go) startQuest();
+    return;
+  }
+  const ok = await ask('Mở khoá Boss',
+    `Trả ${cost} Credit để mở Boss (còn lại ${S.credits - cost}). Trả một lần: trượt Boss thì chơi lại không mất thêm.\n\nLưu ý: thoát giữa Boss sẽ mất ${cost} Credit này và Boss khoá lại.`,
+    `Trả ${cost} Credit`, 'Để sau');
+  if (!ok) return;
+  S.credits -= cost;
+  S.bossUnlocked = true;
+  saveState();
+  renderDashboard();
+  show('dashboard');
+  toast(`Đã mở Boss. Còn ${S.credits} Credit.`);
 }
 
 
@@ -655,7 +862,9 @@ function startArena() {
   if (!S.started || S.finished) return;
   if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_170.json hợp lệ ở màn hình đầu.'); return; }
   const arena = ARENAS[S.stage];
-  const ctx = makeDrawContext();
+  if (arena.id === 'boss' && !S.bossUnlocked) { unlockBoss(); return; }
+  // Boss không hỏi lại câu đã ra ở World Quest (luật 12)
+  const ctx = makeDrawContext(arena.id === 'boss' ? S.questUsedIds : []);
   const qs = buildArena(arena.id, ctx);
   if (qs.length !== arena.size) {
     notice('Không sinh được đề', `${arena.name} cần ${arena.size} câu nhưng chỉ bốc được ${qs.length}. Chi tiết: ${ctx.log.join('; ')}`);
@@ -665,10 +874,28 @@ function startArena() {
     const pts = qs.reduce((s, q) => s + DIFFICULTY_POINTS[q.difficulty], 0);
     if (pts !== 30) ctx.log.push(`Kiểm tra tự động: tổng điểm độ khó Arena 1 = ${pts}, phải bằng 30`);
   }
+  beginPlay(arena, S.attempts[arena.id].length + 1, qs, ctx);
+}
+
+// World Quest: mở sau khi đỗ Arena 4, chơi bao nhiêu lần cũng được
+function startQuest() {
+  if (!questOpen()) return;
+  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_170.json hợp lệ ở màn hình đầu.'); return; }
+  const ctx = makeDrawContext();
+  const qs = buildQuest(ctx);
+  const size = CONFIG.questPerCluster * S.bossPlan.length;
+  if (qs.length !== size) {
+    notice('Không sinh được đề', `${QUEST.name} cần ${size} câu nhưng chỉ bốc được ${qs.length}.`);
+    return;
+  }
+  beginPlay(QUEST, S.questRuns.length + 1, qs, ctx);
+}
+
+function beginPlay(arena, attempt, qs, ctx) {
   ctx.log.forEach(t => console.warn('[CFA Quest]', t));
   RUN = {
     arena,
-    attempt: S.attempts[arena.id].length + 1,
+    attempt,
     qs, ctx,
     qi: 0,
     answers: [],
@@ -677,12 +904,56 @@ function startArena() {
     selected: null,
     eliminated: null,
     locked: false,
-    shownAt: 0
+    shownAt: 0,
+    limit: timeLimitFor(arena.id),
+    timerId: null,
+    waitNotice: false
   };
-  store.set(CONFIG.inProgressKey, arena.id);
+  saveInProgress();
   renderQuestion();
   show('quiz');
-  if (ctx.notices.length) notice('Thông báo về câu hỏi', ctx.notices.join('\n'));
+  if (ctx.notices.length) {
+    RUN.waitNotice = true;
+    notice('Thông báo về câu hỏi', ctx.notices.join('\n'));
+  }
+}
+
+// Lưu tóm tắt lượt đang làm. Nếu người chơi tải lại trang hoặc đóng tab giữa chừng,
+// lần mở sau áp đúng luật thoát (phạt giờ ở Arena 3/4, khoá Boss) thay vì bỏ qua.
+function saveInProgress() {
+  if (!RUN) return;
+  store.set(CONFIG.inProgressKey, JSON.stringify({
+    arena: RUN.arena.id,
+    penalty: sumPenalty(RUN.answers),
+    shown: RUN.qs.slice(0, RUN.qi + 1).map(q => q.id)
+  }));
+}
+
+// ---------- Đồng hồ mỗi câu (Arena 3, 4, Boss) ----------
+function elapsedSec() { return RUN ? Math.floor((performance.now() - RUN.shownAt) / 1000) : 0; }
+
+function renderTimer() {
+  const el = $('qTimer');
+  if (!RUN || !RUN.limit) { el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  if (RUN.waitNotice) { el.textContent = `${RUN.limit} giây`; el.className = 'q-timer'; return; }
+  const left = RUN.limit - elapsedSec();
+  if (left >= 0) {
+    el.textContent = `Còn ${left} giây`;
+    el.className = 'q-timer' + (left <= 10 ? ' warn' : '');
+  } else {
+    const over = -left;
+    el.textContent = `Quá giờ ${over} giây · −${penaltyFor(over)} Credit`;
+    el.className = 'q-timer over';
+  }
+}
+function startTimer() {
+  stopTimer();
+  renderTimer();
+  if (RUN && RUN.limit) RUN.timerId = setInterval(renderTimer, 250);
+}
+function stopTimer() {
+  if (RUN && RUN.timerId) { clearInterval(RUN.timerId); RUN.timerId = null; }
 }
 
 function renderQuestion() {
@@ -691,7 +962,7 @@ function renderQuestion() {
   RUN.eliminated = null;
   RUN.itemOnQuestion = null;
   RUN.locked = false;
-  $('quizArena').textContent = RUN.attempt > 1 ? `${RUN.arena.name} · lượt ${RUN.attempt}` : RUN.arena.name;
+  $('quizArena').textContent = RUN.attempt > 1 ? `${RUN.arena.name} · ${RUN.arena.isQuest ? 'lần' : 'lượt'} ${RUN.attempt}` : RUN.arena.name;
   $('quizCount').textContent = `${RUN.qi + 1} / ${RUN.qs.length}`;
   $('progress').style.width = (RUN.qi / RUN.qs.length * 100) + '%';
   $('qReused').classList.toggle('hidden', !q.reused);
@@ -715,6 +986,8 @@ function renderQuestion() {
   $('sideCredits').textContent = S.credits;
   renderItemBox();
   RUN.shownAt = performance.now();     // Mục 1: mốc bắt đầu đo thời gian trả lời
+  startTimer();
+  saveInProgress();
 }
 
 function selectOption(i) {
@@ -736,14 +1009,18 @@ function confirmAnswer() {
   const q = RUN.qs[RUN.qi];
   const timeMs = Math.round(performance.now() - RUN.shownAt);
   const correct = RUN.selected === q.answer;
+  const overSec = overtimeSec(timeMs, RUN.arena.id);
   RUN.answers.push({
     arena: RUN.arena.id, attempt: RUN.attempt, qid: q.id,
     cluster: q.cluster, module: q.module, difficulty: q.difficulty,
     choice: RUN.selected, answer: q.answer, correct,
     item: RUN.itemOnQuestion, timeMs, reused: !!q.reused,
-    order: q.reused ? q.order : null
+    order: q.reused ? q.order : null,
+    overSec, penalty: penaltyFor(overSec)              // v12: phạt quá giờ của câu này
   });
   RUN.locked = true;
+  stopTimer();
+  saveInProgress();
   if (CONFIG.showFeedbackImmediately && RUN.arena.id !== 'arena1') {
     const bs = [...$('qOptions').children];
     bs.forEach(b => { b.disabled = true; });
@@ -767,7 +1044,7 @@ function nextQuestion() {
 function renderItemBox() {
   const box = $('itemBox');
   if (!RUN.arena.itemsAllowed) {
-    const why = RUN.arena.id === 'arena1' ? 'Arena 1 là bài chẩn đoán gốc.' : 'Boss là chặng đo quyết định của bảng tổng kết.';
+    const why = RUN.arena.id === 'arena1' ? 'Arena 1 là bài chẩn đoán gốc.' : 'World Quest chỉ để ôn và kiếm Credit, không có ngưỡng đỗ.';
     box.innerHTML = `<div class="item-card"><b>Không dùng vật phẩm ở ${esc(RUN.arena.name)}</b><p>${why}</p></div>`;
     return;
   }
@@ -801,29 +1078,76 @@ function useItem(id) {
   updateHUD();
 }
 
-// Mục 7: thoát giữa Arena thì huỷ lượt, không lưu dở dang
-function exitArena() {
+// Mục 7: thoát giữa Arena thì huỷ lượt, không lưu dở dang. Bùa đã dùng được hoàn lại.
+// v12 thêm hai luật (đã chốt 06/10):
+// - Arena 3, 4: tiền phạt quá giờ của các câu đã trả lời trước khi thoát vẫn bị trừ.
+// - Boss: không hoàn 15 Credit đã trả, Boss khoá lại; các câu đã hiện coi như đã gặp để đề sau bốc lại.
+function exitWarning(id, penalty) {
+  if (id === 'quest') return 'Thoát World Quest sẽ huỷ lần chơi này, không nhận Credit. Thoát?';
+  if (id === 'boss') return `Thoát giữa Boss sẽ huỷ lượt này. ${CONFIG.bossUnlockCost} Credit đã trả để mở Boss KHÔNG được hoàn lại và Boss sẽ khoá lại: muốn vào lại phải trả ${CONFIG.bossUnlockCost} Credit lần nữa. Bùa đã dùng trong lượt này được hoàn lại. Thoát?`;
+  const base = 'Thoát giữa Arena sẽ huỷ lượt này. Các câu đã làm không được lưu, vật phẩm đã dùng trong lượt này được hoàn lại.';
+  if (timeLimitFor(id)) return `${base} Tiền phạt quá giờ của các câu đã trả lời vẫn bị trừ${penalty ? ` (hiện là −${penalty} Credit)` : ' (hiện là 0)'}. Thoát?`;
+  return base + ' Thoát?';
+}
+
+// Áp hậu quả của việc thoát. S lúc này đã được đọc lại từ bản lưu trước khi vào Arena.
+function applyQuit(info) {
+  const id = info.arena;
+  let msg = '';
+  if (timeLimitFor(id) && id !== 'boss' && info.penalty > 0) {
+    const before = S.credits;
+    S.credits = Math.max(0, S.credits - info.penalty);
+    msg = `Bị trừ ${before - S.credits} Credit tiền phạt quá giờ.`;
+  }
+  if (id === 'boss') {
+    S.bossUnlocked = false;
+    S.usedIds = [...new Set([...S.usedIds, ...(info.shown || [])])];
+    msg = `Boss đã khoá lại. ${CONFIG.bossUnlockCost} Credit đã trả không được hoàn.`;
+  }
+  if (id !== 'quest') {
+    S.quits = S.quits || [];
+    S.quits.push({ arena: id, penalty: id === 'boss' ? 0 : (info.penalty || 0), at: new Date().toISOString() });
+  }
+  saveState();
+  return msg;
+}
+
+async function exitArena() {
   if (!RUN) return;
-  if (!confirm('Thoát giữa Arena sẽ huỷ lượt này. Các câu đã làm không được lưu, vật phẩm đã dùng trong lượt này được hoàn lại. Thoát?')) return;
-  S = loadState().state;
+  const id = RUN.arena.id;
+  const penalty = sumPenalty(RUN.answers);
+  const ok = await ask('Thoát giữa chừng?', exitWarning(id, penalty), 'Thoát', 'Ở lại làm tiếp');
+  if (!ok || !RUN) return;
+  const shown = RUN.qs.slice(0, RUN.qi + 1).map(q => q.id);
+  stopTimer();
   RUN = null;
+  S = loadState().state;
   store.del(CONFIG.inProgressKey);
+  const msg = applyQuit({ arena: id, penalty, shown });
   renderDashboard();
   show('dashboard');
+  if (msg) toast(msg);
 }
 
 function finishArena() {
+  stopTimer();
+  if (RUN.arena.isQuest) { finishQuest(); return; }
   const { arena, attempt, answers, ctx, qs } = RUN;
   const correct = answers.filter(a => a.correct).length;   // công thức (2): tính cả câu dùng vật phẩm
   const total = answers.length;
-  const ok = passed(correct, total);
+  const ok = passed(correct, total, arena.id);
   const credit = ok ? creditFor(correct, total) : 0;
   let bossBonus = 0;
   if (arena.id === 'boss' && ok && !S.bossClearedOnce) { bossBonus = CONFIG.bossFirstClearBonus; S.bossClearedOnce = true; }
-  S.credits += credit + bossBonus;
+  // v12: thưởng − phạt quá giờ, ví không âm. Trượt round vẫn bị phạt (luật 2, 3).
+  const penalty = sumPenalty(answers);
+  const before = S.credits;
+  S.credits = Math.max(0, S.credits + credit + bossBonus - penalty);
+  const net = S.credits - before;
+  const overCount = answers.filter(a => a.penalty > 0).length;
   S.records.push(...answers);
   S.usedIds = [...new Set([...S.usedIds, ...qs.map(q => q.id)])];
-  S.attempts[arena.id].push({ attempt, correct, total, passed: ok, credit, bossBonus, itemUsed: RUN.itemUsedInArena, at: new Date().toISOString() });
+  S.attempts[arena.id].push({ attempt, correct, total, passed: ok, credit, bossBonus, penalty, net, itemUsed: RUN.itemUsedInArena, at: new Date().toISOString() });
   S.bankLog.push(...ctx.log.map(text => ({ arena: arena.id, attempt, text })));
   if (!ok) S.hadFailure = true;
 
@@ -851,9 +1175,29 @@ function finishArena() {
   saveState();
   store.del(CONFIG.inProgressKey);
 
-  LAST = { arena, attempt, correct, total, passed: ok, credit, bossBonus, qs, answers, notices: ctx.notices, log: ctx.log };
+  LAST = { arena, attempt, correct, total, passed: ok, credit, bossBonus, penalty, net, overCount, qs, answers, notices: ctx.notices, log: ctx.log };
   RUN = null;
   renderResult();
+  show('result');
+  updateHUD();
+}
+
+// World Quest: chỉ cộng Credit theo bậc, không ngưỡng đỗ, không vào dữ liệu chẩn đoán (luật 11, 14)
+function finishQuest() {
+  const { attempt, answers, ctx, qs } = RUN;
+  const correct = answers.filter(a => a.correct).length;
+  const total = answers.length;
+  const credit = questCredit(correct, total);
+  S.credits += credit;
+  S.questRecords.push(...answers);
+  S.questUsedIds = [...new Set([...S.questUsedIds, ...qs.map(q => q.id)])];
+  S.questRuns.push({ n: attempt, correct, total, credit, at: new Date().toISOString() });
+  S.bankLog.push(...ctx.log.map(text => ({ arena: 'quest', attempt, text })));
+  saveState();
+  store.del(CONFIG.inProgressKey);
+  LAST = { arena: QUEST, attempt, correct, total, passed: true, credit, bossBonus: 0, penalty: 0, net: credit, overCount: 0, qs, answers, notices: ctx.notices, log: ctx.log };
+  RUN = null;
+  renderQuestResult();
   show('result');
   updateHUD();
 }
@@ -882,7 +1226,7 @@ function wrongAnswersHTML(wrong) {
     const known = q.orderKnown !== false;          // false: câu lấy lại lưu từ bản cũ, không biết thứ tự đã xáo
     const reason = known ? q.distractorReason[r.choice] : '';
     html += `<details class="review" ${k === 0 ? 'open' : ''}>
-      <summary>${esc(q.cluster)} · ${esc(MODULE_NAMES[q.module])} · mức ${q.difficulty}${r.item ? ` · đã dùng ${esc(itemName(r.item))}` : ''}</summary>
+      <summary>${esc(q.cluster)} · ${esc(MODULE_NAMES[q.module])} · mức ${q.difficulty}${r.item ? ` · đã dùng ${esc(itemName(r.item))}` : ''}${r.overSec ? ` · quá giờ ${r.overSec} giây` : ''}</summary>
       <p class="stem">${esc(q.stem)}</p>
       ${known ? `<p><span class="tag wrong">Bạn chọn</span> ${'ABC'[r.choice]}. ${esc(q.options[r.choice])}</p>` : '<p class="note">Câu lấy lại từ bản lưu cũ: không khôi phục được phương án bạn đã chọn.</p>'}
       ${reason ? `<p class="reason">Vì sao dễ chọn nhầm: ${esc(reason)}</p>` : ''}
@@ -896,19 +1240,18 @@ function renderResult() {
   const L = LAST;
   const a = L.arena;
   const next = ARENAS[ARENA_INDEX[a.id] + 1];
-  const need = Math.ceil(L.total * CONFIG.passPercent / 100);
+  const need = needToPass(L.total, a.id);
   let html = `<div class="eyebrow">Kết quả${L.attempt > 1 ? ` · lượt ${L.attempt}` : ''}</div>
     <h1>${esc(a.name)}</h1>
     <div class="result-score ${L.passed ? 'pass' : 'fail'}">
       <b>${fmtPct(L.correct, L.total)}</b>
-      <span>${L.correct}/${L.total} câu đúng · ${L.passed ? 'Đỗ' : 'Trượt'}</span>
+      <span>${L.correct}/${L.total} câu đúng · ngưỡng ${need}/${L.total} (${passPercentFor(a.id)}%) · ${L.passed ? 'Đỗ' : 'Trượt'}</span>
     </div>`;
 
-  if (L.passed) {
-    html += `<p>Nhận <b>${L.credit} Credit</b>${L.bossBonus ? ` và thưởng vượt Boss lần đầu <b>+${L.bossBonus}</b>` : ''}. Số dư hiện tại: <b>${S.credits} Credit</b>.</p>`;
-  } else {
-    html += `<p>Chưa đạt ngưỡng ${CONFIG.passPercent}% (cần ${need}/${L.total} câu). Không cấp Credit. ${next ? esc(next.name) + ' bị khoá' : 'Bảng tổng kết bị khoá'} cho tới khi bạn chơi lại và đỗ. Lượt chơi lại dùng bộ câu rút mới.</p>`;
+  if (!L.passed) {
+    html += `<p>Chưa đạt ngưỡng ${passPercentFor(a.id)}% (cần ${need}/${L.total} câu). Không cấp Credit thưởng. ${next ? esc(next.name) + ' bị khoá' : 'Bảng tổng kết bị khoá'} cho tới khi bạn chơi lại và đỗ. Lượt chơi lại dùng bộ câu rút mới.</p>`;
   }
+  html += creditLineHTML(L);
   if (L.attempt > 1) html += '<p class="note">Lượt này tính cho đỗ/trượt và Credit. Bảng chẩn đoán và performance score vẫn giữ theo lượt làm đầu tiên.</p>';
   if (L.notices.length) html += `<div class="warn-box">${L.notices.map(esc).join('<br>')}</div>`;
 
@@ -935,8 +1278,64 @@ function renderResult() {
   } else {
     addBtn('Vào Shop', 'secondary-btn', () => openShop('result'));
     addBtn('Về bảng tiến trình', 'secondary-btn', () => { renderDashboard(); show('dashboard'); });
-    addBtn(L.passed ? `Vào ${next.name}` : `Chơi lại ${a.name}`, 'primary-btn', startArena);
+    if (L.passed && next && next.id === 'boss') {
+      // Sau Arena 4: Boss phải mở khoá bằng Credit, thiếu thì đi World Quest
+      addBtn('Chơi World Quest', 'secondary-btn', startQuest);
+      addBtn(S.credits >= CONFIG.bossUnlockCost ? `Mở khoá Boss (${CONFIG.bossUnlockCost} Credit)` : `Mở Boss: còn thiếu ${CONFIG.bossUnlockCost - S.credits} Credit`, 'primary-btn', unlockBoss);
+    } else {
+      addBtn(L.passed ? `Vào ${next.name}` : `Chơi lại ${a.name}`, 'primary-btn', startArena);
+    }
   }
+}
+
+// Dòng tính Credit sau mỗi round: thưởng − phạt quá giờ = thực nhận (v12)
+function creditLineHTML(L) {
+  const parts = [];
+  if (L.passed) parts.push(`thưởng +${L.credit}`);
+  if (L.bossBonus) parts.push(`thưởng vượt Boss lần đầu +${L.bossBonus}`);
+  if (L.penalty) parts.push(`phạt quá giờ −${L.penalty} (${L.overCount} câu quá giờ)`);
+  if (!parts.length) return `<p>Credit không đổi. Số dư hiện tại: <b>${S.credits} Credit</b>.</p>`;
+  const capped = L.net !== (L.passed ? L.credit : 0) + (L.bossBonus || 0) - (L.penalty || 0);
+  return `<div class="credit-line"><span>${esc(parts.join(' · '))}</span>
+    <b>Thực nhận ${L.net >= 0 ? '+' : '−'}${Math.abs(L.net)} Credit</b>
+    <span>Số dư hiện tại: <b>${S.credits} Credit</b>${capped ? ' (ví không xuống dưới 0)' : ''}</span></div>`;
+}
+
+// Màn kết quả của World Quest
+function renderQuestResult() {
+  const L = LAST;
+  const lack = Math.max(0, CONFIG.bossUnlockCost - S.credits);
+  let html = `<div class="eyebrow">World Quest · lần ${L.attempt}</div>
+    <h1>World Quest</h1>
+    <div class="result-score pass">
+      <b>${fmtPct(L.correct, L.total)}</b>
+      <span>${L.correct}/${L.total} câu đúng · nhận +${L.credit} Credit</span>
+    </div>
+    <p>Bậc thưởng: từ 60% được +2, từ 80% được +3, từ 90% được +4, dưới 60% không nhận. Số dư hiện tại: <b>${S.credits} Credit</b>.</p>`;
+  if (!S.bossUnlocked && !S.finished) {
+    html += lack > 0
+      ? `<div class="announce"><h3>Còn thiếu ${lack} Credit để mở Boss</h3><p>Chơi World Quest thêm để kiếm đủ ${CONFIG.bossUnlockCost} Credit.</p></div>`
+      : `<div class="announce"><h3>Đã đủ Credit mở Boss</h3><p>Mở Boss tốn ${CONFIG.bossUnlockCost} Credit, trả một lần.</p></div>`;
+  }
+  html += '<p class="note">Kết quả World Quest không tính vào bảng chẩn đoán và bảng tổng kết. Các câu đã ra ở đây sẽ không xuất hiện lại ở Boss.</p>';
+  if (L.notices.length) html += `<div class="warn-box">${L.notices.map(esc).join('<br>')}</div>`;
+  html += wrongAnswersHTML(L.answers.map((r, i) => ({ r, q: L.qs[i] })).filter(x => !x.r.correct));
+  $('resultBody').innerHTML = html;
+
+  const actions = $('resultActions');
+  actions.innerHTML = '';
+  const addBtn = (label, cls, fn) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = cls;
+    b.textContent = label;
+    b.addEventListener('click', fn);
+    actions.appendChild(b);
+  };
+  addBtn('Về bảng tiến trình', 'secondary-btn', () => { renderDashboard(); show('dashboard'); });
+  addBtn('Chơi World Quest lần nữa', 'secondary-btn', startQuest);
+  if (!S.bossUnlocked && !S.finished && lack === 0) addBtn(`Mở khoá Boss (${CONFIG.bossUnlockCost} Credit)`, 'primary-btn', unlockBoss);
+  if (S.bossUnlocked && !S.finished) addBtn('Vào Boss', 'primary-btn', startArena);
 }
 
 
@@ -969,7 +1368,7 @@ function reviewArena(id) {
       <b>${fmtPct(t.correct, t.total)}</b>
       <span>${t.correct}/${t.total} câu đúng · ${t.passed ? 'Đỗ' : 'Trượt'}</span>
     </div>
-    <p>Nhận <b>${t.credit} Credit</b>${t.bossBonus ? ` và thưởng vượt Boss lần đầu <b>+${t.bossBonus}</b>` : ''}${t.itemUsed ? `. Đã dùng ${esc(itemName(t.itemUsed))}` : ''}.</p>`;
+    <p>Thưởng <b>${t.credit} Credit</b>${t.bossBonus ? ` và thưởng vượt Boss lần đầu <b>+${t.bossBonus}</b>` : ''}${t.penalty ? `, phạt quá giờ <b>−${t.penalty}</b>, thực nhận <b>${t.net >= 0 ? '+' : '−'}${Math.abs(t.net)}</b>` : ''}${t.itemUsed ? `. Đã dùng ${esc(itemName(t.itemUsed))}` : ''}.</p>`;
   if (tries.length > 1) {
     const earlier = tries.filter(x => x !== t).map(x => `lượt ${x.attempt}: ${x.correct}/${x.total}, ${x.passed ? 'đỗ' : 'trượt'}`).join('; ');
     html += `<p class="note">Các lượt khác: ${esc(earlier)}. Bảng chẩn đoán vẫn tính theo lượt làm đầu tiên.</p>`;
@@ -1109,9 +1508,20 @@ function renderReport() {
   // Các lượt làm
   let arows = '';
   ARENAS.forEach(a => S.attempts[a.id].forEach(t => {
-    arows += `<tr><th scope="row">${esc(a.name)}</th><td>${t.attempt}</td><td>${t.correct}/${t.total} (${fmtPct(t.correct, t.total)})</td><td>${t.passed ? 'Đỗ' : 'Trượt'}</td><td>${t.credit + t.bossBonus}</td><td>${t.itemUsed ? esc(itemName(t.itemUsed)) : '--'}</td></tr>`;
+    arows += `<tr><th scope="row">${esc(a.name)}</th><td>${t.attempt}</td><td>${t.correct}/${t.total} (${fmtPct(t.correct, t.total)})</td><td>${t.passed ? 'Đỗ' : 'Trượt'}</td><td>+${t.credit + t.bossBonus}</td><td>${t.penalty ? '−' + t.penalty : '0'}</td><td>${t.net >= 0 ? '+' : '−'}${Math.abs(t.net)}</td><td>${t.itemUsed ? esc(itemName(t.itemUsed)) : '--'}</td></tr>`;
   }));
-  html += `<h3>Các lượt làm Arena</h3><div class="tbl-wrap"><table class="diag"><thead><tr><th>Arena</th><th>Lượt</th><th>Điểm</th><th>Kết quả</th><th>Credit</th><th>Vật phẩm</th></tr></thead><tbody>${arows}</tbody></table></div>`;
+  html += `<h3>Các lượt làm Arena</h3><div class="tbl-wrap"><table class="diag"><thead><tr><th>Arena</th><th>Lượt</th><th>Điểm</th><th>Kết quả</th><th>Thưởng</th><th>Phạt giờ</th><th>Thực nhận</th><th>Vật phẩm</th></tr></thead><tbody>${arows}</tbody></table></div>`;
+
+  // v12: World Quest, mở Boss, các lần thoát
+  if (S.questRuns.length) {
+    const qrows = S.questRuns.map(r => `<tr><td>${r.n}</td><td>${r.correct}/${r.total} (${fmtPct(r.correct, r.total)})</td><td>+${r.credit}</td></tr>`).join('');
+    html += `<h3>World Quest</h3><div class="tbl-wrap"><table class="diag"><thead><tr><th>Lần</th><th>Điểm</th><th>Credit</th></tr></thead><tbody>${qrows}</tbody></table></div>
+      <p class="note">Không tính vào bảng chẩn đoán và các kết luận ở trên.</p>`;
+  }
+  const quits = S.quits || [];
+  if (quits.length) {
+    html += `<p class="note">Thoát giữa chừng ${quits.length} lần: ${esc(quits.map(x => `${NAME(x.arena)}${x.arena === 'boss' ? ' (Boss khoá lại, mất ' + CONFIG.bossUnlockCost + ' Credit)' : x.penalty ? ` (phạt −${x.penalty})` : ''}`).join('; '))}.</p>`;
+  }
 
   if (S.bankLog.length) {
     html += `<details class="review"><summary>Log thiếu câu cho nhóm bổ sung ngân hàng (${S.bankLog.length})</summary><ul>${S.bankLog.map(l => `<li>${esc(l.arena)} lượt ${l.attempt}: ${esc(l.text)}</li>`).join('')}</ul></details>`;
@@ -1150,7 +1560,8 @@ function init() {
   $('confirmBtn').addEventListener('click', confirmAnswer);
   $('nextBtn').addEventListener('click', nextQuestion);
   $('exitBtn').addEventListener('click', exitArena);
-  $('noticeOk').addEventListener('click', closeNotice);
+  $('noticeOk').addEventListener('click', () => closeNotice(true));
+  $('noticeCancel').addEventListener('click', () => closeNotice(false));
   $('bankFile').addEventListener('change', e => {
     const f = e.target.files[0];
     if (!f) return;
@@ -1178,7 +1589,13 @@ function init() {
     const leftover = store.get(CONFIG.inProgressKey);
     if (leftover) {
       store.del(CONFIG.inProgressKey);
-      messages.push(`Lần trước bạn rời ${ARENAS[ARENA_INDEX[leftover]]?.name ?? 'Arena'} khi chưa làm xong. Lượt đó không được lưu, hãy vào lại Arena để làm từ đầu.`);
+      let info;
+      try { info = JSON.parse(leftover); } catch { info = { arena: leftover, penalty: 0, shown: [] }; }
+      const name = info.arena === 'quest' ? QUEST.name : (ARENAS[ARENA_INDEX[info.arena]]?.name ?? 'Arena');
+      // Tải lại trang giữa chừng được tính như thoát: áp đúng luật thoát của v12
+      const extra = S.started ? applyQuit(info) : '';
+      messages.push(`Lần trước bạn rời ${name} khi chưa làm xong. Lượt đó không được lưu, hãy vào lại để làm từ đầu.${extra ? ' ' + extra : ''}`);
+      if (S.started) renderDashboard();
     }
     if (loaded.problem === 'corrupt') {
       messages.push('Dữ liệu tiến trình lưu trên trình duyệt bị lỗi hoặc không còn. Hệ thống đã khởi tạo tiến trình rỗng, hãy bắt đầu lại.');
