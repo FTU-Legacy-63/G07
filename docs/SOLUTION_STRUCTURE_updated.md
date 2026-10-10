@@ -823,20 +823,3 @@ Nếu có, sản phẩm quan sát được một xu hướng cải thiện trong
 | Boss — cụm yếu thứ ba | tối đa 3 câu | Mẫu rất nhỏ |
 
 ---
-
-## 15. Những gì giữ nguyên so với v11
-
-Thiết kế Week 7 tăng độ khó và thêm progression loop, nhưng **không thay core diagnostic logic**:
-
-- vẫn có 5 Arena chính với số câu **15/10/10/10/15**;
-- Arena 2 vẫn nhắm W1;
-- Arena 4 vẫn nhắm W2 khác W1;
-- Boss vẫn lấy ba cụm yếu nhất và chia **7/5/3**;
-- Arena 1 vẫn lấy mỗi cụm 3 câu, đủ 3 mức khó;
-- tie-break khi các cụm bằng điểm giữ nguyên;
-- `arena_score_correct` và dữ liệu chẩn đoán vẫn là hai bộ đếm khác nhau;
-- câu dùng Bùa vẫn tính cho đỗ/trượt nhưng không tính vào dữ liệu chẩn đoán;
-- bảng tổng kết sau Boss vẫn dùng mốc **70%** để gắn nhãn cải thiện theo từng cụm;
-- Bùa Loại Trừ vẫn giá **3 Credit**;
-- Credit khởi đầu vẫn là **3**;
-- bậc thưởng vẫn là **70/80/90% → +2/+3/+4** và lần đầu vượt Boss được **+5**.
