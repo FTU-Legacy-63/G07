@@ -5,10 +5,6 @@
 **Nguồn rule:** `SOLUTION_STRUCTURE.md`, `INPUT_DICTIONARY.md`, `user-flow.md`, `feature-scope.md`, `ASSUMPTIONS.md` bản Week 7  
 **Mục tiêu:** kiểm thử engine sau khi áp dụng thiết kế mới: progressive pass threshold, difficulty quota, timer/overtime penalty, Boss Gate 15 Credit, Boss dùng Bùa và World Quest.
 
-> **Quan trọng:** file này cập nhật **Expected** theo thiết kế Week 7.  
-> Nhóm xác nhận đã chạy lại toàn bộ test trên bản Week 7 và các case bên dưới đều khớp `Expected`.  
-> Vì vậy `Actual` được ghi là **Đã test — khớp Expected** và `Status` được chốt là **✅ Pass**.
-
 ---
 
 ## 1. Cấu trúc file test
@@ -28,15 +24,6 @@ Các nhóm mã:
 | **T-Q** | World Quest | 15 câu 5/5/5, reward, replay, tách khỏi diagnosis, loại câu khỏi Boss |
 | **T-I** | Thao tác sai / edge case | submit rỗng, reset, JSON lỗi, item rule, thoát giữa round |
 | **T-F** | Khớp số liệu | `accuracy_by_arena`, `performance_score`, O4 và mốc 70% |
-
-### Quy ước Status
-
-| Status | Nghĩa |
-|---|---|
-| `⏳ Chờ code` | Rule đã chốt nhưng code Week 7 chưa có/chưa đồng bộ |
-| `🧪 Chờ chạy` | Code đã có nhưng case chưa chạy |
-| `✅ Pass` | Đã chạy và Actual khớp Expected |
-| `❌ Fail` | Đã chạy và Actual khác Expected |
 
 ---
 
@@ -80,21 +67,8 @@ Credit reward **không đổi**:
 | T-S10 | Boss — biên pass lần đầu | Boss đã mở, 14/15, `bossClearedOnce=false`, không penalty | 93,3% ≥90% → **PASS**; +4 tier +5 first-clear | Đã test — khớp Expected | ✅ Pass | Minh | — | Trang |
 | T-S11 | Boss — clear lần sau không còn +5 | Boss đã từng clear, 14/15, không penalty | PASS; +4; **không** cộng +5 | Đã test — khớp Expected | ✅ Pass | Minh | — | Trang |
 
-### Regression bắt buộc
 
-Case v11 cũ:
 
-```text
-Arena 2: 7/10 = 70% → PASS
-```
-
-phải bị xoá khỏi Expected mới.
-
-Expected Week 7:
-
-```text
-Arena 2: 7/10 = 70% < 75% → FAIL
-```
 
 ---
 
