@@ -1,136 +1,361 @@
-# Demo input — CFA Quest v11 (Seed 7)
+# DEMO INPUT — CFA Quest Week 7 · Exact Seed 7
 
-## Mục tiêu
-Tạo một lượt demo không trượt Arena nào và khi mở **Bảng tổng kết** có đồng thời:
-- **C2 = Đã cải thiện**
-- **C3 = Cần cải thiện tiếp**
+**Seed:** `7`  
+**Run:** `runNo = 1`  
+**Mục tiêu:** demo một lượt main path theo đúng engine Week 7 hiện tại, với **Question ID thật**, đáp án đúng và nút cần bấm cho từng câu.
 
-## Chuẩn bị trước demo
-`CFAQ.setSeed(7)` chỉ cố định RNG. Arena 1 còn phụ thuộc `runNo`, vì vậy để kịch bản dưới đây khớp **đúng ID và đúng thứ tự câu**, hãy đưa lượt chơi về `runNo = 1`. Mở Console và chạy:
+> Điều kiện để bảng dưới đây khớp chính xác: reset state → reload → `CFAQ.setSeed(7)` → bắt đầu lượt chơi đầu tiên. Không dùng Bùa, không retry, không vào World Quest và không thực hiện thêm thao tác nào làm sinh đề ngoài flow chính.
+
+---
+
+## 1. Chuẩn bị
+
+Mở Console:
 
 ```js
-localStorage.removeItem("cfaQuestV11");
-localStorage.removeItem("cfaQuestV11_inProgress");
-localStorage.setItem("cfaQuestV11_runCount", "0");
+localStorage.removeItem("cfaQuestV12");
+localStorage.removeItem("cfaQuestV12_inProgress");
+localStorage.setItem("cfaQuestV12_runCount", "0");
 location.reload();
 ```
 
-Sau khi trang reload, mở Console lại và chạy:
+Sau khi trang reload, mở Console lại:
 
 ```js
 CFAQ.setSeed(7)
 ```
 
-Sau đó bấm **Bắt đầu lượt chơi**. **Không dùng Bùa Loại Trừ** ở Trap/Crossroads, vì câu dùng item bị loại khỏi dữ liệu chẩn đoán.
+Sau đó bấm **Bắt đầu lượt chơi**.
 
-## Arena 1 · The Gate
+Main path:
 
-| # | Question ID | Cluster | Đáp án đúng | Cần làm | Bấm |
-|---:|---|:---:|:---:|:---:|:---:|
-| 1 | `ETH-C1-GIPS-001` | C1 | B | **Đúng** | **B** |
-| 2 | `ETH-C1-CODE-001` | C1 | B | **Đúng** | **B** |
-| 3 | `ETH-C1-GIPS-009` | C1 | A | **Đúng** | **A** |
-| 4 | `ETH-C2-S1-003` | C2 | A | **Sai** | **B** |
-| 5 | `ETH-C2-S2-001` | C2 | B | **Sai** | **C** |
-| 6 | `ETH-C2-S1-002` | C2 | A | **Sai** | **B** |
-| 7 | `ETH-C3-S3-001` | C3 | B | **Đúng** | **B** |
-| 8 | `ETH-C3-S3-002` | C3 | B | **Đúng** | **B** |
-| 9 | `ETH-C3-S3-005` | C3 | A | **Sai** | **B** |
-| 10 | `ETH-C4-S4-005` | C4 | B | **Đúng** | **B** |
-| 11 | `ETH-C4-S5-001` | C4 | B | **Đúng** | **B** |
-| 12 | `ETH-C4-S4-003` | C4 | C | **Đúng** | **C** |
-| 13 | `ETH-C5-S6-002` | C5 | A | **Đúng** | **A** |
-| 14 | `ETH-C5-S7-001` | C5 | A | **Đúng** | **A** |
-| 15 | `ETH-C5-S6-004` | C5 | B | **Đúng** | **B** |
+```text
+Arena 1: 11/15
+→ W1 = C2
+→ Arena 2: 8/10
+→ Arena 3: 8/10
+→ W2 = C1
+→ Arena 4: 9/10
+→ Credit = 15
+→ trả 15 Credit
+→ Boss: 14/15
+```
 
-**Kết quả cần đạt: 11/15 = 73.3%**.
+---
 
-Sau Arena 1: C2 = 0/3, C3 = 2/3, C1/C4/C5 = 3/3. **W1 phải là C2**.
+# 2. Arena 1 — The Gate
 
-## Trap I
+**Mục tiêu:** `11/15 = 73.3% → PASS`  
+**Ngưỡng:** 70% · **Timer:** Không · **Bùa:** Không
 
-| # | Question ID | Cluster | Đáp án đúng | Cần làm | Bấm |
-|---:|---|:---:|:---:|:---:|:---:|
-| 1 | `ETH-C2-S1-013` | C2 | B | **Đúng** | **B** |
-| 2 | `ETH-C2-S1-009` | C2 | A | **Đúng** | **A** |
-| 3 | `ETH-C2-S1-005` | C2 | C | **Đúng** | **C** |
-| 4 | `ETH-C2-S2-016` | C2 | B | **Đúng** | **B** |
-| 5 | `ETH-C2-S1-016` | C2 | B | **Đúng** | **B** |
-| 6 | `ETH-C2-S2-015` | C2 | A | **Đúng** | **A** |
-| 7 | `ETH-C2-S2-013` | C2 | B | **Đúng** | **B** |
-| 8 | `ETH-C2-S2-011` | C2 | C | **Sai** | **A** |
-| 9 | `ETH-C2-S1-010` | C2 | B | **Sai** | **C** |
-| 10 | `ETH-C2-S2-014` | C2 | C | **Sai** | **A** |
+| # | Question ID | Cluster | Độ khó | Đáp án đúng | Cần làm | Bấm |
+|---:|---|:---:|:---:|:---:|:---:|:---:|
+| 1 | `ETH-C1-GIPS-001` | C1 | Dễ (1) | B | **Sai** | A |
+| 2 | `ETH-C1-CODE-001` | C1 | Vừa (2) | B | **Sai** | A |
+| 3 | `ETH-C1-GIPS-009` | C1 | Khó (3) | A | **Đúng** | A |
+| 4 | `ETH-C2-S1-003` | C2 | Dễ (1) | A | **Đúng** | A |
+| 5 | `ETH-C2-S2-001` | C2 | Vừa (2) | B | **Sai** | A |
+| 6 | `ETH-C2-S1-002` | C2 | Khó (3) | A | **Sai** | B |
+| 7 | `ETH-C3-S3-001` | C3 | Dễ (1) | B | **Đúng** | B |
+| 8 | `ETH-C3-S3-002` | C3 | Vừa (2) | B | **Đúng** | B |
+| 9 | `ETH-C3-S3-005` | C3 | Khó (3) | A | **Đúng** | A |
+| 10 | `ETH-C4-S4-005` | C4 | Dễ (1) | B | **Đúng** | B |
+| 11 | `ETH-C4-S5-001` | C4 | Vừa (2) | B | **Đúng** | B |
+| 12 | `ETH-C4-S4-003` | C4 | Khó (3) | C | **Đúng** | C |
+| 13 | `ETH-C5-S6-002` | C5 | Dễ (1) | A | **Đúng** | A |
+| 14 | `ETH-C5-S7-001` | C5 | Vừa (2) | A | **Đúng** | A |
+| 15 | `ETH-C5-S6-004` | C5 | Khó (3) | B | **Đúng** | B |
 
-**Kết quả cần đạt: 7/10 = 70.0%**.
+Kết quả:
 
-Trap I đạt đúng ngưỡng 70% và khóa mục tiêu ở C2.
+```text
+C1 = 1/3
+C2 = 1/3
+C3 = 3/3
+C4 = 3/3
+C5 = 3/3
+```
 
-## The Crossroads
+C1 và C2 cùng Accuracy. C2 sai các câu khó hơn:
 
-| # | Question ID | Cluster | Đáp án đúng | Cần làm | Bấm |
-|---:|---|:---:|:---:|:---:|:---:|
-| 1 | `ETH-C1-GIPS-003` | C1 | C | **Đúng** | **C** |
-| 2 | `ETH-C5-S7-002` | C5 | B | **Đúng** | **B** |
-| 3 | `ETH-C4-S4-004` | C4 | C | **Đúng** | **C** |
-| 4 | `ETH-C4-S5-016` | C4 | B | **Đúng** | **B** |
-| 5 | `ETH-C3-S3-006` | C3 | C | **Đúng** | **C** |
-| 6 | `ETH-C1-CODE-016` | C1 | B | **Sai** | **C** |
-| 7 | `ETH-C5-S6-015` | C5 | A | **Đúng** | **A** |
-| 8 | `ETH-C2-S1-001` | C2 | B | **Đúng** | **B** |
-| 9 | `ETH-C2-S2-017` | C2 | C | **Sai** | **A** |
-| 10 | `ETH-C3-S3-009` | C3 | A | **Sai** | **B** |
+```text
+C1 wrong-difficulty average = (1 + 2) / 2 = 1.5
+C2 wrong-difficulty average = (2 + 3) / 2 = 2.5
+```
 
-**Kết quả cần đạt: 7/10 = 70.0%**.
+Vì vậy:
 
-Crossroads = 7/10. Mốc Arena 1 + Crossroads: **C2 = 1/5 = 20%**, **C3 = 3/5 = 60%**, **C1 = 4/5 = 80%**, C4 = C5 = 5/5. Do W2 loại W1=C2, **W2 phải là C3**.
+```text
+W1 = C2
+Credit: 3 + 2 = 5
+```
 
-## Trap II
+---
 
-| # | Question ID | Cluster | Đáp án đúng | Cần làm | Bấm |
-|---:|---|:---:|:---:|:---:|:---:|
-| 1 | `ETH-C3-S3-026` | C3 | A | **Đúng** | **A** |
-| 2 | `ETH-C3-S3-027` | C3 | B | **Đúng** | **B** |
-| 3 | `ETH-C3-S3-017` | C3 | A | **Đúng** | **A** |
-| 4 | `ETH-C3-S3-031` | C3 | C | **Đúng** | **C** |
-| 5 | `ETH-C3-S3-032` | C3 | A | **Đúng** | **A** |
-| 6 | `ETH-C3-S3-023` | C3 | A | **Đúng** | **A** |
-| 7 | `ETH-C3-S3-013` | C3 | A | **Đúng** | **A** |
-| 8 | `ETH-C3-S3-003` | C3 | A | **Sai** | **B** |
-| 9 | `ETH-C3-S3-015` | C3 | B | **Sai** | **C** |
-| 10 | `ETH-C3-S3-010` | C3 | B | **Sai** | **C** |
+# 3. Arena 2 — Trap I
 
-**Kết quả cần đạt: 7/10 = 70.0%**.
+**Target:** `W1 = C2`  
+**Mục tiêu:** `8/10 = 80% → PASS`  
+**Ngưỡng:** 75% · **Difficulty mix:** `4 Dễ / 4 Vừa / 2 Khó` · **Timer:** Không
 
-Trap II = 7/10. Trước Boss, chẩn đoán cộng dồn đưa thứ tự yếu nhất thành **C2 → C3 → C1**, nên Boss phải chia **C2 7 câu, C3 5 câu, C1 3 câu**.
+| # | Question ID | Cluster | Độ khó | Đáp án đúng | Cần làm | Bấm |
+|---:|---|:---:|:---:|:---:|:---:|:---:|
+| 1 | `ETH-C2-S2-006` | C2 | Dễ (1) | B | **Đúng** | B |
+| 2 | `ETH-C2-S2-016` | C2 | Vừa (2) | B | **Đúng** | B |
+| 3 | `ETH-C2-S1-009` | C2 | Vừa (2) | A | **Đúng** | A |
+| 4 | `ETH-C2-S1-017` | C2 | Khó (3) | C | **Sai** | A |
+| 5 | `ETH-C2-S2-004` | C2 | Vừa (2) | B | **Đúng** | B |
+| 6 | `ETH-C2-S1-007` | C2 | Dễ (1) | A | **Đúng** | A |
+| 7 | `ETH-C2-S2-011` | C2 | Khó (3) | C | **Sai** | A |
+| 8 | `ETH-C2-S2-007` | C2 | Dễ (1) | A | **Đúng** | A |
+| 9 | `ETH-C2-S1-016` | C2 | Vừa (2) | B | **Đúng** | B |
+| 10 | `ETH-C2-S1-006` | C2 | Dễ (1) | B | **Đúng** | B |
 
-## Boss
+Kết quả:
 
-| # | Question ID | Cluster | Đáp án đúng | Cần làm | Bấm |
-|---:|---|:---:|:---:|:---:|:---:|
-| 1 | `ETH-C3-S3-018` | C3 | C | **Đúng** | **C** |
-| 2 | `ETH-C2-S2-008` | C2 | B | **Đúng** | **B** |
-| 3 | `ETH-C1-CODE-006` | C1 | B | **Đúng** | **B** |
-| 4 | `ETH-C3-S3-011` | C3 | C | **Sai** | **A** |
-| 5 | `ETH-C3-S3-008` | C3 | A | **Sai** | **B** |
-| 6 | `ETH-C2-S1-014` | C2 | C | **Đúng** | **C** |
-| 7 | `ETH-C2-S2-009` | C2 | C | **Đúng** | **C** |
-| 8 | `ETH-C2-S1-006` | C2 | B | **Đúng** | **B** |
-| 9 | `ETH-C2-S2-007` | C2 | A | **Đúng** | **A** |
-| 10 | `ETH-C1-CODE-012` | C1 | A | **Đúng** | **A** |
-| 11 | `ETH-C3-S3-016` | C3 | B | **Sai** | **C** |
-| 12 | `ETH-C2-S1-017` | C2 | C | **Đúng** | **C** |
-| 13 | `ETH-C2-S2-006` | C2 | B | **Đúng** | **B** |
-| 14 | `ETH-C3-S3-024` | C3 | B | **Sai** | **C** |
-| 15 | `ETH-C1-GIPS-004` | C1 | B | **Đúng** | **B** |
+```text
+8/10 = 80% → PASS
+Credit: 5 + 3 = 8
+```
 
-**Kết quả cần đạt: 11/15 = 73.3%**.
+Hai câu cố ý sai đều là câu khó. Việc này giúp C2 tiếp tục được xếp yếu hơn C1 khi hai cụm về sau có cùng Accuracy.
 
-Boss = 11/15 = 73.3%, đủ đỗ. Theo cluster: **C2 7/7**, **C3 1/5**, **C1 3/3**.
+---
 
-## Kết quả cuối cần nhìn thấy
-- **C2:** mốc chẩn đoán = 1/5 = 20%; Boss = 7/7 = 100% → **Đã cải thiện**.
-- **C3:** mốc chẩn đoán = 3/5 = 60%; Boss = 1/5 = 20% → **Cần cải thiện tiếp**.
-- **C1:** mốc chẩn đoán = 4/5 = 80%; Boss = 3/3 = 100% → **Đã cải thiện**.
+# 4. Arena 3 — The Crossroads
 
-Kịch bản này cố ý tạo kết quả đối lập để chứng minh logic O4; không dùng nó làm bằng chứng rằng Trap gây ra learning.
+**Mục tiêu:** `8/10 = 80% → PASS`  
+**Ngưỡng:** 75% · **Difficulty mix:** `2 Dễ / 5 Vừa / 3 Khó`  
+**Timer:** `100 giây/câu`
+
+| # | Question ID | Cluster | Độ khó | Đáp án đúng | Cần làm | Bấm |
+|---:|---|:---:|:---:|:---:|:---:|:---:|
+| 1 | `ETH-C4-S4-016` | C4 | Vừa (2) | B | **Đúng** | B |
+| 2 | `ETH-C5-S6-005` | C5 | Vừa (2) | A | **Đúng** | A |
+| 3 | `ETH-C2-S1-004` | C2 | Vừa (2) | B | **Đúng** | B |
+| 4 | `ETH-C1-GIPS-010` | C1 | Khó (3) | C | **Đúng** | C |
+| 5 | `ETH-C3-S3-027` | C3 | Vừa (2) | B | **Sai** | A |
+| 6 | `ETH-C2-S2-005` | C2 | Khó (3) | A | **Đúng** | A |
+| 7 | `ETH-C4-S5-013` | C4 | Vừa (2) | B | **Đúng** | B |
+| 8 | `ETH-C1-CODE-002` | C1 | Dễ (1) | A | **Sai** | B |
+| 9 | `ETH-C5-S7-008` | C5 | Dễ (1) | C | **Đúng** | C |
+| 10 | `ETH-C3-S3-020` | C3 | Khó (3) | A | **Đúng** | A |
+
+Kết quả theo cluster:
+
+| Cluster | Arena 1 | Crossroads | Baseline sau Arena 3 |
+|:---:|---:|---:|---:|
+| C1 | 1/3 | 1/2 | **2/5 = 40%** |
+| C2 | 1/3 | 2/2 | **3/5 = 60%** |
+| C3 | 3/3 | 1/2 | **4/5 = 80%** |
+| C4 | 3/3 | 2/2 | **5/5 = 100%** |
+| C5 | 3/3 | 2/2 | **5/5 = 100%** |
+
+`W1 = C2` nên khi chọn W2 phải loại C2. Cluster yếu nhất còn lại là C1:
+
+```text
+W2 = C1
+Arena 3 = 8/10 → PASS
+Credit: 8 + 3 = 11
+```
+
+Không để câu nào vượt 100 giây.
+
+---
+
+# 5. Arena 4 — Trap II
+
+**Target:** `W2 = C1`  
+**Mục tiêu:** `9/10 = 90% → PASS`  
+**Ngưỡng:** 85% · **Difficulty mix:** `2 Dễ / 4 Vừa / 4 Khó`  
+**Timer:** `80 giây/câu`
+
+| # | Question ID | Cluster | Độ khó | Đáp án đúng | Cần làm | Bấm |
+|---:|---|:---:|:---:|:---:|:---:|:---:|
+| 1 | `ETH-C1-GIPS-017` | C1 | Khó (3) | C | **Đúng** | C |
+| 2 | `ETH-C1-CODE-003` | C1 | Dễ (1) | B | **Sai** | A |
+| 3 | `ETH-C1-GIPS-014` | C1 | Khó (3) | C | **Đúng** | C |
+| 4 | `ETH-C1-CODE-010` | C1 | Khó (3) | A | **Đúng** | A |
+| 5 | `ETH-C1-CODE-013` | C1 | Vừa (2) | B | **Đúng** | B |
+| 6 | `ETH-C1-GIPS-003` | C1 | Dễ (1) | C | **Đúng** | C |
+| 7 | `ETH-C1-GIPS-013` | C1 | Vừa (2) | B | **Đúng** | B |
+| 8 | `ETH-C1-CODE-016` | C1 | Vừa (2) | B | **Đúng** | B |
+| 9 | `ETH-C1-CODE-009` | C1 | Khó (3) | C | **Đúng** | C |
+| 10 | `ETH-C1-GIPS-008` | C1 | Vừa (2) | A | **Đúng** | A |
+
+Kết quả:
+
+```text
+9/10 = 90% → PASS
+Credit: 11 + 4 = 15
+```
+
+Không để câu nào vượt 80 giây.
+
+---
+
+# 6. Ranking sau Arena 4
+
+Diagnostic cumulative:
+
+| Cluster | Correct / Attempted | Accuracy |
+|:---:|---:|---:|
+| C1 | 11/15 | 73.3% |
+| C2 | 11/15 | 73.3% |
+| C3 | 4/5 | 80.0% |
+| C4 | 5/5 | 100% |
+| C5 | 5/5 | 100% |
+
+C1 và C2 cùng Accuracy, nhưng average difficulty của câu sai là:
+
+```text
+C1: (1 + 2 + 1 + 1) / 4 = 1.25
+C2: (2 + 3 + 3 + 3) / 4 = 2.75
+```
+
+C2 bị xếp yếu hơn C1.
+
+Boss plan:
+
+| Thứ tự yếu | Cluster | Số câu Boss |
+|---:|:---:|---:|
+| 1 | **C2** | 7 |
+| 2 | **C1** | 5 |
+| 3 | **C3** | 3 |
+
+---
+
+# 7. Boss Gate
+
+Sau Arena 4:
+
+```text
+Credit = 15
+```
+
+| Bước | Credit trước | Thay đổi | Credit sau |
+|---|---:|---:|---:|
+| Đỗ Arena 4 | 11 | +4 | 15 |
+| Mở Boss | 15 | -15 | **0** |
+
+Main demo đủ Credit nên **không cần World Quest**.
+
+---
+
+# 8. Boss
+
+**Boss plan:** `C2 = 7 câu · C1 = 5 câu · C3 = 3 câu`  
+**Mục tiêu:** `14/15 = 93.3% → PASS`  
+**Ngưỡng:** 90% · **Difficulty mix:** `2 Dễ / 4 Vừa / 9 Khó`  
+**Timer:** `60 giây/câu` · **Bùa:** không dùng trong demo
+
+| # | Question ID | Cluster | Độ khó | Đáp án đúng | Cần làm | Bấm |
+|---:|---|:---:|:---:|:---:|:---:|:---:|
+| 1 | `ETH-C3-S3-021` | C3 | Khó (3) | C | **Đúng** | C |
+| 2 | `ETH-C2-S2-002` | C2 | Vừa (2) | C | **Đúng** | C |
+| 3 | `ETH-C1-CODE-011` | C1 | Khó (3) | C | **Đúng** | C |
+| 4 | `ETH-C2-S2-010` | C2 | Khó (3) | A | **Đúng** | A |
+| 5 | `ETH-C1-GIPS-011` | C1 | Khó (3) | C | **Đúng** | C |
+| 6 | `ETH-C2-S1-011` | C2 | Khó (3) | C | **Đúng** | C |
+| 7 | `ETH-C1-CODE-014` | C1 | Khó (3) | C | **Đúng** | C |
+| 8 | `ETH-C2-S2-012` | C2 | Dễ (1) | A | **Đúng** | A |
+| 9 | `ETH-C3-S3-006` | C3 | Vừa (2) | C | **Đúng** | C |
+| 10 | `ETH-C2-S1-001` | C2 | Vừa (2) | B | **Đúng** | B |
+| 11 | `ETH-C2-S1-014` | C2 | Khó (3) | C | **Đúng** | C |
+| 12 | `ETH-C1-GIPS-016` | C1 | Vừa (2) | B | **Đúng** | B |
+| 13 | `ETH-C3-S3-017` | C3 | Dễ (1) | A | **Sai** | B |
+| 14 | `ETH-C2-S2-014` | C2 | Khó (3) | C | **Đúng** | C |
+| 15 | `ETH-C1-CODE-005` | C1 | Dễ (1) | A | **Đúng** | A |
+
+Kết quả theo cluster:
+
+```text
+C2 = 7/7 = 100%
+C1 = 5/5 = 100%
+C3 = 2/3 = 66.7%
+
+Boss total = 14/15 = 93.3% → PASS
+```
+
+Không để câu nào vượt 60 giây.
+
+Credit sau Boss:
+
+```text
+Credit trước Boss result = 0
+Boss reward              = +4
+First clear bonus        = +5
+Penalty                  = 0
+--------------------------------
+Credit cuối              = 9
+```
+
+---
+
+# 9. Kết quả O4 cần thấy
+
+| Cluster | Baseline | Boss | Expected |
+|:---:|---:|---:|---|
+| C1 | 2/5 = 40% | 5/5 = 100% | **Đã cải thiện** |
+| C2 | 3/5 = 60% | 7/7 = 100% | **Đã cải thiện** |
+| C3 | 4/5 = 80% | 2/3 = 66.7% | **Cần cải thiện tiếp** |
+
+Lưu ý:
+
+```text
+Boss cần 90% để PASS.
+Nhãn O4 của từng cluster vẫn dùng mốc 70%.
+```
+
+---
+
+# 10. Credit summary
+
+| Bước | Kết quả | Thay đổi | Ví sau |
+|---|---|---:|---:|
+| Bắt đầu | — | — | 3 |
+| Arena 1 | 11/15 | +2 | 5 |
+| Arena 2 | 8/10 | +3 | 8 |
+| Arena 3 | 8/10 | +3 | 11 |
+| Arena 4 | 9/10 | +4 | 15 |
+| Mở Boss | đủ 15 Credit | -15 | 0 |
+| Boss | 14/15, first clear | +4 +5 | **9** |
+
+---
+
+# 11. Checklist trước khi demo
+
+- [ ] Reset đúng ba key `cfaQuestV12`
+- [ ] Reload xong mới chạy `CFAQ.setSeed(7)`
+- [ ] `runNo = 1`
+- [ ] Arena 1 = 11/15
+- [ ] W1 = C2
+- [ ] Arena 2 = 8/10
+- [ ] Arena 3 = 8/10
+- [ ] W2 = C1
+- [ ] Arena 4 = 9/10
+- [ ] Credit trước Boss = 15
+- [ ] Boss plan = C2(7) / C1(5) / C3(3)
+- [ ] Boss Gate trừ 15 Credit
+- [ ] Boss = 14/15
+- [ ] Câu Boss duy nhất cố ý sai = `ETH-C3-S3-017`
+- [ ] Không dùng Bùa
+- [ ] Không có overtime penalty
+- [ ] Credit cuối = 9
+- [ ] C1 = Đã cải thiện
+- [ ] C2 = Đã cải thiện
+- [ ] C3 = Cần cải thiện tiếp
+
+---
+
+## Ghi chú
+
+Bảng này chỉ đúng cho **main path Seed 7** với điều kiện ở đầu file. Nếu:
+
+- retry một Arena;
+- dùng World Quest;
+- thay seed;
+- đổi question bank;
+- sửa thuật toán shuffle/generation;
+
+thì Question ID từ round đó trở đi có thể thay đổi.
