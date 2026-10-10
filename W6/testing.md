@@ -57,7 +57,7 @@ Credit reward **không đổi**:
 |---|---|---|---|---|---|---|---|---|
 | T-S01 | Arena 1 — ngay dưới ngưỡng | 10/15, Credit trước = 3 | 66,7% < 70% → **FAIL**; +0; Credit sau = 3 | Đã test — khớp Expected | ✅ Pass | Minh | — | Trang |
 | T-S02 | Arena 1 — ngay trên ngưỡng | 11/15, Credit trước = 3 | 73,3% ≥ 70% → **PASS**; tier ≥70% → +2; Credit sau = 5 | Đã test — khớp Expected | ✅ Pass | Minh | — | Trang |
-| **T-S03** | **Arena 2 — 7/10 không còn đủ để đỗ** | Arena 2, 7/10, Credit trước = 5 | 70% < 75% → **FAIL**; +0; Credit sau = 5 | Chưa chạy Week 7 | ⏳ Chờ code | Minh | — | Trang |
+| **T-S03** | **Arena 2 — 7/10 không còn đủ để đỗ** | Arena 2, 7/10, Credit trước = 5 | 70% < 75% → **FAIL**; +0; Credit sau = 5 | Đã test — khớp Expected | ✅ Pass | Minh | — | Trang |
 | T-S04 | Arena 2 — biên pass | Arena 2, 8/10, Credit trước = 5 | 80% ≥75% → **PASS**; tier ≥80% → +3; Credit sau = 8 | Đã test — khớp Expected | ✅ Pass | Minh | — | Trang |
 | T-S05 | Arena 3 — ngay dưới ngưỡng | Arena 3, 7/10, không penalty, Credit trước = 8 | 70% <75% → **FAIL**; reward 0; Credit sau = 8 | Đã test — khớp Expected | ✅ Pass | Minh | — | Trang |
 | T-S06 | Arena 3 — biên pass | Arena 3, 8/10, không penalty, Credit trước = 8 | 80% ≥75% → **PASS**; +3; Credit sau = 11 | Đã test — khớp Expected | ✅ Pass | Minh | — | Trang |
