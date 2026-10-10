@@ -1,9 +1,9 @@
 # INPUT_DICTIONARY
 
-**Sản phẩm:** CFA Quest — Ethics diagnostic dungeon
-**Học phần:** NHA408E · Nhóm 7
-**Nguồn tham chiếu nội bộ:** `SOLUTION_STRUCTURE.md` v hiện hành, `ethics_bank_110.json` (110 câu)
-**Trạng thái:** đã đồng bộ với bản `SOLUTION_STRUCTURE.md` có Mục 5 ba công thức và bảng tổng kết sau Boss
+**Sản phẩm:** CFA Quest — Ethics diagnostic dungeon  
+**Học phần:** NHA408E · Nhóm 7  
+**Nguồn tham chiếu nội bộ:** `SOLUTION_STRUCTURE.md` bản Week 7, `ethics_bank_170.json` (170 câu)  
+**Trạng thái:** đặc tả dữ liệu đã cập nhật theo thiết kế Week 7; code phải đồng bộ lại các field và rule bên dưới
 
 ---
 
@@ -16,14 +16,14 @@ Một field chỉ được nằm trong file này nếu trả lời được **c�
 
 Field không trả lời được câu 2 thì xuống Mục 5 (contextual) hoặc bị xoá.
 
-Sản phẩm có **bốn** output. Cột "Ảnh hưởng output" luôn trỏ về một trong bốn:
+Sản phẩm có **bốn** output chính. Cột "Ảnh hưởng output" luôn trỏ về một hoặc nhiều output sau:
 
-- **O1 — Bảng chẩn đoán:** tỷ lệ đúng theo 5 cụm và 9 module, tính lại sau mỗi Arena
-- **O2 — Arena kế tiếp:** đề được sinh ra từ cụm yếu
-- **O3 — Kết quả Arena:** đỗ/trượt, Credit, lời giải từng câu sai
-- **O4 — Bảng tổng kết sau Boss:** tỷ lệ đúng từng cụm qua 5 Arena, nhãn cải thiện, và `performance_score` toàn lượt
+- **O1 — Bảng chẩn đoán:** tỷ lệ đúng theo 5 cụm và 9 module, tính lại sau mỗi Arena.
+- **O2 — Arena kế tiếp:** đề được sinh ra từ cụm yếu, đồng thời tuân theo tỉ lệ dễ/vừa/khó của round.
+- **O3 — Kết quả Arena / tiến trình game:** đỗ/trượt, Credit, phạt quá giờ, trạng thái mở Boss, kết quả World Quest và lời giải từng câu sai.
+- **O4 — Bảng tổng kết sau Boss:** tỷ lệ đúng từng cụm qua 5 Arena, nhãn cải thiện, và `performance_score` toàn lượt.
 
-> **O4 là output mới so với bản Week 3.** Trước Week 3 sản phẩm chỉ có ba output. Bảng tổng kết sau Boss ở Mục 5 `SOLUTION_STRUCTURE.md` là output thứ tư, dùng bộ đếm riêng và không đọc `accuracy_cumulative`.
+> **World Quest không phải dữ liệu chẩn đoán.** Kết quả Quest được lưu riêng để cấp Credit và phục vụ tiến trình game; không cộng vào O1, không làm thay đổi `W1`, `W2`, `boss_clusters`, và không được đưa vào O4.
 
 ---
 
@@ -32,123 +32,268 @@ Sản phẩm có **bốn** output. Cột "Ảnh hưởng output" luôn trỏ v�
 | Field | Nghĩa | Đơn vị / Định dạng | Nguồn | Ảnh hưởng output |
 |---|---|---|---|---|
 | `selected_option` | Chỉ số phương án người học chọn cho một câu. Chỉ ghi nhận sau khi bấm Xác nhận; không cho đổi lại | int, 0–2 | Người dùng | O1, O2, O3, O4 |
-| `time_to_answer` | Số giây tính từ lúc câu hiện lên màn hình đến lúc bấm Xác nhận. **Chỉ đo, không giới hạn.** Không dùng để chấm điểm | int, giây | Hệ thống đo (timestamp render → timestamp submit) | O2 — chỉ chạy khi hai cụm bằng Accuracy và bằng cả độ khó trung bình |
-| `item_used` | Câu này có dùng vật phẩm (Bùa Loại Trừ) hay không | boolean | Người dùng | O1 — quyết định câu có vào mẫu chẩn đoán hay không; O4 — quyết định câu có vào tử số `performance_score` hay không |
+| `timeMs` | Thời gian từ lúc câu hiện lên đến lúc người học bấm Xác nhận | int, mili giây | Hệ thống đo (timestamp render → timestamp submit) | O2 — tie-break khi cần; O3 — tính quá giờ và phạt Credit ở Arena 3, Arena 4, Boss |
+| `item_used` | Câu này có dùng Bùa Loại Trừ hay không | boolean | Người dùng | O1 — quyết định câu có vào mẫu chẩn đoán hay không; O4 — quyết định câu có vào tử số `performance_score` hay không |
 | `item_type_used` | Loại vật phẩm đã dùng ở câu đó, nếu có | enum: `none` / `eliminate` | Người dùng | O3 — hiển thị lại trong bảng lời giải |
 
-**Lưu ý về `time_to_answer`:** Mục 10 của `SOLUTION_STRUCTURE.md` xếp "giới hạn thời gian mỗi câu" vào Out of Scope. Không mâu thuẫn — sản phẩm **đo** thời gian nhưng **không đặt hạn**. Người học không bị đếm ngược, không bị trừ điểm vì chậm.
+### 1.1 Quy tắc thời gian
 
-### Bốn ràng buộc vật phẩm (Mục 8 `SOLUTION_STRUCTURE.md`)
+`timeMs` là field thời gian gốc của từng record. Giới hạn thời gian không làm câu tự nộp; người chơi vẫn được chọn đáp án sau khi hết giờ.
 
-Đây là ràng buộc lên chính `item_used`, không phải luật game phụ. Vi phạm bất kỳ dòng nào là lỗi engine, không phải lựa chọn của người chơi.
+Giới hạn theo round:
+
+| Round | Giới hạn |
+|---|---:|
+| Arena 1 | Không giới hạn |
+| Arena 2 | Không giới hạn |
+| Arena 3 | 100 giây/câu |
+| Arena 4 | 80 giây/câu |
+| Boss | 60 giây/câu |
+| World Quest | Không giới hạn |
+
+Từ `timeMs`, engine sinh ra `overtime_seconds` và `time_penalty_credit` ở Mục 3.2.
+
+Với `t` là số giây đã dùng và `L` là giới hạn của round:
+
+```text
+time_penalty_credit = ceil(max(0, t - L) / 10)
+```
+
+- Trả lời đúng bằng giới hạn: phạt `0`.
+- Quá từ 1 đến 10 giây: phạt `1 Credit`.
+- Quá từ 11 đến 20 giây: phạt `2 Credit`.
+- Phạt tính riêng từng câu.
+- Tổng phạt của round được trừ sau khi chấm round, kể cả khi người chơi trượt.
+- `credit_balance` không được xuống dưới `0`.
+- Thoát giữa Arena 3 hoặc Arena 4 không xoá tiền phạt của các câu đã trả lời trước khi thoát.
+- Ở Boss, tiền phạt được trừ vào phần thưởng sau Boss; ví vẫn không âm.
+
+### 1.2 Ràng buộc vật phẩm
+
+Đây là ràng buộc lên chính `item_used`, không phải luật phụ. Vi phạm là lỗi engine.
 
 | # | Ràng buộc | Hệ quả lên dữ liệu |
 |---|---|---|
-| 1 | **Arena 1 không được dùng vật phẩm** | Mọi record của Arena 1 phải có `item_used = false`. Đây là điều kiện để `points_offered` của Arena 1 luôn bằng 30 |
-| 2 | **Boss không được dùng vật phẩm** | Cột Boss của O4 không bao giờ bị rỗng mẫu vì item |
-| 3 | **Mỗi Arena tối đa 1 vật phẩm** | Một cụm không thể bị rỗng mẫu chẩn đoán do dồn item |
-| 4 | **Mỗi câu tối đa 1 vật phẩm** | `item_type_used` luôn là một giá trị đơn, không phải mảng |
+| 1 | **Arena 1 không được dùng vật phẩm** | Mọi record Arena 1 phải có `item_used = false` |
+| 2 | **Arena 2, Arena 3, Arena 4 và Boss tối đa 1 Bùa Loại Trừ mỗi round** | Mỗi round có nhiều nhất 1 record `item_used = true` |
+| 3 | **Mỗi câu tối đa 1 vật phẩm** | `item_type_used` luôn là một giá trị đơn, không phải mảng |
+| 4 | **World Quest không được dùng vật phẩm** | Mọi record Quest phải có `item_used = false` |
+
+Câu trả lời đúng nhờ Bùa vẫn được tính vào `arena_score_correct` để xét đỗ/trượt, nhưng bị loại khỏi dữ liệu chẩn đoán và khỏi tử số `performance_score`.
 
 ---
 
 ## 2. Product information — nằm sẵn trong ngân hàng câu hỏi
 
-Nguồn chung: `ethics_bank_110.json`, do nhóm tự biên soạn, gắn nhãn thủ công.
+Nguồn chung: `ethics_bank_170.json`, do nhóm tự biên soạn và gắn nhãn thủ công.
 
 | Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
 |---|---|---|---|
-| `id` | Mã định danh duy nhất của câu. Cấu trúc `ETH-{cụm}-{module}-{số thứ tự}` | string, 110 giá trị duy nhất | O2 — chống lặp câu trong cùng một lượt chơi |
-| `cluster` | Cụm chẩn đoán. **Đây là trục sinh đề.** Toàn bộ cơ chế Trap chạy trên trường này | enum: C1–C5 | O1, O2, O4 |
-| `module` | Module nội dung. **Đây là trục báo cáo, không phải trục sinh đề.** Ngoài ra ràng buộc phân bổ câu: Arena 1 phải rải qua hết module trong cụm, Trap phải chia đều 10 câu cho các module trong cụm | enum: GIPS, CODE, S1–S7 | O1 (bảng 9 dòng), O2 (ràng buộc phủ module) |
-| `difficulty` | Mức khó do nhóm tự đánh giá. **Không phải trục chẩn đoán.** Có **ba** công dụng, xem ô ghi chú bên dưới | int, 1–3 | O2 — cân bằng Arena 1 và tie-break; **O4 — trọng số điểm của `performance_score`** |
-| `stem` | Đề bài. Tình huống giả định do nhóm dựng, kết bằng lead-in chuẩn CFA ("most likely", "least likely") | string | O3 |
-| `options` | Ba phương án trả lời, đúng chuẩn CFA Level I | mảng 3 string | O3 |
+| `id` | Mã định danh duy nhất của câu. Cấu trúc `ETH-{cụm}-{module}-{số thứ tự}` | string, duy nhất trong bank | O2 — chống lặp không đúng luật và loại câu Quest khỏi Boss |
+| `cluster` | Cụm chẩn đoán. **Đây là trục sinh đề chính** | enum: C1–C5 | O1, O2, O4 |
+| `module` | Module nội dung. **Đây là trục báo cáo, không phải trục chọn cụm yếu** | enum: GIPS, CODE, S1–S7 | O1, O2 |
+| `difficulty` | Mức khó do nhóm tự đánh giá: 1=dễ, 2=vừa, 3=khó | int, 1–3 | O2 — quyết định tỉ lệ dễ/vừa/khó theo round, cân bằng Arena 1 và fallback; O4 — trọng số `performance_score` |
+| `stem` | Đề bài. Tình huống giả định do nhóm dựng | string | O3 |
+| `options` | Ba phương án trả lời | mảng 3 string | O3 |
 | `answer` | Chỉ số phương án đúng trong `options` | int, 0–2 | O1, O2, O3, O4 |
-| `distractor_reason` | Lỗi tư duy dẫn tới từng phương án sai. Phần tử ở vị trí `answer` để rỗng | mảng 3 string | O3 — nội dung giải thích câu sai |
-| `hint` | Một dòng gợi ý: Standard nào đang bị áp dụng. Không tiết lộ đáp án | string | Bản hiện tại của sản phẩm chưa sử dụng feature này |
-| `explanation` | Lời giải: vì sao đáp án đúng, vì sao các phương án khác sai, và điều kiện nào sẽ làm kết luận đổi chiều | string | O3 |
+| `distractor_reason` | Lỗi tư duy dẫn tới từng phương án sai. Phần tử tại `answer` để rỗng | mảng 3 string | O3 |
+| `hint` | Một dòng gợi ý về Standard đang áp dụng | string | Bản hiện tại chưa dùng feature hint |
+| `explanation` | Lời giải sau câu hỏi | string | O3 |
 
-> **`difficulty` đã đổi vai từ Week 3.** Bản trước dùng nó cho hai việc nội bộ (cân bằng Arena 1, tie-break) và không hiện ra màn hình. Bản hiện hành dùng nó làm **trọng số điểm** cho `performance_score` — một con số hiển thị công khai ở màn tổng kết. Bảng quy đổi: `{1: 1, 2: 2, 3: 3}`. Vì đây là nhãn chủ quan do nhóm tự gắn, giới hạn của việc dùng nó làm trọng số phải được đọc kèm `ASSUMPTIONS.md` mục **C2** và **B11**.
+### 2.1 Vai trò của `difficulty` trong bản Week 7
+
+`difficulty` có bốn vai trò:
+
+1. Arena 1 giữ cách rút cũ: mỗi cụm 3 câu, gồm 1 dễ + 1 vừa + 1 khó.
+2. Arena 2–Boss phải tuân theo quota dễ/vừa/khó của round.
+3. `difficulty` tiếp tục tham gia tie-break khi xác định cụm yếu nếu Accuracy bằng nhau.
+4. `difficulty` tiếp tục là trọng số của `performance_score`, với `{1:1, 2:2, 3:3}`.
+
+Quota độ khó:
+
+| Round | Dễ / Vừa / Khó | Số câu Dễ / Vừa / Khó |
+|---|---|---|
+| Arena 1 | theo từng cụm: 1/1/1 | tổng 5/5/5 |
+| Arena 2 | 40/40/20% | 4/4/2 |
+| Arena 3 | 20/50/30% | 2/5/3 |
+| Arena 4 | 20/40/40% | 2/4/4 |
+| Boss | 10/30/60% | 2/4/9 |
+
+Boss chia ba cụm yếu nhất theo 7/5/3 câu:
+
+| Cụm trong Boss | Tổng câu | Dễ | Vừa | Khó |
+|---|---:|---:|---:|---:|
+| Cụm yếu nhất | 7 | 1 | 2 | 4 |
+| Cụm yếu thứ hai | 5 | 1 | 1 | 3 |
+| Cụm yếu thứ ba | 3 | 0 | 1 | 2 |
+
+Khi cụm không còn **câu mới** đúng mức khó cần rút:
+
+1. ưu tiên lấy lại câu **cùng mức khó** mà người chơi đã gặp;
+2. nếu cũng không còn câu phù hợp thì hạ xuống mức **vừa**;
+3. mỗi lần fallback phải ghi vào `bankLog`.
 
 ---
 
 ## 3. State variables — hệ thống tự tính, không ai nhập vào
 
-Đây là nhóm quan trọng nhất: O1 và O4 được sinh ra hoàn toàn từ nhóm này.
+Đây là nhóm quan trọng nhất: O1 và O4 được sinh ra hoàn toàn từ các bộ đếm Arena; O3 còn đọc thêm state về Credit, timer, Boss và World Quest.
 
 ### 3.1 Bộ đếm chẩn đoán — phục vụ O1, O2
 
 | Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
 |---|---|---|---|
-| `diagnostic_correct[c]` | Số câu **đúng** thuộc cụm c, **đã loại bỏ mọi câu có `item_used = true`**. Cộng dồn toàn hành trình, **bao gồm cả câu ở Trap I và Trap II**, không reset giữa các Arena | int | O1 — tử số |
-| `diagnostic_attempted[c]` | Số câu **đã làm** thuộc cụm c, cùng điều kiện loại vật phẩm và cùng phạm vi cộng dồn | int | O1 — mẫu số |
-| `accuracy_cumulative[c]` | `diagnostic_correct[c] ÷ diagnostic_attempted[c]`. Tính lại sau mỗi Arena. **Công thức (1) Mục 5 `SOLUTION_STRUCTURE.md`** | float, 0.0–1.0 | O1, O2 |
+| `diagnostic_correct[c]` | Số câu đúng thuộc cụm c, **loại mọi câu có `item_used = true`**. Chỉ tính dữ liệu của 5 Arena, không tính World Quest | int | O1 — tử số |
+| `diagnostic_attempted[c]` | Số câu đã làm thuộc cụm c, cùng điều kiện loại vật phẩm và không tính Quest | int | O1 — mẫu số |
+| `accuracy_cumulative[c]` | `diagnostic_correct[c] ÷ diagnostic_attempted[c]`. Tính lại sau mỗi Arena | float, 0.0–1.0 | O1, O2 |
 
-> **Đổi tên so với bản Week 3.** Field này trước đây tên `accuracy[c]`. Tên trần `accuracy` bị cấm dùng trong code kể từ khi có `accuracy_by_arena`, vì hai biến đọc cùng một tập câu trả lời nhưng cho hai con số khác nhau.
+> Câu ở Arena 2 và Arena 4 vẫn nằm trong `accuracy_cumulative`. World Quest thì **không**.
 
-> **Trap có nằm trong `accuracy_cumulative` không:** **CÓ.** Câu ở Trap I và Trap II vào cả tử lẫn mẫu. Đây là lựa chọn có chủ ý, có hệ quả, và được ghi ở `ASSUMPTIONS.md` mục **B10** — đọc trước khi code.
-
-### 3.2 Bộ đếm điểm Arena — phục vụ O3
+### 3.2 Bộ đếm điểm Arena, timer và Credit — phục vụ O3
 
 | Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
 |---|---|---|---|
-| `arena_score_correct` | Số câu đúng trong Arena hiện tại, **tính cả câu có `item_used = true`**. Reset về 0 khi vào Arena mới. **Công thức (2)** | int | O3 — đỗ/trượt và Credit |
-| `arena_question_count` | Tổng số câu của Arena hiện tại (15 hoặc 10) | int | O3 — mẫu số của ngưỡng 70% |
-| `arena_passed` | Arena hiện tại đỗ hay trượt. Ngưỡng: `arena_score_correct ÷ arena_question_count ≥ 0.70` | boolean | O3 — mở khoá Arena kế tiếp, cấp Credit |
-| `credit_balance` | Số Credit đang có. Khởi tạo = 3 | int, ≥ 0 | O3 — quyết định có mua được vật phẩm không. Gián tiếp tác động O1 qua `item_used` |
+| `arena_score_correct` | Số câu đúng trong Arena hiện tại, **tính cả câu có `item_used = true`**. Reset khi vào round mới | int | O3 — đỗ/trượt và Credit |
+| `arena_question_count` | Tổng số câu của round hiện tại: 15 ở Arena 1/Boss; 10 ở Arena 2–4; 15 ở Quest | int | O3 |
+| `arena_pass_percent` | Ngưỡng đỗ của round hiện tại. Chỉ áp dụng cho 5 Arena, không áp dụng World Quest | int, % | O3 |
+| `arena_passed` | `arena_score_correct ÷ arena_question_count` đạt ngưỡng của round hay không | boolean | O3 — mở tiến trình tiếp theo, cấp Credit |
+| `time_limit_seconds` | Giới hạn thời gian của một câu ở round hiện tại; `null` nếu không có giới hạn | int hoặc null | O3 — tính phạt |
+| `overtime_seconds` | Số giây vượt giới hạn của một câu: `max(0, ceil(timeMs/1000) - time_limit_seconds)`; bằng 0 nếu round không có timer | int, ≥0 | O3 |
+| `time_penalty_credit` | Credit bị phạt cho một câu: `ceil(overtime_seconds / 10)` | int, ≥0 | O3 |
+| `round_time_penalty_credit` | Tổng `time_penalty_credit` của các câu đã xác nhận trong round | int, ≥0 | O3 |
+| `credit_balance` | Credit đang có. Khởi tạo = 3; không bao giờ âm | int, ≥0 | O3 — mua Bùa, trả phí mở Boss |
+| `round_credit_reward` | Credit thưởng theo tỷ lệ đúng: ≥70% `+2`, ≥80% `+3`, ≥90% `+4`; trượt round không được thưởng | int: 0/2/3/4 | O3 |
+| `boss_first_clear_bonus` | Thưởng thêm khi lần đầu vượt Boss | int, cố định +5 khi thỏa điều kiện | O3 |
+
+Ngưỡng đỗ:
+
+| Round | Số câu | `arena_pass_percent` | Số câu đúng tối thiểu |
+|---|---:|---:|---:|
+| Arena 1 | 15 | 70% | 11/15 |
+| Arena 2 | 10 | 75% | 8/10 |
+| Arena 3 | 10 | 75% | 8/10 |
+| Arena 4 | 10 | 85% | 9/10 |
+| Boss | 15 | 90% | 14/15 |
+
+> **Không được dùng một hằng `70%` chung cho pass/fail.**  
+> Ngưỡng 70% của bảng tổng kết O4 là một rule khác và vẫn giữ nguyên.
 
 ### 3.3 Bộ đếm theo Arena — phục vụ O4
 
 | Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
 |---|---|---|---|
-| `accuracy_by_arena[c][arena]` | Cặp số `{correct, attempted}` của cụm c **riêng trong từng Arena**, không cộng dồn. Cùng điều kiện loại câu dùng vật phẩm như 3.1 | object lồng 2 tầng | O4 — mọi ô của bảng tổng kết |
-| `baseline_accuracy[c]` | Mốc chẩn đoán của cụm c: `(arena1.correct + crossroads.correct) ÷ (arena1.attempted + crossroads.attempted)`. **Không gồm Trap** | float | O4 — cột so sánh gốc |
-| `delta[c]` | `boss_accuracy[c] − baseline_accuracy[c]`. Không hiển thị trực tiếp; là biến trung gian để dán nhãn | float, có thể âm | O4 |
-| `improvement_label[c]` | Nhãn kết luận của cụm c, nhận một trong bốn giá trị theo bảng điều kiện Mục 5 `SOLUTION_STRUCTURE.md` | enum: `not_retested` / `improved` / `improved_insufficient` / `needs_work` | O4 — cột Kết luận |
-| `performance_by_arena[arena]` | Cặp số `{points_earned, points_offered}` theo Arena. `points_earned` cộng điểm độ khó của câu **đúng và không dùng vật phẩm**; `points_offered` cộng điểm độ khó của **mọi câu đã hỏi**. Không chia theo cụm | object | O4 |
-| `performance_score` | `Σ points_earned ÷ Σ points_offered` trên cả 5 Arena. **Công thức (3)** | float, 0.0–1.0 | O4 — con số so sánh giữa người chơi |
+| `accuracy_by_arena[c][arena]` | Cặp `{correct, attempted}` của cụm c riêng trong từng Arena; loại câu dùng vật phẩm; **không có World Quest** | object lồng 2 tầng | O4 |
+| `baseline_accuracy[c]` | Mốc chẩn đoán của cụm c theo logic hiện hành trong `SOLUTION_STRUCTURE.md` | float | O4 |
+| `delta[c]` | `boss_accuracy[c] − baseline_accuracy[c]` | float, có thể âm | O4 |
+| `improvement_label[c]` | Nhãn kết luận của cụm c theo rule O4. Mốc đánh giá cải thiện vẫn là 70%, không đổi theo Boss pass threshold | enum: `not_retested` / `improved` / `improved_insufficient` / `needs_work` | O4 |
+| `performance_by_arena[arena]` | `{points_earned, points_offered}` theo từng Arena. Quest không có entry | object | O4 |
+| `performance_score` | `Σ points_earned ÷ Σ points_offered` trên **5 Arena**, không tính Quest | float, 0.0–1.0 | O4 |
 
 ### 3.4 Biến điều khiển sinh đề
 
 | Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
 |---|---|---|---|
-| `W1` | Cụm có `accuracy_cumulative` thấp nhất tại thời điểm sau Arena 1 | enum: C1–C5 | O2 — nội dung Trap I |
-| `W2` | Cụm có `accuracy_cumulative` thấp nhất tại thời điểm sau Arena 3, **bắt buộc khác `W1`** | enum: C1–C5 | O2 — nội dung Trap II |
-| `boss_clusters` | Ba cụm có `accuracy_cumulative` thấp nhất sau Arena 4, xếp theo thứ tự yếu dần, phân bổ 7/5/3 câu. **Không loại trừ W1/W2** | mảng 3 enum | O2 — nội dung Boss |
-| `used_question_ids` | Danh sách `id` các câu đã ra trong lượt chơi hiện tại | mảng string | O2 — lọc bank khi sinh Arena, chống lặp câu |
-| `attempt_index[arena]` | Lượt làm thứ mấy của Arena đó. Bắt đầu từ 1, tăng mỗi lần chơi lại sau khi trượt | int, ≥ 1 | O4 — quyết định lượt nào được ghi vào mốc chẩn đoán |
+| `W1` | Cụm có `accuracy_cumulative` thấp nhất sau Arena 1 | enum: C1–C5 | O2 — Arena 2 |
+| `W2` | Cụm có `accuracy_cumulative` thấp nhất sau Arena 3, bắt buộc khác `W1` | enum: C1–C5 | O2 — Arena 4 |
+| `boss_clusters` | Ba cụm có `accuracy_cumulative` thấp nhất sau Arena 4, xếp yếu dần, phân bổ 7/5/3 | mảng 3 enum | O2 — Boss và World Quest |
+| `used_question_ids` | Danh sách câu đã xuất hiện trong 5 Arena của lượt chơi | mảng string | O2 — chống lặp và hỗ trợ fallback |
+| `quest_used_question_ids` | Tập `id` đã xuất hiện trong World Quest. **Boss không được rút các id này** | mảng string | O2 |
+| `bankLog` | Log mọi trường hợp thiếu câu đúng quota/mức khó và phải dùng fallback | mảng string | O2 — kiểm tra chất lượng bank |
+| `attempt_index[arena]` | Lượt làm thứ mấy của Arena đó | int, ≥1 | O3, O4 |
+
+### 3.5 Trạng thái mở Boss
+
+| Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
+|---|---|---|---|
+| `boss_unlocked` | Người chơi hiện có quyền vào Boss hay không | boolean | O3 |
+| `boss_unlock_cost` | Giá mở Boss | int, cố định 15 Credit | O3 |
+| `boss_unlock_paid` | Đợt mở Boss hiện tại đã trừ 15 Credit hay chưa | boolean | O3 |
+| `boss_cleared_once` | Người chơi đã từng vượt Boss trong run hiện tại chưa | boolean | O3 — quyết định thưởng +5 |
+
+Luật cập nhật state:
+
+- Sau khi đỗ Arena 4, nếu `credit_balance >= 15`, người chơi có thể trả 15 Credit để đặt `boss_unlocked = true`.
+- Nếu chưa đủ 15 Credit, Boss vẫn khoá và người chơi có thể vào World Quest.
+- **Trượt Boss:** `boss_unlocked` vẫn là `true`; chơi lại với đề mới, không trả thêm 15 Credit.
+- **Thoát giữa Boss:** lượt Boss bị huỷ, 15 Credit đã trả không hoàn, và `boss_unlocked = false`. Muốn vào lại phải kiếm đủ và trả 15 Credit lần nữa.
+
+### 3.6 World Quest
+
+| Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
+|---|---|---|---|
+| `quest_available` | Quest đã được mở hay chưa. Chỉ mở sau khi đỗ Arena 4 | boolean | O3 |
+| `quest_attempt_index` | Số lần đã chơi Quest trong run | int, ≥0 | O3 |
+| `quest_score_correct` | Số câu đúng ở lượt Quest hiện tại | int, 0–15 | O3 |
+| `quest_credit_reward` | Credit nhận sau Quest theo kết quả | int: 0/2/3/4 | O3 |
+| `quest_history` | Lịch sử các lượt Quest: điểm, Credit nhận, question ids | mảng object | O3 |
+| `quest_used_question_ids` | Tất cả câu đã xuất hiện ở Quest trong run, dùng để loại khỏi Boss | mảng string | O2 |
+
+Cấu trúc Quest:
+
+- 15 câu.
+- Dùng đúng `boss_clusters`: mỗi cụm 5 câu.
+- Độ khó ngẫu nhiên.
+- Không timer.
+- Không ngưỡng đỗ.
+- Không dùng Bùa.
+- Có thể chơi bao nhiêu lần cũng được.
+- Ưu tiên câu người chơi đã gặp ở Arena 1–4 thuộc ba cụm đó; không đủ mới lấy câu chưa gặp.
+- Không ghi vào bộ đếm chẩn đoán và không ghi vào bảng tổng kết Boss.
+- Câu đã ra ở Quest không được xuất hiện trong Boss.
+
+Thưởng Quest:
+
+| Kết quả | `quest_credit_reward` |
+|---|---:|
+| 0–8/15 | 0 |
+| 9–11/15 | +2 |
+| 12–13/15 | +3 |
+| 14–15/15 | +4 |
 
 ---
 
 ## 4. Ba khái niệm "trả lời đúng"
 
-Sản phẩm đếm cùng một tập câu trả lời bằng **ba** công thức xử lý câu dùng vật phẩm theo ba cách khác nhau. Đây là chỗ dễ sai nhất khi code.
+Sản phẩm xử lý cùng một câu trả lời theo ba bộ đếm khác nhau. Đây là chỗ dễ sai nhất khi code.
 
 | | (1) `accuracy_cumulative` | (2) `arena_score_correct` | (3) `performance_score` |
 |---|---|---|---|
-| Dùng để | Chẩn đoán — chọn cụm cho Trap và Boss | Chấm điểm — đỗ/trượt, Credit | Phân biệt hai người cùng điểm |
+| Dùng để | Chẩn đoán — chọn cụm cho Arena 2, Arena 4, Boss | Chấm điểm — đỗ/trượt, Credit | Phân biệt hiệu suất toàn lượt |
 | Đơn vị đếm | Số câu | Số câu | Điểm độ khó (1/2/3) |
-| Câu dùng vật phẩm — tử số | **Loại** | Tính | **Loại** |
-| Câu dùng vật phẩm — mẫu số | **Loại** | Tính | **Tính** |
-| Phạm vi | Cộng dồn toàn hành trình | Reset mỗi Arena | Cộng gộp cả 60 câu |
-| Chia theo cụm | Có (5 bộ đếm) | Không | Không |
-| Ghi theo lượt nào khi chơi lại | Lượt **đầu tiên** | Lượt **đỗ** | Lượt **đầu tiên** |
+| Câu dùng Bùa — tử số | **Loại** | Tính | **Loại** |
+| Câu dùng Bùa — mẫu số | **Loại** | Tính | **Tính** |
+| Phạm vi | 5 Arena, cộng dồn theo rule chẩn đoán | Reset mỗi Arena | 5 Arena |
+| World Quest | **Không tính** | Dùng bộ đếm Quest riêng | **Không tính** |
+| Chia theo cụm | Có | Không | Không |
 
-**Vì sao mẫu số của (3) khác (1):** ở (1), câu dùng vật phẩm bị loại hẳn vì nó không cho biết người học có nắm cụm đó hay không — giữ lại sẽ đẩy Accuracy của cụm lên cao giả tạo, cụm đó thoát khỏi vị trí yếu nhất, và Trap bắn sang cụm khác. Ở (3), câu đó **ở lại mẫu số** vì chỉ số này đo phần người chơi tự làm được trên toàn bộ những gì đã gặp: vật phẩm giúp qua màn, không mua được `performance_score`.
+**Vì sao mẫu số của (3) khác (1):** ở (1), câu dùng vật phẩm bị loại hẳn vì nó không chứng minh người học tự nắm kiến thức. Ở (3), câu đó vẫn nằm trong `points_offered` vì `performance_score` đo phần người chơi tự làm được trên toàn bộ phần nội dung đã gặp.
 
-**`performance_score` không tham gia chuỗi chẩn đoán.** Nó không quyết định `W1`, `W2`, `boss_clusters`, không quyết định đỗ/trượt, không cấp Credit. Nếu một nhánh code đọc `performance_score` để ra quyết định, đó là lỗi.
+**`performance_score` không tham gia chuỗi chẩn đoán.** Nó không quyết định `W1`, `W2`, `boss_clusters`, không quyết định đỗ/trượt, không cấp Credit.
 
-**Cấm dùng tên biến `correct`, `score`, `right`, `accuracy` trần trong code.** Luôn viết đủ tiền tố: `diagnostic_`, `arena_score_`, `accuracy_cumulative`, `accuracy_by_arena`, `performance_`.
+**World Quest cũng không tham gia chuỗi chẩn đoán.** Quest chỉ dùng để luyện tập và kiếm Credit.
+
+**Cấm dùng tên biến `correct`, `score`, `right`, `accuracy` trần trong code.** Luôn viết rõ tiền tố/phạm vi: `diagnostic_`, `arena_score_`, `quest_`, `accuracy_cumulative`, `accuracy_by_arena`, `performance_`.
 
 ### Ba quy tắc lưu của `accuracy_by_arena`
 
-1. Lưu **cặp số**, không lưu phần trăm. `baseline_accuracy` phải cộng được `(1+2)/(3+2)`; hai phần trăm thì không cộng được.
+1. Lưu **cặp số**, không lưu phần trăm.
 2. Đếm theo `diagnostic_correct` / `diagnostic_attempted`, tức loại câu dùng vật phẩm khỏi cả tử lẫn mẫu.
-3. Arena nào không hỏi cụm đó thì **không tạo key**, không đặt `attempted: 0`. Đặt 0 sẽ sinh phép chia cho 0 và một ô 0% giả trên bảng.
+3. Arena nào không hỏi cụm đó thì không tạo key giả `attempted: 0`.
 
 ### Điểm kiểm tra tự động
 
-`performance_by_arena["arena1"].points_offered` **luôn phải bằng 30** — vì Arena 1 có 5 cụm × 3 mức khó × 1 câu, và không được dùng vật phẩm. Nếu engine tính ra số khác, lỗi nằm ở khâu sinh đề Arena 1, không nằm ở khâu tính điểm.
+`performance_by_arena["arena1"].points_offered` luôn phải bằng 30 vì Arena 1 có 5 cụm × (1+2+3 điểm độ khó) và không dùng vật phẩm.
+
+Ngoài ra engine phải kiểm tra:
+
+- Arena 2 có đúng `4/4/2` câu dễ/vừa/khó.
+- Arena 3 có đúng `2/5/3`, đồng thời mỗi cụm đúng 2 câu.
+- Arena 4 có đúng `2/4/4`.
+- Boss có đúng `2/4/9` và split ba cụm là `7/5/3`.
+- World Quest có đúng 15 câu, `5/5/5` theo ba `boss_clusters`.
+- Không có `quest_used_question_ids` nào xuất hiện trong Boss.
+- `credit_balance` không âm sau khi trừ penalty.
+- Pass boundary đúng: `11/15`, `8/10`, `8/10`, `9/10`, `14/15`.
 
 ---
 
@@ -156,8 +301,8 @@ Sản phẩm đếm cùng một tập câu trả lời bằng **ba** công thứ
 
 | Field | Vì sao giữ |
 |---|---|
-| `topic` | Hằng số `"ETHICS"` ở cả 110 câu. Chỉ có nghĩa nếu sau này thêm chủ đề khác (FSA, Quantitative...). Hiện tại không có nhánh code nào đọc nó |
-| `item_type` | Nhãn `concept` / `vignette`. Không ảnh hưởng output |
+| `topic` | Hằng số `"ETHICS"` trong bank. Chỉ có nghĩa nếu sau này thêm môn/chủ đề khác |
+| `item_type` | Nhãn `concept` / `vignette`. Không ảnh hưởng trực tiếp output |
 
 ---
 
@@ -165,41 +310,44 @@ Sản phẩm đếm cùng một tập câu trả lời bằng **ba** công thứ
 
 | Field | Dùng lúc nào | Ai dùng |
 |---|---|---|
-| `sub_standard` | Lúc soạn đề. Kiểm tra ngân hàng đã phủ đủ các sub-standard chưa (hiện có 28 giá trị: GIPS-fundamentals, GIPS-composite, GIPS-disclosures, GIPS-verification, CODE-code-vs-standards, CODE-six-components, I(A)–I(D), II(A)–II(B), III(A)–III(E), IV(A)–IV(C), V(A)–V(C), VI(A)–VI(C), VII(A)–VII(B)). Đồng thời là khoá nối sang `SOURCE_USE_MAP.md` | Hồng (nội dung), Quỳnh (tài liệu) |
+| `sub_standard` | Lúc soạn đề. Kiểm tra ngân hàng đã phủ đủ các sub-standard chưa và nối sang `SOURCE_USE_MAP.md` | Nhóm nội dung / tài liệu |
 
-Lúc sản phẩm chạy, `sub_standard` không xuất hiện ở bất kỳ màn hình nào. Bảng chẩn đoán dừng ở tầng module.
+Lúc sản phẩm chạy, `sub_standard` không xuất hiện ở màn hình chẩn đoán; bảng chẩn đoán dừng ở tầng module.
 
 ---
 
-## 7. Trạng thái các việc phải chốt trước Week 4
+## 7. Việc code phải đồng bộ từ thiết kế Week 7
 
-| # | Việc | Người | Trạng thái |
-|---|---|---|---|
-| 1 | Viết lại công thức Accuracy ở Mục 5 `SOLUTION_STRUCTURE.md`, ghi điều kiện loại câu dùng vật phẩm ngay tại công thức | Quỳnh | **Xong** — Mục 5, công thức (1) |
-| 2 | Bổ sung `time_to_answer` vào danh sách Input Mục 1 `SOLUTION_STRUCTURE.md` | Quỳnh | **Xong** |
-| 3 | Xác nhận engine đo `time_to_answer` bằng timestamp render và submit | Minh | Khi dựng khung engine |
-| 4 | Đặt tên biến trong code khớp file này | Minh, Trang | Khi dựng khung engine |
-
-## 7b. Việc phát sinh từ bản `SOLUTION_STRUCTURE.md` mới
-
-| # | Việc | Người | Hạn |
-|---|---|---|---|
-| 5 | Đổi tên `accuracy` → `accuracy_cumulative` ở mọi chỗ trong repo, kể cả comment code | Minh, Trang | Trước buổi code đầu tiên |
-| 6 | Bổ sung validation: mọi record thuộc Arena 1 và Boss phải có `item_used = false`; mỗi Arena tối đa 1 record có `item_used = true` | Minh | Cùng đợt #6 |
-| 7 | Bổ sung `validate.html`: kiểm tra worst case cụm W1 tiêu thụ đúng 22 câu (3+10+2+7) mà bank không cạn | Trang | Trước integration |
-| 8 | Xác nhận cách ghi khi người chơi trượt: `accuracy_by_arena` và `performance_by_arena` ghi theo `attempt_index = 1`; `arena_score_correct` và Credit ghi theo lượt đỗ | Minh | Trước buổi code đầu tiên |
+| # | Việc cần làm | Điều kiện hoàn thành |
+|---|---|---|
+| 1 | Đổi pass threshold từ một hằng 70% sang ngưỡng theo round | Arena 1/2/3/4/Boss = 70/75/75/85/90 |
+| 2 | Giữ riêng threshold 70% của nhãn O4 | Boss 90% không làm thay đổi rule nhãn từng cụm |
+| 3 | Dùng `timeMs` để tính `overtime_seconds`, `time_penalty_credit`, `round_time_penalty_credit` | Boundary `L`, `L+1`, `L+10`, `L+11` cho kết quả đúng |
+| 4 | Sửa rule item ở Boss | Boss cho dùng tối đa 1 Bùa Loại Trừ |
+| 5 | Sinh đề theo difficulty quota | A2 4/4/2, A3 2/5/3, A4 2/4/4, Boss 2/4/9 |
+| 6 | Ghi `bankLog` khi phải fallback mức khó | Mọi fallback có log |
+| 7 | Thêm Boss gate | Đỗ A4 chưa đủ; phải trả 15 Credit |
+| 8 | Thêm state retry/quit Boss | Fail không trả lại; quit mất phí và khoá lại |
+| 9 | Thêm World Quest | 15 câu, 5/5/5, reward 0/2/3/4, replay được |
+| 10 | Tách dữ liệu Quest khỏi diagnosis | Quest không làm đổi O1/O4 |
+| 11 | Loại câu Quest khỏi Boss | `quest_used_question_ids ∩ boss_question_ids = ∅` |
+| 12 | Đổi `storageKey` sang version mới | Tiến trình v11 cũ không làm hỏng state Week 7 |
 
 ---
 
 ## 8. Owner
 
-Xem phân công chi tiết tại [WEEK5_CHECKPOINT Mục 10](WEEK5_CHECKPOINT.md#10-ownership-v%C3%A0-integration-evidence).
+Phân công owner cụ thể giữ theo file quản lý công việc của nhóm. File này chỉ định nghĩa dữ liệu và điều kiện để code/tài liệu dùng cùng một nghĩa.
 
 ---
 
 ## 9. Giới hạn của file này
 
-- Toàn bộ ngân hàng câu hỏi do nhóm tự biên soạn, tình huống là tình huống giả định. Không phải dữ liệu thật, không trích nguyên văn tài liệu CFA Institute. Chi tiết về nguồn và giới hạn nằm ở `SOURCE_USE_MAP.md`.
-- Ngưỡng đỗ 70%, ngưỡng 70% để dán nhãn "Đã cải thiện" ở O4, và bảng ánh xạ 9 module → 5 cụm đều do nhóm tự đặt, chưa đối chiếu với trọng số đề thi thật. Ghi và giải thích ở `ASSUMPTIONS.md`.
-- Mức độ khó 1–3 do nhóm tự đánh giá, chưa qua kiểm định trên người học thật. Việc dùng nó làm trọng số điểm ở `performance_score` kế thừa toàn bộ giới hạn này.
-- `performance_score` chỉ so sánh được giữa những người chơi **trong cùng sản phẩm này**. Nó không phải thang đo năng lực chuẩn hoá và không dự báo kết quả thi CFA.
+- Toàn bộ ngân hàng câu hỏi do nhóm tự biên soạn; mức độ khó 1–3 là nhãn chủ quan.
+- Các ngưỡng đỗ `70/75/75/85/90`, giới hạn giờ `100/80/60`, mức phạt theo block 10 giây, giá mở Boss 15 Credit và bậc thưởng Quest đều là con số do nhóm tự đặt, chưa được kiểm chứng bằng dữ liệu người chơi thật.
+- Arena 2 và Arena 3 cùng ngưỡng 75%; độ khó tăng giữa hai round đến từ tỉ lệ câu khó và timer ở Arena 3.
+- Mỗi cụm chỉ có số lượng câu khó hữu hạn. Replay Arena 4 nhiều lần có thể làm cụm W2 hết câu khó trước Boss; khi đó engine phải reuse/fallback và ghi `bankLog`.
+- Quest ưu tiên lặp câu cũ nên người chơi có thể nhớ đáp án và Quest dễ dần. Nhóm chấp nhận vì Quest không dùng để chẩn đoán.
+- Thời gian đo bằng đồng hồ trình duyệt; đổi tab hoặc máy chậm có thể làm `timeMs` lệch so với thời gian suy nghĩ thật.
+- Boss yêu cầu 90% trong khi có 9 câu khó; độ khó này chưa được kiểm chứng bằng clear-rate người chơi thật.
+- `performance_score` chỉ có nghĩa nội bộ trong sản phẩm này; không phải thang đo năng lực chuẩn hoá và không dự báo kết quả thi CFA.
