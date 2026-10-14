@@ -3908,5 +3908,1155 @@
     ],
     "hint": "Passing examinations and meeting experience requirements do not themselves award the charter.",
     "explanation": "Standard VII(B), together with Standard I(C)'s prohibition on misrepresentation, requires accurate description of CFA status. Ellis has not yet been awarded the charter and therefore should not imply that the designation is pending as a guaranteed administrative outcome. Option A equates prerequisites with award, and Option B overstates the effect of the qualifier. The conclusion would change after CFA Institute formally awarded the charter and Ellis satisfied the ongoing membership requirements for using the designation."
+  },
+  {
+    "id": "ETH-C1-CODE-018",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "CODE",
+    "sub_standard": "CODE-ethics-trust",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Mateo is a portfolio manager who believes his long record means he is incapable of misleading a client. When his team leader asks him to skip one disclosure step to meet a quarterly revenue target, he reasons that his own judgment is reliable enough and approves the shortcut. Which statement best explains his decision?",
+    "options": [
+      "An internal bias alone, since Mateo's experience makes the sales pressure irrelevant to his final choice.",
+      "Both external revenue pressure and internal overconfidence, which combine to distort Mateo's judgment.",
+      "An external incentive alone, since Mateo's strong self-belief is evidence of sound professional judgment."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Overlooks the supervisor's revenue demand as an external situational influence.",
+      "",
+      "Treats overconfidence as evidence of good judgment rather than a cognitive bias."
+    ],
+    "hint": "Separate the pressure from the manager's belief about his own judgment.",
+    "explanation": "Ethical judgment can be undermined by an external situational incentive and an internal bias. The team leader's revenue target is external; Mateo's overconfidence is internal. A and C each disregard one factor. With neither pressure nor overconfidence, the rationale would change."
+  },
+  {
+    "id": "ETH-C1-CODE-019",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "CODE",
+    "sub_standard": "CODE-ethics-trust",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "In a jurisdiction where advisers are not legally required to act in a client's best interest, Delphine recommends a mutual fund that pays her firm a higher commission than an otherwise identical, lower-cost fund. She discloses the commission in the client's paperwork. Which characterization is most appropriate?",
+    "options": [
+      "Legal but ethically questionable, because the higher commission drove a choice against the client's interest.",
+      "Legal and ethical, because the commission was disclosed and the fund meets the firm's product criteria.",
+      "Ethical despite the cost difference, because either identical fund could satisfy the client's investment needs."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Assumes commission disclosure makes a worse-cost recommendation ethically sound.",
+      "Ignores that an identical, cheaper fund was available without the sales incentive."
+    ],
+    "hint": "Compare legal permission with duties owed to clients.",
+    "explanation": "Ethical behavior extends beyond local law and mere disclosure. Choosing the costlier of otherwise identical funds for a higher commission subordinates client interests. B and C wrongly treat disclosure or minimal suitability as sufficient. A client-benefiting difference between funds could change the conclusion."
+  },
+  {
+    "id": "ETH-C1-CODE-020",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "CODE",
+    "sub_standard": "CODE-code-vs-standards",
+    "item_type": "concept",
+    "difficulty": 3,
+    "stem": "A professional association publishes a code of ethics expressing its shared principles. It also adopts standards of conduct to guide its members' actions. Which statement about the purpose of those standards is least likely correct?",
+    "options": [
+      "They clarify minimum acceptable practices by translating a professional body's principles into conduct.",
+      "They can be principle-based for broad duties or rule-based for particular professional situations.",
+      "They establish legal boundaries for members that government regulators would otherwise have to enact."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Mistakes a true description of the standards' purpose for the requested false statement.",
+      "Rejects the valid distinction between broadly applicable principles and specific rules.",
+      ""
+    ],
+    "hint": "Distinguish a professional body's instruments from government law.",
+    "explanation": "A code states shared principles; professional standards define minimally acceptable conduct and may be principle- or rule-based. C incorrectly assigns lawmaking to a professional code. A and B accurately describe standards. If the question referred to government regulation, legal boundaries would be relevant."
+  },
+  {
+    "id": "ETH-C1-CODE-021",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "CODE",
+    "sub_standard": "CODE-ethics-trust",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "A new association of fund managers describes itself as a profession. It publishes a code of ethics, administers an entry examination, and maintains a body of knowledge. It has no process for monitoring members' conduct and does not encourage continuing education. Which assessment is most appropriate?",
+    "options": [
+      "Sufficiently professional, because an exam and published ethical principles establish credibility for all members.",
+      "Not professional, because the group lacks direct government regulation of its practicing members.",
+      "Incomplete as a profession, because continuing education and monitoring conduct help sustain public trust."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Assumes admission requirements alone sustain trust for a professional career.",
+      "Assumes a professional association must be directly governed by the state.",
+      ""
+    ],
+    "hint": "Think about what maintains trust after admission to a profession.",
+    "explanation": "Professions foster trust through ongoing learning, conduct monitoring, established knowledge, and entry standards. A treats the entrance requirements as exhaustive; B incorrectly demands government supervision. A genuine system of ongoing monitoring and education would address the missing attributes."
+  },
+  {
+    "id": "ETH-C1-CODE-022",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "CODE",
+    "sub_standard": "CODE-ethics-trust",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "While applying an ethical decision-making framework to a proposed investment product, a manager lists alternative actions and realizes one option would affect a group of retail investors she had not identified earlier. She needs to present the ethical implications to a committee that will decide tomorrow. Which response is most appropriate?",
+    "options": [
+      "Keep the original stakeholder list, because changing it now would make the framework inconsistent.",
+      "Revisit the identification step and evaluate the newly affected group before selecting an action.",
+      "Replace the framework with the code of ethics, because new stakeholders invalidate the prior analysis."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Treats identification as closed even after a previously overlooked stakeholder appears.",
+      "",
+      "Treats a code of principles as a substitute for systematic analysis of consequences."
+    ],
+    "hint": "Consider whether ethical decision making is a one-way sequence.",
+    "explanation": "An ethical decision-making framework is iterative: identification, consideration, decision, action and assessment can be revisited. A falsely freezes the stakeholder list; C confuses a principles-based code with the framework. If no additional stakeholder had emerged, repeating identification might be unnecessary."
+  },
+  {
+    "id": "ETH-C1-CODE-023",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "CODE",
+    "sub_standard": "CODE-conduct-program",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "A written complaint leads CFA Institute Professional Conduct staff to open an inquiry about a charterholder. The staff interviews witnesses, concludes that a violation occurred, and proposes sanctions, but the member disputes both the evidence and the proposed penalty. Which body can revoke the charter over the member's objection?",
+    "options": [
+      "A Disciplinary Review Committee panel, after determining that misconduct occurred.",
+      "The Professional Conduct staff, because its initial inquiry conclusion ends the disciplinary process.",
+      "The CFA Institute Board of Governors, following an appeal initiated by the accused charterholder."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Confuses investigation and proposed sanctions with the final contested adjudication.",
+      "Assigns the disputed sanctions decision to a governing body rather than the DRC panel."
+    ],
+    "hint": "Track which body acts after the accused rejects a proposed sanction.",
+    "explanation": "After an accused member rejects the Professional Conduct staff's proposed sanctions, a Disciplinary Review Committee panel may adjudicate and impose sanctions including charter revocation. B wrongly treats the staff's view as final; C names a different body. Acceptance of proposed sanctions would avoid that contested review path."
+  },
+  {
+    "id": "ETH-C1-GIPS-018",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "GIPS",
+    "sub_standard": "GIPS-fundamentals",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Brightwater Group manages assets through three affiliates in different countries. All three advertise under the same Brightwater brand, although each has a separate legal business name. Management wants to claim GIPS compliance for the two larger affiliates while omitting the smallest. The marketing team would disclose that exclusion. Which assessment is most appropriate?",
+    "options": [
+      "The exclusion is acceptable, because separately registered affiliates qualify as independent entities.",
+      "The exclusion is acceptable, because the omitted affiliate is small and the footnote is transparent.",
+      "It is improper: a firm-wide claim cannot exclude an affiliate operating under the same brand."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Equates separate legal incorporation with a separate firm-wide GIPS compliance scope.",
+      "Treats small asset size and footnote disclosure as permission to carve out an affiliate.",
+      ""
+    ],
+    "hint": "Focus on the scope of the entity claiming compliance.",
+    "explanation": "GIPS compliance is claimed at the firm level, rather than by selected affiliates. Separately named subsidiaries operating under one held-out brand cannot be excluded to improve the claimed scope. A and B rely on legal names or size. A genuinely separate, independently defined firm would require a different analysis; the broadest definition is encouraged, not an independent substitute for the firm-wide rule."
+  },
+  {
+    "id": "ETH-C1-GIPS-019",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "GIPS",
+    "sub_standard": "GIPS-fundamentals",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Clearwater Advisors manages client assets through several composites and currently claims compliance with the GIPS standards. Its latest presentation states: 'Clearwater complies with GIPS except for its private-credit composite, which uses a different valuation policy.' The firm offers that composite's figures separately and explains the exception in a footnote. Which assessment is most appropriate?",
+    "options": [
+      "The claim is acceptable, because the exception is disclosed and the affected composite is shown separately.",
+      "The claim is improper, because a firm cannot assert partial compliance with the GIPS standards.",
+      "The claim is acceptable, because a distinct valuation policy may be used for a special strategy."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Assumes disclosing a named exception permits claiming compliance for the remainder.",
+      "",
+      "Confuses methodological flexibility with permission to depart from applicable GIPS rules."
+    ],
+    "hint": "Think about the scope that a GIPS compliance claim must cover.",
+    "explanation": "GIPS does not permit a firm to claim partial compliance or to say it complies \"except for\" an identified composite. A incorrectly treats transparent carve-outs as a substitute; C assumes a strategy-specific method excuses noncompliance. If the entire defined firm met all applicable requirements, it could claim compliance."
+  },
+  {
+    "id": "ETH-C1-GIPS-020",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "GIPS",
+    "sub_standard": "GIPS-disclosures",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Orion Capital has maintained GIPS-compliant performance records for a composite for 12 complete years. Its latest marketing report presents the most recent 10 consecutive years of returns, while retaining the older two years in its internal records. Management has not selectively removed any results from the displayed decade. Under the GIPS performance-history requirement, this practice is most likely:",
+    "options": [
+      "impermissible, because a firm with 12 years of records must display its entire operating history.",
+      "impermissible, because the firm cannot omit years once they have entered its client reports.",
+      "permissible, because 10 consecutive years satisfy the required minimum performance history."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Mistakes a minimum decade of performance for a duty to display every older year.",
+      "Assumes a compliant ten-year window must also include the earliest years available.",
+      ""
+    ],
+    "hint": "Identify the minimum length after a complete decade of records exists.",
+    "explanation": "A firm with at least 10 years of GIPS-compliant performance must present a minimum of 10 years, and may show more. A falsely requires all 12 years; B incorrectly prevents a compliant rolling decade. Displaying fewer than 10 years for this established composite would change the answer."
+  },
+  {
+    "id": "ETH-C1-GIPS-021",
+    "topic": "ETHICS",
+    "cluster": "C1",
+    "module": "GIPS",
+    "sub_standard": "GIPS-composite",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Kestrel Asset Management defines its Large-Cap Growth composite using criteria set before the year began. In the third quarter, one account in the composite performs poorly, and the manager moves it to a 'Special Situations' composite, explaining that its holdings have diverged from the strategy. No client mandate change has occurred. Which assessment is most appropriate?",
+    "options": [
+      "Appropriate, because changed security weights justify moving an account across composites after review.",
+      "Inappropriate, because the move lacks a documented mandate change under predetermined criteria.",
+      "Appropriate, because transferring historical data to the new composite removes selection bias."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Uses current holdings drift instead of a documented ex ante membership criterion.",
+      "",
+      "Assumes rewriting composite history legitimizes a performance-driven transfer."
+    ],
+    "hint": "Ask when composite membership criteria were determined and why the account moved.",
+    "explanation": "GIPS composites use predetermined, ex ante mandates, objectives and membership criteria to prevent cherry-picking. A and C treat holdings drift or reassigned history as enough despite no mandate change. A documented change meeting pre-established criteria could justify a transfer."
+  },
+  {
+    "id": "ETH-C2-S1-018",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S1",
+    "sub_standard": "I(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Priya is an analyst on a team underwriting a bond offering. She discovers that the draft prospectus omits a pending lawsuit that could materially affect the issuer. She raises the issue with her supervisor, who refuses to amend the document, and the compliance officer is unavailable. Which action is most appropriate?",
+    "options": [
+      "Continue the assignment but refuse to attest, because not signing is sufficient dissociation.",
+      "Report straight to securities regulators, because failed internal escalation creates a reporting duty.",
+      "Leave the underwriting activity and seek legal or compliance advice on the unresolved omission."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Assumes refusing to sign suffices while the analyst continues the improper work.",
+      "Invents an unconditional regulatory reporting duty not established in the facts.",
+      ""
+    ],
+    "hint": "Think beyond refusing to sign; consider participation in the activity.",
+    "explanation": "Standard I(A), Knowledge of the Law, requires dissociation from known violations and appropriate advice or escalation. A merely avoids a signature while remaining involved; B asserts mandatory regulatory reporting without a stated legal requirement. Correcting the material omission and ceasing the improper activity would remove the problem."
+  },
+  {
+    "id": "ETH-C2-S1-019",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S1",
+    "sub_standard": "I(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Marta, a CFA charterholder, works in a country whose law does not restrict advisers from trading for their own accounts before executing large client orders in the same stock. Her employer's policy is silent on the matter. She plans to buy shares for herself ahead of a large client order. Which statement is most appropriate?",
+    "options": [
+      "She must not trade first, because the stricter CFA requirements give client orders priority.",
+      "She may trade first, because the local law and her employer's written policy impose no enforceable restriction.",
+      "She may trade first, because a small personal order would have limited market-price impact."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Treats permissive local law as displacing the stricter Code and Standards.",
+      "Mistakes a small trade's market impact for priority of client execution."
+    ],
+    "hint": "Compare local law with the more demanding professional obligation.",
+    "explanation": "Standard I(A) requires the stricter applicable rule, and Standard VI(B) gives client transactions priority over personal trading. B confuses legal permission with professional compliance; C wrongly treats transaction size as decisive. Trading after client orders receive priority may be permissible."
+  },
+  {
+    "id": "ETH-C2-S1-020",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S1",
+    "sub_standard": "I(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Samuel inherits coverage of an airline stock from a colleague. The head of research tells him that the existing 'buy' rating must not be changed, although Samuel's updated valuation work points toward 'sell.' The head insists that Samuel sign his name to the new report. Which course of action is most appropriate?",
+    "options": [
+      "Keep the buy rating with an explanation, because disclosure protects research independence.",
+      "Refuse the imposed conclusion, or reach an independent view and escalate the interference.",
+      "Keep the official buy rating but tell selected clients to sell, because they need protection."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Assumes disclosing management pressure restores the analyst's independent judgment.",
+      "",
+      "Attempts to correct a biased public report by privately favoring certain clients."
+    ],
+    "hint": "A disclosed instruction is not necessarily independent analysis.",
+    "explanation": "Standard I(B) requires independence and objectivity. Samuel should not sign a dictated rating or selectively contradict it. A wrongly assumes disclosure cures lost independence; C introduces unequal client treatment. Independent support for a buy rating would change the facts."
+  },
+  {
+    "id": "ETH-C2-S1-021",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S1",
+    "sub_standard": "I(B)",
+    "item_type": "concept",
+    "difficulty": 3,
+    "stem": "Garrett is a portfolio manager whose broker receives substantial trading commissions. He also receives occasional gifts from appreciative clients. Which offer most likely threatens his independence and should be declined rather than merely disclosed to his supervisor?",
+    "options": [
+      "A luxury broker-funded villa stay, because the executing broker has financial influence over him.",
+      "Two client-funded concert tickets after good results, because the gift is tied to performance.",
+      "A small handmade client gift, because accepting any personal benefit could affect his objectivity."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Confuses a client thank-you gift with a major broker inducement affecting execution decisions.",
+      "Treats a modest client gift as equivalent to the lavish broker-funded benefit."
+    ],
+    "hint": "Consider the identity of the gift giver and potential influence on broker selection.",
+    "explanation": "Under Standard I(B), a lavish benefit from a broker receiving commissions can threaten independent broker selection and should be refused. B and C are comparatively modest client gifts but still may require proper disclosure. If the broker offered only customary non-influential hospitality, the assessment could differ."
+  },
+  {
+    "id": "ETH-C2-S1-022",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S1",
+    "sub_standard": "I(C)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Aisha joined Corbett Capital as a portfolio manager six months ago. In its pitch deck, she shows an eight-year performance record of a strategy she personally managed at her previous employer, labeled 'Corbett Capital strategy performance' because the approach is identical. Which statement is most likely correct?",
+    "options": [
+      "No violation, because Aisha designed the strategy and its method is unchanged at the new employer.",
+      "A violation if her former employer objects, because ownership determines whether disclosure is needed.",
+      "A violation, because calling the prior employer's returns Corbett's misstates their provenance."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Conflates strategy ownership with the new firm's historical performance identity.",
+      "Assumes a misleading statement becomes a violation only after a complaint by the old firm.",
+      ""
+    ],
+    "hint": "Ask whose track record the brochure suggests investors are seeing.",
+    "explanation": "Standard I(C), Misrepresentation, prohibits attributing performance earned at a former firm to the new firm. A assumes identical methods excuse the attribution; B makes the former employer's objection the condition. Correctly identifying the prior track-record source would change the result."
+  },
+  {
+    "id": "ETH-C2-S1-023",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S1",
+    "sub_standard": "I(D)",
+    "item_type": "concept",
+    "difficulty": 2,
+    "stem": "An investment professional is evaluated for compliance with Standard I(D), Misconduct. The following actions occurred outside the professional's investment decision-making responsibilities, and no client assets were involved. Which conduct most likely violates that Standard?",
+    "options": [
+      "An arrest during peaceful protest, because criminal charges may reflect negatively on one's employer.",
+      "Deliberately inflating payroll timesheets, because the employee is making dishonest claims.",
+      "Personal bankruptcy after a failed venture, because it suggests a professional lacks financial skill."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Equates an arrest during peaceful protest with demonstrable dishonesty or fraud.",
+      "",
+      "Mistakes ordinary personal insolvency for misconduct undermining professional integrity."
+    ],
+    "hint": "Consider which act could reflect on the person's professional integrity.",
+    "explanation": "Standard I(D) prohibits fraudulent or dishonest professional conduct; falsified timesheets constitute dishonesty. A mistakes peaceful civil protest for proof of professional misconduct; C assumes ordinary bankruptcy implies misconduct. Fraud related to either alternative would alter the conclusion."
+  },
+  {
+    "id": "ETH-C2-S1-024",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S1",
+    "sub_standard": "I(E)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Dae-ho is a public-equity portfolio manager who is asked to oversee a new private-credit sleeve for institutional clients. He has never evaluated covenant packages, recovery rates, or illiquidity in private loans. After reading two introductory articles, he approves allocations the following day on his team's enthusiasm. Which statement is most likely correct?",
+    "options": [
+      "A violation, because Dae-ho lacks the private-credit expertise needed to assess client allocations.",
+      "No violation, because experienced team members may assume responsibility for each assessment in the new sleeve.",
+      "No violation, because introductory published materials can substitute for asset-class expertise."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Assumes delegating analysis transfers the manager's responsibility to remain competent.",
+      "Treats limited introductory reading as expertise about complex credit exposures."
+    ],
+    "hint": "Determine whether the manager can competently evaluate the new risks.",
+    "explanation": "Standard I(E), Competence, requires sufficient knowledge and diligence for assigned responsibilities. Dae-ho lacks substantive understanding of private-credit risks. B cannot transfer his competence obligation through delegation; C mistakes introductory reading for competence. Documented training and expert oversight might support a different outcome."
+  },
+  {
+    "id": "ETH-C2-S2-018",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S2",
+    "sub_standard": "II(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Naveen covers retailer Vexa. At a private lunch with ten analysts, Vexa's CFO states that quarterly same-store sales fell 8%, contrary to public guidance, and that a profit warning will be released in two days. Naveen's firm holds Vexa in client accounts. Which action is most appropriate?",
+    "options": [
+      "Sell the holdings for clients now, because protecting their wealth takes precedence over information rules.",
+      "Alert large clients privately to weakening sales, because withholding the exact figures reduces risk.",
+      "Do not trade or alter recommendations using the information; consult compliance until public release."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Prioritizes immediate trading benefits over the prohibition on acting on MNI.",
+      "Treats a vague tip to selected clients as harmless because no precise number is disclosed.",
+      ""
+    ],
+    "hint": "Evaluate what may be done with a material fact before public release.",
+    "explanation": "Standard II(A) prohibits trading, recommendations, or tipping using material nonpublic information. A invokes client benefit, which does not excuse trading; B would pass a selective tip. After the information is broadly disseminated and the market can absorb it, ordinary analysis may resume."
+  },
+  {
+    "id": "ETH-C2-S2-019",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S2",
+    "sub_standard": "II(A)",
+    "item_type": "vignette",
+    "difficulty": 2,
+    "stem": "Colin, a CFA Level I candidate, overhears a friend who works at a target company say that an acquisition offer at a large premium will be announced Monday. Colin does not trade, but he tells his cousin, who buys the target's shares that afternoon. Which statement is most likely correct?",
+    "options": [
+      "No violation, because Colin did not personally trade or receive any monetary benefit from the tip.",
+      "A violation, because passing material nonpublic information to another potential trader is prohibited.",
+      "No violation, because the comment arose in a casual conversation instead of an authorized formal company release."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Mistakenly confines material nonpublic information violations to personal trades.",
+      "",
+      "Assumes the setting in which information was heard determines whether tipping is allowed."
+    ],
+    "hint": "Consider whether tipping is distinct from trading personally.",
+    "explanation": "Standard II(A) covers tipping others about material nonpublic information, even without personal trading or remuneration. A ignores tipping; C treats casual context as an exemption. If the acquisition information were already public and widely disseminated, the result could differ."
+  },
+  {
+    "id": "ETH-C2-S2-020",
+    "topic": "ETHICS",
+    "cluster": "C2",
+    "module": "S2",
+    "sub_standard": "II(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Wiktor manages two funds with different investors. Near each quarter-end, he repeatedly arranges matched purchases and sales of the same thinly traded security between the funds at similar prices. Economic ownership within his managed group barely changes, but the reported market trading volume rises sharply. He wants the stock to appear more liquid to prospective investors. Under Standard II(B), Wiktor most likely:",
+    "options": [
+      "Violates the Standard, because matched trades were arranged to create misleading trading volume.",
+      "Complies with the Standard, because the transactions used real funds and observable market prices.",
+      "Complies with the Standard, because the funds have different investors and each has its own mandate."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Assumes transactions cannot manipulate markets when actual trades settle.",
+      "Confuses separate fund ownership with genuine independent trading motives."
+    ],
+    "hint": "Examine the intended effect on apparent trading activity.",
+    "explanation": "Standard II(B), Market Manipulation, prohibits transactions intended to mislead market participants about price or volume. Matched fund-to-fund trades created artificial activity. B mistakes genuine settlement for legitimate purpose; C wrongly assumes separate beneficial owners cure manipulation. Independently motivated trades without misleading intent require separate assessment."
+  },
+  {
+    "id": "ETH-C3-S3-035",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Sven manages a corporate pension plan. The plan sponsor's CEO asks him to vote the plan's shares in a holding in favor of a management proposal that weakens shareholder rights, and hints that Sven's mandate renewal depends on his cooperation. Sven's analysis indicates the proposal would harm the holding's long-term value. Which action is most appropriate?",
+    "options": [
+      "Vote for the pension beneficiaries' interests, because they are the ultimate clients of this mandate.",
+      "Follow the sponsor's request, because the corporate sponsor selected, directs and pays the investment manager.",
+      "Abstain from voting, because pressure from the sponsor makes an independent decision impossible."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Mistakes the hiring pension sponsor for the ultimate beneficiaries owed loyalty.",
+      "Treats sponsor pressure as a reason to avoid exercising proper fiduciary voting judgment."
+    ],
+    "hint": "Identify the ultimate beneficiaries of the pension portfolio.",
+    "explanation": "Standard III(A), Loyalty, Prudence, and Care, directs a pension manager to protect participants and beneficiaries. B wrongly elevates the plan sponsor's business interest; C avoids the manager's voting duty. A proposal that actually benefits participants could justify voting for it."
+  },
+  {
+    "id": "ETH-C3-S3-036",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Iris is a performance analyst. Before client reports are finalized, she finds that the reporting system omitted a large losing trade, which turns a strong quarter into a loss for a client already on 'watch' for termination. A senior manager suggests releasing the report as is and correcting it next quarter. Which action is most appropriate?",
+    "options": [
+      "Issue the report first and correct it in the next cycle, because the numbers are still preliminary.",
+      "Issue it after advising senior managers, because internal escalation meets the duty of loyalty.",
+      "Fix the omitted trade before release, because client reporting must not conceal the actual loss."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Assumes preliminary reporting permits shipping numbers known to be materially wrong.",
+      "Treats notifying executives as a substitute for correcting misleading client reports.",
+      ""
+    ],
+    "hint": "Consider whether a known reporting error may be deferred.",
+    "explanation": "Standard III(A) requires protecting client interests and correcting known errors before sending performance information. A delays a material correction; B mistakes notifying management for correcting clients' report. If the inaccurate trade had been fixed before release, the problem would not arise."
+  },
+  {
+    "id": "ETH-C3-S3-037",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Orbis Securities publishes rating changes to all clients on its website at 6:00 a.m. Customers paying for a higher-fee Platinum tier receive those same changes in private alerts at 5:30 a.m., enabling them to place orders sooner. Every client agreement discloses this arrangement, and all clients may upgrade. Under Standard III(B), Orbis's practice is most likely:",
+    "options": [
+      "A violation, because Platinum clients may trade on rating changes before other clients receive them.",
+      "Not a violation, because all client tiers are disclosed and every client has the option to upgrade.",
+      "Not a violation, because a thirty-minute advance alert cannot materially disadvantage clients who trade later."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Conflates disclosed differences in service quality with unequal early dissemination of ratings.",
+      "Assumes a short time advantage cannot change other clients' execution prices."
+    ],
+    "hint": "Distinguish richer service from earlier actionable recommendations.",
+    "explanation": "Standard III(B), Fair Dealing, requires fair and objective dissemination of investment recommendations. Platinum clients receive actionable rating changes 30 minutes early and can trade before others. B wrongly treats tier disclosure as a cure; C assumes the brief interval eliminates disadvantage. Differentiated research depth or meetings can be permissible if recommendations reach clients fairly."
+  },
+  {
+    "id": "ETH-C3-S3-038",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Prem manages three fee-paying accounts: a pension plan requested 20,000 shares of an IPO, a foundation 20,000, and his brother's account, handled under the firm's normal fee schedule, 10,000. All three consider the IPO suitable. The IPO is oversubscribed, and the firm receives 25,000 shares. Which allocation is most consistent with Standard III(B)?",
+    "options": [
+      "Pension 12,500; foundation 12,500; brother 0, because family relationships raise fairness concerns.",
+      "Pension 10,000; foundation 10,000; brother 5,000, allocated pro rata to orders placed.",
+      "Pension 8,333; foundation 8,333; brother 8,334, because each account deserves equal shares."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Excludes a related-party fee-paying account without a suitability-based reason.",
+      "",
+      "Conflates equal account allocations with fair pro-rata treatment of unequal requests."
+    ],
+    "hint": "Compare the requested share quantities with available shares.",
+    "explanation": "Under Standard III(B), suitable fee-paying accounts, including a relative's normally billed account, should receive equitable IPO allocations. Available shares are 50% of requests, giving 10,000, 10,000 and 5,000. A excludes a valid account; C ignores differing orders. An account that is unsuitable should be excluded."
+  },
+  {
+    "id": "ETH-C3-S3-039",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(C)",
+    "item_type": "vignette",
+    "difficulty": 2,
+    "stem": "Andre, an investment adviser, launches a fund that combines two top-performing hedge funds at a lower fee. He recommends it to all 120 of his clients on the strength of those track records, without reviewing each client's investment policy statement. Which assessment is most appropriate?",
+    "options": [
+      "Inappropriate, because individual client objectives and limits must be checked against each IPS.",
+      "Appropriate, because strong hedge-fund histories and low fees establish broad investor suitability.",
+      "Appropriate if a newsletter lists the fund's risks, because general disclosure replaces individual review."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Treats attractive pooled performance as proof of suitability for every client.",
+      "Assumes blanket warnings replace assessment of each client's investment policy."
+    ],
+    "hint": "Identify the client-specific information missing from this recommendation.",
+    "explanation": "Standard III(C), Suitability, requires examining the circumstances, investment objectives and limitations of each client. B assumes historical returns establish universal suitability; C mistakes general risk communication for IPS review. A documented matching of the fund to each client might justify recommendations."
+  },
+  {
+    "id": "ETH-C3-S3-040",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(C)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Olga adds a 5% position in a highly volatile gold-miners fund to a risk-averse client's diversified portfolio because the fund has historically had a low correlation with the client's other holdings. A colleague objects that the fund is too volatile for a risk-averse client. Which statement is most appropriate?",
+    "options": [
+      "Unsuitable, because the volatility of one holding is above the client's normal risk profile.",
+      "Suitable, because the low correlation aids diversification without assessing the full client IPS.",
+      "Potentially suitable, if portfolio-level risk remains acceptable and the position meets the IPS."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Applies a single-security volatility screen without analyzing overall portfolio risk.",
+      "Treats low covariance as sufficient even if the client's IPS constraints are breached.",
+      ""
+    ],
+    "hint": "Suitability may depend on aggregate portfolio risk, not one holding alone.",
+    "explanation": "Standard III(C) assesses suitability within the context of the overall portfolio while honoring the IPS. A focuses only on one volatile holding; B treats correlation as independently sufficient. If the combined portfolio breached the client's risk constraint, the allocation would be unsuitable."
+  },
+  {
+    "id": "ETH-C3-S3-041",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(D)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "A manager's brochure shows that its Dynamic Growth strategy returned 14% annualized over three years. The figure comes from a single flagship account; ten other accounts managed with the same strategy returned between 6% and 9%. The firm does not claim GIPS compliance, and the brochure states that past performance is no guarantee of future results. Which assessment is most appropriate?",
+    "options": [
+      "Inappropriate, because selecting a single winning account obscures the full strategy record.",
+      "Appropriate, because the reported 14 percent figure was correctly calculated for that account.",
+      "Appropriate, because a generic past-performance warning offsets the omission of weaker accounts."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Confuses the mathematical accuracy of one return with fair presentation of the strategy.",
+      "Assumes generic risk boilerplate excuses selective omission of weaker accounts."
+    ],
+    "hint": "Assess the representativeness of the record rather than the disclaimer.",
+    "explanation": "Standard III(D), Performance Presentation, requires performance to be fair, accurate and complete. Using a single flagship account masks lower returns elsewhere. B focuses narrowly on calculation accuracy; C assumes a general warning fixes selective presentation. A clearly labeled case study with representative performance elsewhere might be acceptable."
+  },
+  {
+    "id": "ETH-C3-S3-042",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(D)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Perrin Capital runs a small-cap value fund that outperformed a broad large-cap index by 3% last year but underperformed its stated small-cap value benchmark by 2%. Before a client presentation, the sales team selects the comparison that appears more favorable. Its brochure shows only the comparison with the large-cap index. Which assessment is most appropriate?",
+    "options": [
+      "Appropriate, because an established large-cap benchmark gives a familiar frame of comparison.",
+      "Inappropriate, because the chosen index disguises results against the strategy's true benchmark.",
+      "Appropriate if the relevant benchmark is obtainable on request, because investors can compare later."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Mistakes benchmark familiarity for relevance to the fund's true investment style.",
+      "",
+      "Assumes on-request availability cures selective comparisons in a marketing brochure."
+    ],
+    "hint": "Ask whether the chosen benchmark matches the managed strategy.",
+    "explanation": "Standard III(D) prohibits misleading performance comparisons. The large-cap index does not fairly reflect a small-cap value strategy when the stated benchmark shows underperformance. A overvalues brand recognition; C assumes later availability corrects the selective brochure. Showing relevant benchmarks prominently could change the assessment."
+  },
+  {
+    "id": "ETH-C3-S3-043",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(E)",
+    "item_type": "vignette",
+    "difficulty": 2,
+    "stem": "Hana manages the account of a client who is going through a divorce. The spouse's attorney phones Hana to ask for the account's current value and holdings, saying the information will be disclosed in court anyway. There is no court order or subpoena, and the client has not authorized disclosure. Which action is most appropriate?",
+    "options": [
+      "Give the attorney the holdings, because the information is expected to appear during divorce proceedings.",
+      "Give the attorney the total account value, because aggregated values reveal no individual positions.",
+      "Decline disclosure without client consent or a legal requirement, because account data are confidential."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Treats a prediction of future court disclosure as a present legal command.",
+      "Incorrectly excludes the client's total account value from confidential information.",
+      ""
+    ],
+    "hint": "Examine the recognized exceptions to preserving client confidentiality.",
+    "explanation": "Standard III(E), Preservation of Confidentiality, generally protects client holdings and asset values absent consent or a legal exception. A assumes future litigation authorizes disclosure; B mistakenly treats aggregated wealth as nonconfidential. A valid subpoena, client permission or another recognized exception would change the conclusion."
+  },
+  {
+    "id": "ETH-C3-S3-044",
+    "topic": "ETHICS",
+    "cluster": "C3",
+    "module": "S3",
+    "sub_standard": "III(E)",
+    "item_type": "concept",
+    "difficulty": 3,
+    "stem": "A portfolio manager must protect client account information, but her colleagues sometimes need those details to service clients. Which situation is least likely a violation of Standard III(E), Preservation of Confidentiality?",
+    "options": [
+      "Sharing with assigned account-team colleagues, because the information is used to service that client.",
+      "Identifying a pending trade to an outside analyst, because market expertise may aid execution decisions.",
+      "Alerting a charity about the named client, because the client's planned donation may benefit its mission."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Confuses potentially useful external advice with authorized sharing of a named client trade.",
+      "Assumes charitable intentions override a client's expectation of confidentiality."
+    ],
+    "hint": "Distinguish authorized account servicing from unrelated outside sharing.",
+    "explanation": "Standard III(E) allows necessary sharing with colleagues serving the same client account within authorized duties. B reveals trading information to an outsider, and C discloses a client identity for a separate cause. Express client permission could make relevant outside disclosure permissible."
+  },
+  {
+    "id": "ETH-C4-S4-018",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S4",
+    "sub_standard": "IV(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Dina leaves her employer to open her own advisory firm and has no noncompete agreement. Years earlier she e-mailed the firm's client list to her personal address to work from home. She uses that list to mail announcements of her new firm to former clients. Which statement is most likely correct?",
+    "options": [
+      "No violation, because the lack of a noncompete agreement permits using former firm records for outreach.",
+      "A violation, because using the employer's client list after departure breaches the duty of loyalty.",
+      "A violation if detailed holdings were listed, because addresses alone are not proprietary information."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Confuses freedom to compete after departure with ownership of employer client records.",
+      "",
+      "Incorrectly limits proprietary lists to records containing financial positions."
+    ],
+    "hint": "Compare public client contacts with property taken from the former firm.",
+    "explanation": "Standard IV(A), Loyalty, prevents use of a former employer's proprietary client lists. A confuses freedom to compete with permission to take data; C incorrectly limits confidentiality to portfolio values. Soliciting contacts gathered independently from public sources could be permissible."
+  },
+  {
+    "id": "ETH-C4-S4-019",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S4",
+    "sub_standard": "IV(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Ravi, an analyst, finds that his firm routinely back-dates trade tickets so the owner's personal account receives favorable allocations. He escalates the issue internally for months with no response, then reports it to the securities regulator without the employer's consent. Which statement is most likely correct?",
+    "options": [
+      "A violation, because reporting externally without formal company authorization breaches employee loyalty.",
+      "A violation, because the firm should be protected from enforcement action before client interests are weighed.",
+      "No violation, because employer loyalty does not require hiding client harm and market misconduct."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Treats external whistleblowing about client harm as disloyal by definition.",
+      "Places protection of the wrongdoer firm ahead of the interests of clients and markets.",
+      ""
+    ],
+    "hint": "Consider which duty prevails when the firm harms clients.",
+    "explanation": "Standard IV(A) does not compel a member to hide employer misconduct damaging clients or markets. A assumes external reporting is itself disloyal; B reverses the priority of professional duties. An unauthorized disclosure unrelated to protecting clients or market integrity requires different analysis."
+  },
+  {
+    "id": "ETH-C4-S4-020",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S4",
+    "sub_standard": "IV(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Elena, an investment analyst, is offered US$3,000 to review a start-up's financial model during weekends. Her employer is simultaneously assessing that same start-up for a possible investment. Elena would use her personal computer and work outside office hours, and the offer is not included in her employment contract. Which action is most appropriate?",
+    "options": [
+      "Seek the employer's written consent, because the outside fees could create a conflict of interest.",
+      "Accept the paid review, because weekends and personal equipment keep this work distinct from her employer.",
+      "Tell the start-up about the fee, because its knowledge is sufficient for paid outside work."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Assumes a weekend schedule and separate equipment eliminate competing interests.",
+      "Mistakes informing the paying start-up for written approval from the actual employer."
+    ],
+    "hint": "Check the form of authorization required for outside compensation.",
+    "explanation": "Standard IV(B) requires employer written consent to arrangements that could conflict with the employer's interests. A weekend schedule does not resolve the investment conflict; B and C ignore the employer's approval. An unrelated activity without a potential employer conflict may be assessed differently."
+  },
+  {
+    "id": "ETH-C4-S4-021",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S4",
+    "sub_standard": "IV(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Hamid manages client portfolios and joins the board of a public company whose shares he also purchases for client accounts. He receives an annual director's fee and mentions his new appointment to his supervisor in a corridor conversation. No written approval is requested or granted. Which assessment is most appropriate under Standard IV(B)?",
+    "options": [
+      "Adequate, because an informal conversation with the supervisor is sufficient disclosure of outside fees.",
+      "Adequate, because board compensation is distinct from an investment manager's ordinary salary.",
+      "Inadequate, because potentially conflicting director's fees require the employer's written consent."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Treats an informal conversation as documented employer consent.",
+      "Incorrectly exempts outside director fees from additional compensation scrutiny.",
+      ""
+    ],
+    "hint": "Consider whether a verbal mention satisfies the formal requirement.",
+    "explanation": "Standard IV(B) requires prior written consent for compensation arrangements that could conflict with an employer. A treats oral notice as consent; B incorrectly excludes paid board service. Written employer consent after proper disclosure would change the outcome."
+  },
+  {
+    "id": "ETH-C4-S4-022",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S4",
+    "sub_standard": "IV(C)",
+    "item_type": "vignette",
+    "difficulty": 2,
+    "stem": "Camille heads a 40-person trading desk. She delegates monitoring of trading limits to Lukas, a junior manager with little compliance experience, but offers no training or follow-up review. Several traders subsequently breach the limits, and Lukas misses the pattern during his checks. The firm's trading manual assigns overall supervisory authority to Camille. Which statement is most appropriate?",
+    "options": [
+      "Lukas bears responsibility, because the monitoring function was formally assigned to him.",
+      "Camille remains responsible, because delegation does not transfer supervisory duties.",
+      "Camille is responsible for known breaches, but not for flaws in Lukas's assigned work."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Confuses assigning monitoring duties with transferring the supervisor's responsibility.",
+      "",
+      "Restricts supervisory duties to violations the supervisor personally detected."
+    ],
+    "hint": "Distinguish task delegation from supervisory accountability.",
+    "explanation": "Standard IV(C), Responsibilities of Supervisors, requires supervisors to establish and enforce reasonable procedures even when duties are delegated. A improperly transfers accountability to Lukas; C limits duty to known violations. Adequate supervision and effective monitoring would change the factual assessment."
+  },
+  {
+    "id": "ETH-C4-S4-023",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S4",
+    "sub_standard": "IV(C)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Ibrahim supervises a derivatives desk with documented compliance procedures. An internal surveillance report shows that one trader repeatedly allocated profitable trades to a favored account in violation of the desk's policy. The trader claims the errors were accidental, and Ibrahim has not yet confirmed the full scope. Under Standard IV(C), Ibrahim's most appropriate response is to:",
+    "options": [
+      "Warn the trader privately and leave trading permissions unchanged until another confirmed violation occurs.",
+      "Investigate promptly and limit the trader's activities while the suspected breaches are assessed.",
+      "Wait for the next quarterly control review, because the surveillance report is not final proof."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Treats a private warning as sufficient response despite signs of repeated misconduct.",
+      "",
+      "Waits for a routine audit instead of exercising immediate supervisory controls."
+    ],
+    "hint": "Consider the supervisor's duties while a credible breach is investigated.",
+    "explanation": "Standard IV(C) requires prompt action when supervisors detect credible indications of violations: investigate and limit supervised activity as appropriate pending review. A is inadequate because a quiet warning may leave clients exposed; C postpones necessary controls. A genuinely unfounded signal following reasonable investigation could permit closing the inquiry."
+  },
+  {
+    "id": "ETH-C4-S5-018",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S5",
+    "sub_standard": "V(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Lian recommends a screening model to portfolio managers after backtesting it over seven years that included only rising markets. She did not test the model under adverse conditions or review its assumptions, but its backtest results were strong and the firm is considering applying it to client accounts. Which assessment is most appropriate?",
+    "options": [
+      "Adequate, because a long positive-market backtest provides robust evidence of model quality.",
+      "Inadequate, because untested adverse regimes and assumptions undermine the research basis.",
+      "Adequate if marked quantitative, because the label explains limits inherent in all models."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Treats years of rising-market data as sufficient testing across adverse conditions.",
+      "",
+      "Assumes disclosing the quantitative nature of a model supplies missing research diligence."
+    ],
+    "hint": "Test whether the research covers relevant risks and market conditions.",
+    "explanation": "Standard V(A) requires a reasonable and adequate basis, including understanding model assumptions and risks across relevant market regimes. A treats a bull-market backtest as conclusive; C assumes a method label cures deficient investigation. Broader validation could support the model."
+  },
+  {
+    "id": "ETH-C4-S5-019",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S5",
+    "sub_standard": "V(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Julius, a portfolio manager, relies on his firm's in-house research department's valuation reports. He knows the analysts are experienced and the reports go through the firm's review process, but he does not independently replicate their models. A colleague says Julius violates Standard V(A). Which assessment is most appropriate?",
+    "options": [
+      "Permissible, if quality controls support a reasonable belief in the reports' soundness.",
+      "Impermissible, because every analyst model must be replicated by each portfolio manager using it.",
+      "Permissible because internal reports are approved, even if Julius ignores their reliability."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Mistakes reasonable due diligence for mandatory duplication of every analyst model.",
+      "Assumes internal publication establishes reliability without considering research quality."
+    ],
+    "hint": "Reasonable reliance is different from blind acceptance or model duplication.",
+    "explanation": "Standard V(A) permits reasonable reliance on qualified research when diligence supports its quality. B incorrectly requires repeating every model; C dispenses with any quality assessment. Clear signs of a flawed model would require further investigation, not blind reliance."
+  },
+  {
+    "id": "ETH-C4-S5-020",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S5",
+    "sub_standard": "V(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Tara manages a balanced investment strategy. The lead portfolio manager who designed its proprietary security-selection process resigns unexpectedly, and a less-experienced colleague takes over. The firm keeps the written investment process unchanged and does not tell clients, arguing that the same portfolio guidelines remain in place. Under Standard V(B), Tara's firm most likely:",
+    "options": [
+      "Must notify clients promptly, because losing the key strategy designer is a material change.",
+      "Need not notify clients, because written portfolio rules and benchmark objectives remain unchanged.",
+      "May wait until the annual report, because personnel changes are part of ordinary business."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Assumes unchanged formal documentation makes a key personnel departure immaterial.",
+      "Treats annual reporting as sufficiently timely for a material investment-process change."
+    ],
+    "hint": "Assess whether replacing a strategy's key decision maker is material.",
+    "explanation": "Standard V(B) requires communicating material changes to an investment process, including significant personnel changes that affect investment implementation. B assumes unchanged written rules make the departure immaterial; C permits undue delay. Replacement by an equally qualified co-manager whose role is not material could change the assessment."
+  },
+  {
+    "id": "ETH-C4-S5-021",
+    "topic": "ETHICS",
+    "cluster": "C4",
+    "module": "S5",
+    "sub_standard": "V(C)",
+    "item_type": "concept",
+    "difficulty": 2,
+    "stem": "An analyst keeps the models, data downloads and meeting notes behind each research report as scanned and electronic files on her firm's document system. After scanning, she shreds the paper originals. Under Standard V(C), Record Retention, her practice is most likely:",
+    "options": [
+      "inadequate, because paper originals of research support must be kept",
+      "adequate, because the Standard allows electronic or hard-copy records",
+      "inadequate, because support files must be kept in her personal archive"
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Assumes the Standard prescribes paper records, when it requires retaining the support rather than a particular medium.",
+      "",
+      "Confuses who holds research records; supporting files belong to the firm and may be kept in its systems."
+    ],
+    "hint": "Consider whether the Standard specifies a storage format.",
+    "explanation": "Standard V(C) requires members to develop and keep records that support their investment analysis, recommendations and actions. It does not prescribe a medium, so records may be kept in hard copy or electronic form. A wrongly requires paper originals; C wrongly requires a personal archive, although such records are the firm's property. If the scanned files were incomplete or later deleted, the analyst would no longer meet the Standard."
+  },
+  {
+    "id": "ETH-C5-S6-018",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S6",
+    "sub_standard": "VI(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Wellspring Advisers is owned by a commercial bank whose bonds it recommends to advisory clients. The ownership relationship is revealed in small print on page 38 of a 40-page legal appendix delivered with every brochure. Clients sign a receipt confirming the package arrived, but most do not read the appendix. Which assessment is most appropriate under Standard VI(A)?",
+    "options": [
+      "Adequate, because a complete legal appendix was supplied to every advised client with the brochure.",
+      "Adequate, because signed receipt confirms that clients had an opportunity to inspect the disclosure.",
+      "Inadequate, because buried fine print is not a prominent, effective conflict disclosure."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Treats delivery of a long document as effective communication of a material conflict.",
+      "Conflates proof of receipt with prominent and understandable disclosure.",
+      ""
+    ],
+    "hint": "Ask whether the conflict is communicated effectively, not merely included somewhere.",
+    "explanation": "Standard VI(A), Disclosure of Conflicts, requires prominent and effectively communicated conflicts. A focuses on mere delivery and B on receipt, neither ensuring clear disclosure. An upfront, plain-language explanation of ownership could resolve the deficiency."
+  },
+  {
+    "id": "ETH-C5-S6-019",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S6",
+    "sub_standard": "VI(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Alejandro publishes securities research on Kincaid Corporation. His spouse unexpectedly inherits a three-percent ownership interest in Kincaid just as Alejandro receives an assignment to update the rating. The inheritance is lawful, and his spouse is not employed by his research firm. What is his most appropriate action under Standard VI(A)?",
+    "options": [
+      "Take no further action, because the inherited shares are legally owned by Alejandro's spouse.",
+      "Disclose the interest to the employer and clients; consider transferring research coverage.",
+      "Disclose it internally but omit it from published research to respect the spouse's privacy."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Treats spouse ownership as irrelevant even when it may affect research independence.",
+      "",
+      "Assumes privacy always prevents disclosure of a material conflict to research clients."
+    ],
+    "hint": "Consider indirect financial interests held through close family.",
+    "explanation": "Standard VI(A) requires disclosure of conflicts that could impair objectivity, including significant family holdings. A treats formal share ownership as dispositive; C omits disclosure to affected clients. Divesting or reassignment can further control the conflict."
+  },
+  {
+    "id": "ETH-C5-S6-020",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S6",
+    "sub_standard": "VI(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Thea is hired by a pension-plan sponsor to evaluate three competing asset managers. One finalist pays for Thea's international conference trip, including the hotel and flights. The sponsor knows she attended the conference but has not been told who paid. Thea subsequently recommends that finalist. Which statement is most likely correct?",
+    "options": [
+      "Thea violated the Standards, because she accepted and failed to disclose a compromising benefit.",
+      "Thea complied, because performance data supported her manager choice despite undisclosed benefits.",
+      "Thea complied if the benefit was a conference expense rather than a direct cash payment."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Assumes favorable outcomes eliminate inducements that might affect independent selection.",
+      "Treats travel sponsorship as categorically different from other material benefits."
+    ],
+    "hint": "Identify both the benefit's influence and the obligation to disclose it.",
+    "explanation": "Thea accepted a benefit from a manager she was assessing that might impair objectivity, raising Standard I(B), Independence and Objectivity. Failure to disclose it to the sponsor also raises Standard VI(A), Disclosure of Conflicts. B confuses good performance with absence of conflict; C distinguishes cash from travel without basis. Declining the trip and disclosing any material relationship would change the facts."
+  },
+  {
+    "id": "ETH-C5-S6-021",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S6",
+    "sub_standard": "VI(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Nia, a portfolio manager, subscribes in her personal account to a hot IPO that her firm's clients also want. The offering is oversubscribed, and clients' allocations are cut back. Nia receives her full personal allocation while the firm is aware that clients have unmet demand. Which statement is most likely correct?",
+    "options": [
+      "A violation, because Nia received a full personal allocation while client orders were reduced.",
+      "No violation if her supervisor was informed, because disclosure protects the allocation process.",
+      "No violation, because the underwriting syndicate determines the number of IPO shares allotted."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Assumes approval or notice can justify priority of a personal IPO allocation.",
+      "Treats underwriter allocation mechanics as a substitute for client-first treatment."
+    ],
+    "hint": "Compare priority of client orders and personal subscriptions.",
+    "explanation": "Standard VI(B), Priority of Transactions, gives clients and employers priority over a member's personal trading. A full personal allocation while client orders are curtailed is improper. B mistakes disclosure for priority; C overlooks the portfolio manager's role in allocation. Proper priority and equitable allocation would avoid the breach."
+  },
+  {
+    "id": "ETH-C5-S6-022",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S6",
+    "sub_standard": "VI(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Rosa is a CFA charterholder who supervises her firm's proprietary trading desk. During an internal meeting she learns that the research division will downgrade AlphaTel in a report intended for clients the next morning. Before the report is released, she directs the proprietary desk to sell its AlphaTel position. Which assessment is most accurate?",
+    "options": [
+      "No violation, because the firm's proprietary positions are managed independently of client portfolios.",
+      "A violation if the desk's sales moved the price, because actual market harm is the relevant test.",
+      "A violation, because proprietary trading used the downgrade before clients could act on it."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Assumes firm proprietary accounts may act ahead of the firm's advisory clients.",
+      "Incorrectly conditions priority-of-transactions breaches on observable price movement.",
+      ""
+    ],
+    "hint": "Check who had access to the investment recommendation before trading.",
+    "explanation": "Standard VI(B) prohibits trading in firm proprietary accounts on forthcoming recommendations before clients have a fair chance to act. A treats internal desk separation as an exception; B invents a market-impact requirement. Trading after proper distribution and client opportunity would change the assessment."
+  },
+  {
+    "id": "ETH-C5-S6-023",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S6",
+    "sub_standard": "VI(C)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Yuki works in a bank's trust department and receives a bonus from the bank's affiliated brokerage for each client she refers to it. Her employer has approved the arrangement in writing. Before each referral, Yuki tells the client that she \"may benefit in some way\" from the introduction, but she does not describe the form of the bonus or its approximate amount. Under Standard VI(C), Yuki's disclosure is most likely:",
+    "options": [
+      "adequate, because clients learn of a possible benefit before they agree",
+      "inadequate, because clients are not told the bonus's nature and value",
+      "adequate, because the employer approved the internal bonus in writing"
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Treats a vague mention of some benefit as sufficient, although clients need its nature and value to judge the referral.",
+      "",
+      "Assumes employer approval of an internal payment replaces meaningful disclosure to the clients being referred."
+    ],
+    "hint": "Ask whether the clients could judge how strongly the bonus might influence Yuki.",
+    "explanation": "Standard VI(C), Referral Fees, requires disclosure to clients of any compensation received for a referral, including its nature and estimated value, before they engage the service. Saying only that Yuki \"may benefit in some way\" does not let clients weigh the conflict. A treats early but vague notice as enough; C relies on employer approval, which does not replace disclosure to clients. Had Yuki described the per-referral bonus and its approximate amount before each referral, the disclosure would be adequate."
+  },
+  {
+    "id": "ETH-C5-S6-024",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S6",
+    "sub_standard": "VI(C)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Siena, a financial adviser, refers a client who is revising her estate plan to a lawyer who prepares wills. The lawyer pays Siena a fixed referral fee for each new engagement. The client signs the engagement agreement and begins legal work before receiving Siena's written disclosure of the arrangement. Under Standard VI(C), Siena's conduct is most likely:",
+    "options": [
+      "Adequate, because written disclosure was provided before the client paid the lawyer's first invoice.",
+      "Adequate, because a fixed market-rate referral payment would not influence the lawyer's work.",
+      "Inadequate, because the referral fee was not disclosed before the client signed the engagement."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Uses timing of the first invoice instead of the decision to enter the legal services contract.",
+      "Treats a customary referral amount as an exception to disclosure before engagement.",
+      ""
+    ],
+    "hint": "Focus on when the client needed to know about the referral payment.",
+    "explanation": "Standard VI(C) requires disclosure of a referral arrangement before the client enters the formal services relationship. A focuses on first payment rather than engagement; B treats a standard fee as exempt. Disclosure before the agreement would have allowed an informed decision."
+  },
+  {
+    "id": "ETH-C5-S7-018",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S7",
+    "sub_standard": "VII(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Sora, a Level II candidate, tells friends preparing for the next exam that the ethics portion contained no questions on soft dollars and that the derivatives portion was dominated by option strategies. He does not mention any actual question. Which statement is most likely correct?",
+    "options": [
+      "No violation, because Sora did not disclose the exact wording of a live examination question.",
+      "A violation, because revealing examined or omitted topic areas compromises exam integrity.",
+      "No violation, because broad topic descriptions are equivalent to ordinary study advice."
+    ],
+    "answer": 1,
+    "distractor_reason": [
+      "Assumes exam confidentiality applies only to exact question wording.",
+      "",
+      "Misclassifies nonpublic exam-topic information as ordinary curriculum guidance."
+    ],
+    "hint": "Exam integrity covers information beyond actual question wording.",
+    "explanation": "Standard VII(A) protects the integrity of CFA Institute exams; revealing tested and untested subject areas can compromise confidentiality without quoting a question. A focuses too narrowly on question text; C confuses test-content disclosure with public study advice. Publicly released curriculum weighting is different."
+  },
+  {
+    "id": "ETH-C5-S7-019",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S7",
+    "sub_standard": "VII(A)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "Omar's firm received a written customer complaint about his handling of an account; the investigation is pending. On his annual Professional Conduct Statement, he answers 'no' to the question about written complaints, reasoning that the complaint has not been proven. Which statement is most likely correct?",
+    "options": [
+      "A violation, because the written complaint must be reported despite the pending investigation.",
+      "No violation, because a client complaint not yet substantiated does not count as reportable misconduct.",
+      "No violation at this stage, because disclosure is triggered after a disciplinary finding."
+    ],
+    "answer": 0,
+    "distractor_reason": [
+      "",
+      "Equates a lack of substantiated wrongdoing with no duty to disclose a written complaint.",
+      "Confuses the reportable complaint event with the later outcome of an inquiry."
+    ],
+    "hint": "Distinguish a pending written complaint from a confirmed violation.",
+    "explanation": "Standard VII(A) encompasses truthful responses in CFA Institute professional conduct processes; the given statement specifically asks about written complaints, including unresolved ones. B requires proven wrongdoing and C delays disclosure until a finding. If the form instead asked only about adverse findings, the response could differ."
+  },
+  {
+    "id": "ETH-C5-S7-020",
+    "topic": "ETHICS",
+    "cluster": "C5",
+    "module": "S7",
+    "sub_standard": "VII(B)",
+    "item_type": "vignette",
+    "difficulty": 3,
+    "stem": "A marketing brochure for an investment firm states that its two portfolio managers are CFA charterholders who passed all three levels on their first attempts. The statement is factually correct. The brochure then says clients should therefore expect top-quartile returns. Which assessment is most appropriate under Standard VII(B)?",
+    "options": [
+      "Appropriate, because the managers genuinely passed all three examination levels at first sitting.",
+      "Inappropriate, because exam-attempt information is unsuitable for promotional materials.",
+      "Inappropriate, because exam success does not justify promising superior investment results."
+    ],
+    "answer": 2,
+    "distractor_reason": [
+      "Assumes a truthful examination claim can justify an unrelated performance promise.",
+      "Treats factual passing-attempt information as inherently prohibited marketing content.",
+      ""
+    ],
+    "hint": "Assess what is implied by the claim about exam attempts.",
+    "explanation": "Standard VII(B) permits factual disclosure of CFA examination achievements but prohibits suggesting superior investment results because of the designation or exam performance. A ignores the exaggerated inference; B wrongly rejects truthful attempts data altogether. Removing the performance promise would change the conclusion."
   }
 ]
