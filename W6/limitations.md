@@ -31,7 +31,7 @@ Arena 4 = 4 câu khó
 Boss    = 9 câu khó
 ```
 
-Mỗi cluster chỉ có khoảng **9–10 câu khó**. Nếu người chơi trượt Arena 4 nhiều lần, cluster W2 có thể hết câu khó mới trước khi tới Boss.
+Mỗi cluster chỉ có khoảng **17–20 câu khó**. Nếu người chơi trượt Arena 4 nhiều lần, cluster W2 có thể hết câu khó mới trước khi tới Boss.
 
 Khi đó generator phải fallback:
 
