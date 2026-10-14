@@ -35,6 +35,7 @@ Sản phẩm có **bốn** output chính. Cột "Ảnh hưởng output" luôn tr
 | `timeMs` | Thời gian từ lúc câu hiện lên đến lúc người học bấm Xác nhận | int, mili giây | Hệ thống đo (timestamp render → timestamp submit) | O2 — tie-break khi cần; O3 — tính quá giờ và phạt Credit ở Arena 3, Arena 4, Boss |
 | `item_used` | Câu này có dùng Bùa Loại Trừ hay không | boolean | Người dùng | O1 — quyết định câu có vào mẫu chẩn đoán hay không; O4 — quyết định câu có vào tử số `performance_score` hay không |
 | `item_type_used` | Loại vật phẩm đã dùng ở câu đó, nếu có | enum: `none` / `eliminate` | Người dùng | O3 — hiển thị lại trong bảng lời giải |
+| `reused` | Câu này là câu lấy lại người chơi đã gặp trước đó (rút lại khi cụm hết câu mới đúng mức khó); thứ tự phương án đã được xáo | boolean | Hệ thống sinh đề | O4 — câu lấy lại ở lượt đỗ Boss bị loại khỏi cột Boss |
 
 ### 1.1 Quy tắc thời gian
 
@@ -182,12 +183,12 @@ Ngưỡng đỗ:
 
 | Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
 |---|---|---|---|
-| `accuracy_by_arena[c][arena]` | Cặp `{correct, attempted}` của cụm c riêng trong từng Arena; loại câu dùng vật phẩm; **không có World Quest** | object lồng 2 tầng | O4 |
+| `accuracy_by_arena[c][arena]` | Cặp `{correct, attempted}` của cụm c riêng trong từng Arena; loại câu dùng vật phẩm; **không có World Quest**. Arena 1–4 lấy lượt làm đầu tiên; Boss lấy lượt đỗ và loại câu `reused` | object lồng 2 tầng | O4 |
 | `baseline_accuracy[c]` | Mốc chẩn đoán của cụm c theo logic hiện hành trong `SOLUTION_STRUCTURE.md` | float | O4 |
-| `delta[c]` | `boss_accuracy[c] − baseline_accuracy[c]` | float, có thể âm | O4 |
-| `improvement_label[c]` | Nhãn kết luận của cụm c theo rule O4. Mốc đánh giá cải thiện vẫn là 70%, không đổi theo Boss pass threshold | enum: `not_retested` / `improved` / `improved_insufficient` / `needs_work` | O4 |
+| `delta[c]` | `boss_accuracy[c] − baseline_accuracy[c]`; `boss_accuracy` tính trên lượt đỗ Boss | float, có thể âm | O4 |
+| `improvement_label[c]` | Nhãn kết luận của cụm c theo rule O4. Mốc đánh giá cải thiện vẫn là 70%, không đổi theo Boss pass threshold | enum: `not_retested` / `boss_insufficient` / `improved` / `improved_insufficient` / `needs_work`. `boss_insufficient`: cụm có trong Boss nhưng ở lượt đỗ mọi câu của cụm đều là câu lấy lại hoặc câu dùng Bùa | O4 |
 | `performance_by_arena[arena]` | `{points_earned, points_offered}` theo từng Arena. Quest không có entry | object | O4 |
-| `performance_score` | `Σ points_earned ÷ Σ points_offered` trên **5 Arena**, không tính Quest | float, 0.0–1.0 | O4 |
+| `performance_score` | `Σ points_earned ÷ Σ points_offered` trên **5 Arena**, không tính Quest; mỗi Arena (kể cả Boss) lấy lượt làm đầu tiên | float, 0.0–1.0 | O4 |
 
 ### 3.4 Biến điều khiển sinh đề
 
@@ -274,11 +275,12 @@ Sản phẩm xử lý cùng một câu trả lời theo ba bộ đếm khác nha
 
 **Cấm dùng tên biến `correct`, `score`, `right`, `accuracy` trần trong code.** Luôn viết rõ tiền tố/phạm vi: `diagnostic_`, `arena_score_`, `quest_`, `accuracy_cumulative`, `accuracy_by_arena`, `performance_`.
 
-### Ba quy tắc lưu của `accuracy_by_arena`
+### Bốn quy tắc lưu của `accuracy_by_arena`
 
 1. Lưu **cặp số**, không lưu phần trăm.
 2. Đếm theo `diagnostic_correct` / `diagnostic_attempted`, tức loại câu dùng vật phẩm khỏi cả tử lẫn mẫu.
 3. Arena nào không hỏi cụm đó thì không tạo key giả `attempted: 0`.
+4. Arena 1–4 lấy lượt làm đầu tiên. Boss lấy lượt đỗ và loại câu `reused = true`. Trước khi đỗ Boss chưa có key `boss`.
 
 ### Điểm kiểm tra tự động
 
