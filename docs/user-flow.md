@@ -239,7 +239,8 @@ Nếu người chơi đã trả 15 Credit và vào Boss nhưng **trượt Boss**
 - không hoàn 15 Credit;
 - không yêu cầu trả thêm 15 Credit;
 - lần sau rút một bộ Boss mới;
-- người chơi được retry cho tới khi vượt Boss.
+- người chơi được retry cho tới khi vượt Boss;
+- khi đỗ, bảng tổng kết lấy **lượt đỗ** cho cột Boss và kết luận từng cụm, không tính câu lấy lại đã gặp; lượt trượt vẫn hiện trong bảng "Các lượt làm Arena"; `performance_score` vẫn lấy lượt Boss đầu tiên.
 
 ```text
 Boss
