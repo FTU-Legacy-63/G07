@@ -750,7 +750,7 @@ function progressChartHTML(upto = Infinity) {
   // Boss chỉ có điểm trên biểu đồ khi đã đỗ (cột Boss lấy lượt đỗ)
   const done = ARENAS.filter((a, i) => i <= upto && (a.id === 'boss' ? bossReportAttempt() !== null : S.attempts[a.id].length > 0));
   if (!done.length) return '<p class="muted">Biểu đồ hiện sau khi hoàn thành Arena 1.</p>';
-  const W = 660, H = 270, L = 46, R = 220, T = 18, B = 40;
+  const W = 660, H = 270, L = 46, R = 170, T = 18, B = 40;
   const x = i => done.length === 1 ? L + (W - L - R) / 2 : L + i * (W - L - R) / (done.length - 1);
   const y = v => T + (1 - v) * (H - T - B);
   let svg = '';
