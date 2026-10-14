@@ -15,7 +15,7 @@
    - `cfa_quest_v11.css`
    - `cfa_dungeon_ui_v10_skipfix_updated.css`
 3. Bấm đúp `cfa_quest_v11.html`.
-4. Màn hình đầu phải hiện dòng **"Ngân hàng hợp lệ: 170 câu, 5 cụm, 9 module."** Có dòng này là chạy đúng.
+4. Màn hình đầu phải hiện dòng **"Ngân hàng hợp lệ: 220 câu, 5 cụm, 9 module."** Có dòng này là chạy đúng.
 
 ## 3. Thiết bị & trình duyệt đã thử
 
