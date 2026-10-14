@@ -3,7 +3,7 @@
    CFA Quest — Ethics · demo v12 (tăng độ khó theo góp ý của thầy, luật chốt 06/10/2026)
 
    File đi kèm:
-   - cfa_quest_v12.html        (khung màn hình)
+   - cfa_quest_v11.html        (khung màn hình; giữ tên file cũ, nội dung là v12)
    - cfa_dungeon_ui_v10_skipfix_updated.css  (giao diện cũ, dùng lại nguyên)
    - cfa_quest_v11.css         (style của v11: bảng chẩn đoán, biểu đồ, hộp thông báo)
    - cfa_quest_v12.css         (style mới của v12: đồng hồ, ô World Quest, khoá Boss)
@@ -15,6 +15,11 @@
    - Đồng hồ mỗi câu ở Arena 3, 4, Boss; quá giờ trừ Credit
    - Boss khoá, mở bằng 15 Credit; Boss được dùng 1 Bùa
    - World Quest: 15 câu ôn 3 cụm yếu nhất để kiếm thêm Credit
+
+   Sửa ngày 14/10/2026 (rà lại trường hợp trượt Boss rồi đỗ):
+   - Cột Boss ở bảng tổng kết lấy lượt ĐỖ Boss, không lấy lượt Boss đầu tiên.
+     Câu lấy lại đã gặp (reused) trong lượt đó bị loại khỏi mẫu, như câu dùng Bùa.
+   - Arena 1–4 vẫn lấy lượt làm đầu tiên. performance_score giữ theo lượt đầu ở cả 5 Arena.
    ============================================================================= */
 
 /* ---------- 1. Cấu hình (Mục 4, 5, 8) ---------- */
@@ -454,9 +459,35 @@ function buildQuest(ctx) {
 
 /* ---------- 6. Tính toán (Mục 5: ba công thức, phân định khi bằng nhau) ---------- */
 
-// Mẫu chẩn đoán: chỉ lượt làm đầu tiên của mỗi Arena, bỏ câu dùng vật phẩm
+// Mẫu chẩn đoán dùng để xếp hạng cụm yếu (W1, W2, 3 cụm vào Boss):
+// chỉ lượt làm đầu tiên của mỗi Arena, bỏ câu dùng vật phẩm
 function diagnosticRecords(uptoArenaIndex = Infinity) {
   return S.records.filter(r => r.attempt === 1 && !r.item && ARENA_INDEX[r.arena] <= uptoArenaIndex);
+}
+
+// Lượt Boss dùng cho bảng tổng kết: lượt đỗ Boss. Chưa đỗ thì trả về null.
+function bossReportAttempt() {
+  const t = (S.attempts.boss || []).find(x => x.passed);
+  return t ? t.attempt : null;
+}
+
+// Mẫu dùng cho bảng tổng kết và biểu đồ (sửa 14/10/2026):
+// - Arena 1–4: lượt làm đầu tiên (trình độ trước khi luyện)
+// - Boss: lượt đỗ (trình độ sau khi luyện), bỏ câu lấy lại đã gặp
+// Cả hai đều bỏ câu dùng vật phẩm.
+function reportRecords(uptoArenaIndex = Infinity) {
+  const bossAt = bossReportAttempt();
+  return S.records.filter(r => {
+    if (r.item || ARENA_INDEX[r.arena] > uptoArenaIndex) return false;
+    if (r.arena === 'boss') return r.attempt === bossAt && !r.reused;
+    return r.attempt === 1;
+  });
+}
+
+// Số câu lấy lại đã gặp bị loại khỏi cột Boss (để ghi chú trên bảng tổng kết)
+function bossReusedExcluded() {
+  const bossAt = bossReportAttempt();
+  return S.records.filter(r => r.arena === 'boss' && r.attempt === bossAt && !r.item && r.reused).length;
 }
 
 // Công thức (1) accuracy_cumulative + dữ liệu phụ để phân định
@@ -567,10 +598,11 @@ function overtimeSec(timeMs, arenaId) {
 function penaltyFor(overSec) { return overSec > 0 ? Math.ceil(overSec / CONFIG.penaltyStepSec) : 0; }
 function sumPenalty(answers) { return answers.reduce((s, a) => s + (a.penalty || 0), 0); }
 
-// accuracy_by_arena[cụm][arena] = { correct, attempted } — Mục 5, ba quy tắc lưu
+// accuracy_by_arena[cụm][arena] = { correct, attempted } — Mục 5, các quy tắc lưu
+// Arena 1–4 theo lượt đầu; Boss theo lượt đỗ, bỏ câu lấy lại (reportRecords)
 function buildAccuracyByArena() {
   const out = {};
-  S.records.filter(r => r.attempt === 1 && !r.item).forEach(r => {
+  reportRecords().forEach(r => {
     out[r.cluster] ??= {};
     const cell = (out[r.cluster][r.arena] ??= { correct: 0, attempted: 0 });
     cell.attempted++;
@@ -580,6 +612,7 @@ function buildAccuracyByArena() {
 }
 
 // performance_by_arena[arena] = { points_earned, points_offered } — Mục 5, công thức (3)
+// Giữ theo lượt làm đầu tiên ở cả 5 Arena, kể cả Boss (chốt 14/10/2026)
 function buildPerformanceByArena() {
   const out = {};
   S.records.filter(r => r.attempt === 1).forEach(r => {
@@ -594,7 +627,13 @@ function buildPerformanceByArena() {
 // Mục 5: bốn điều kiện kết luận, chạy theo thứ tự
 function conclude(cluster) {
   const d = S.accuracy_by_arena[cluster] || {};
-  if (!d.boss) return { text: 'Không kiểm tra lại ở Boss', cls: 'na' };
+  if (!d.boss) {
+    // Cụm có trong kế hoạch Boss nhưng mọi câu Boss của cụm đều là câu lấy lại hoặc câu dùng Bùa
+    const planned = (S.bossPlan || []).some(p => p.cluster === cluster);
+    return planned
+      ? { text: 'Chưa đủ câu mới ở Boss để kết luận', cls: 'na', noData: true }
+      : { text: 'Không kiểm tra lại ở Boss', cls: 'na' };
+  }
   const baseC = (d.arena1?.correct || 0) + (d.crossroads?.correct || 0);
   const baseA = (d.arena1?.attempted || 0) + (d.crossroads?.attempted || 0);
   // Nhãn cụm dùng mốc chẩn đoán 70%, không dùng ngưỡng đỗ 90% của Boss (luật 15)
@@ -682,7 +721,7 @@ function arenaDesc(id) {
 
 /* ---------- 8. Bảng chẩn đoán 2 tầng và biểu đồ (Mục 1 Output, Mục 6, Mục 10) ---------- */
 function diagnosticTableHTML(highlight, upto = Infinity) {
-  const recs = diagnosticRecords(upto);
+  const recs = reportRecords(upto);
   if (!recs.length) return '<p class="muted">Bảng chẩn đoán hiện sau khi hoàn thành Arena 1.</p>';
   const cs = clusterStats(recs);
   const ms = moduleStats(recs);
@@ -696,7 +735,7 @@ function diagnosticTableHTML(highlight, upto = Infinity) {
     });
   });
   return `<div class="tbl-wrap"><table class="diag"><thead><tr><th>Cụm / module</th><th>Đúng / đã hỏi</th><th>Tỷ lệ</th></tr></thead><tbody>${rows}</tbody></table></div>
-  <p class="note">Tính cộng dồn từ lượt làm đầu tiên của mỗi Arena, không tính câu dùng vật phẩm. Mỗi module mới có vài câu nên đây là tín hiệu trong lượt chơi này, chưa phải kết luận về năng lực.</p>`;
+  <p class="note">Tính cộng dồn từ lượt làm đầu tiên của Arena 1–4 và lượt đỗ Boss (không tính câu Boss lấy lại đã gặp), không tính câu dùng vật phẩm. Mỗi module mới có vài câu nên đây là tín hiệu trong lượt chơi này, chưa phải kết luận về năng lực.</p>`;
 }
 
 const CLUSTER_STYLE = {
@@ -708,7 +747,8 @@ const CLUSTER_STYLE = {
 };
 
 function progressChartHTML(upto = Infinity) {
-  const done = ARENAS.filter((a, i) => i <= upto && S.attempts[a.id].length > 0);
+  // Boss chỉ có điểm trên biểu đồ khi đã đỗ (cột Boss lấy lượt đỗ)
+  const done = ARENAS.filter((a, i) => i <= upto && (a.id === 'boss' ? bossReportAttempt() !== null : S.attempts[a.id].length > 0));
   if (!done.length) return '<p class="muted">Biểu đồ hiện sau khi hoàn thành Arena 1.</p>';
   const W = 660, H = 270, L = 46, R = 170, T = 18, B = 40;
   const x = i => done.length === 1 ? L + (W - L - R) / 2 : L + i * (W - L - R) / (done.length - 1);
@@ -725,7 +765,7 @@ function progressChartHTML(upto = Infinity) {
   CLUSTERS.forEach(c => {
     const pts = [];
     done.forEach((a, i) => {
-      const st = clusterStats(diagnosticRecords(ARENA_INDEX[a.id])).find(s => s.cluster === c);
+      const st = clusterStats(reportRecords(ARENA_INDEX[a.id])).find(s => s.cluster === c);
       if (st.attempted) pts.push([x(i), y(st.rate), st]);
     });
     if (!pts.length) return;
@@ -1252,7 +1292,14 @@ function renderResult() {
     html += `<p>Chưa đạt ngưỡng ${passPercentFor(a.id)}% (cần ${need}/${L.total} câu). Không cấp Credit thưởng. ${next ? esc(next.name) + ' bị khoá' : 'Bảng tổng kết bị khoá'} cho tới khi bạn chơi lại và đỗ. Lượt chơi lại dùng bộ câu rút mới.</p>`;
   }
   html += creditLineHTML(L);
-  if (L.attempt > 1) html += '<p class="note">Lượt này tính cho đỗ/trượt và Credit. Bảng chẩn đoán và performance score vẫn giữ theo lượt làm đầu tiên.</p>';
+  if (a.id === 'boss') {
+    // Sửa 14/10/2026: cột Boss ở bảng tổng kết lấy lượt đỗ
+    html += L.passed
+      ? `<p class="note">Bảng tổng kết dùng lượt Boss này${L.attempt > 1 ? ` (lượt ${L.attempt})` : ''} cho cột Boss và kết luận từng cụm, không tính câu lấy lại đã gặp. Performance score vẫn giữ theo lượt Boss đầu tiên.</p>`
+      : '<p class="note">Lượt Boss trượt chỉ tính cho Credit. Cột Boss ở bảng tổng kết sẽ lấy từ lượt bạn đỗ Boss.</p>';
+  } else if (L.attempt > 1) {
+    html += '<p class="note">Lượt này tính cho đỗ/trượt và Credit. Bảng chẩn đoán và performance score vẫn giữ theo lượt làm đầu tiên.</p>';
+  }
   if (L.notices.length) html += `<div class="warn-box">${L.notices.map(esc).join('<br>')}</div>`;
 
   if (L.passed) html += `<div class="announce"><h3>Arena kế tiếp</h3><p>${esc(announceAfter(a.id))}</p></div>`;
@@ -1452,6 +1499,8 @@ function openReport() {
 }
 
 function renderReport() {
+  // Dựng lại để tiến trình lưu từ bản trước 14/10/2026 cũng hiện đúng luật mới
+  S.accuracy_by_arena = buildAccuracyByArena();
   const abya = S.accuracy_by_arena;
   const perf = S.performance_by_arena;
   let earned = 0, offered = 0;
@@ -1464,7 +1513,12 @@ function renderReport() {
     <div class="performance-final"><span>Performance score toàn lượt<br><small>Tỷ lệ đúng có trọng số theo mức khó. Không tính câu dùng vật phẩm vào tử số.</small></span>
     <b>${offered ? Math.round(earned / offered * 100) : 0}%</b></div>
     <p class="note">${earned}/${offered} điểm độ khó.</p>`;
-  if (S.hadFailure) html += '<p class="note">Lượt chơi có ít nhất một lần trượt: performance score và mốc chẩn đoán đọc theo lượt làm đầu tiên của mỗi Arena; điểm và Credit ghi theo lượt đỗ.</p>';
+  if (S.hadFailure) html += '<p class="note">Lượt chơi có ít nhất một lần trượt. Mốc chẩn đoán (Arena 1–4) và performance score đọc theo lượt làm đầu tiên của mỗi Arena. Cột Boss và kết luận từng cụm đọc theo lượt đỗ Boss. Điểm và Credit ghi theo từng lượt, xem bảng "Các lượt làm Arena".</p>';
+  const bossAt = bossReportAttempt();
+  const reusedOut = bossReusedExcluded();
+  if (bossAt) {
+    html += `<p class="note">Cột Boss lấy từ lượt đỗ Boss (lượt ${bossAt}${bossAt > 1 ? `, sau ${bossAt - 1} lượt trượt` : ''})${reusedOut ? `; đã bỏ ${reusedOut} câu lấy lại đã gặp khỏi mẫu` : ''}.</p>`;
+  }
   if (perf.arena1 && perf.arena1.points_offered !== 30) {
     html += `<div class="warn-box">Kiểm tra tự động: points_offered của Arena 1 = ${perf.arena1.points_offered}, phải bằng 30. Lỗi nằm ở khâu sinh đề Arena 1.</div>`;
   }
@@ -1478,7 +1532,7 @@ function renderReport() {
   });
   html += `<h3>Bảng A · Kết quả theo cụm</h3>
     <div class="tbl-wrap"><table class="diag"><thead><tr><th>Cụm</th>${ARENAS.map(a => `<th>${esc(a.name.replace(' · The Gate', ''))}</th>`).join('')}<th>Kết luận</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="note">Ô "--" là Arena không hỏi cụm đó, không phải trả lời sai hết. Số liệu tính theo lượt làm đầu tiên, không gồm câu dùng vật phẩm.</p>`;
+    <p class="note">Ô "--" là Arena không hỏi cụm đó, không phải trả lời sai hết. Arena 1–4 tính theo lượt làm đầu tiên; Boss tính theo lượt đỗ, không gồm câu lấy lại đã gặp. Không gồm câu dùng vật phẩm.</p>`;
 
   // Câu hỏi MVP phải trả lời
   const targeted = [S.w1, S.w2].filter(Boolean);
@@ -1486,16 +1540,18 @@ function renderReport() {
   targeted.forEach(c => {
     const k = conclude(c);
     const trap = c === S.w1 ? NAME('trap1') : NAME('trap2');
-    html += k.cls === 'na'
+    html += k.noData
+      ? `<div class="milestone"><b>${c}</b> (${trap}): có trong Boss nhưng mọi câu Boss của cụm ở lượt đỗ đều là câu lấy lại hoặc câu dùng Bùa, nên chưa đủ dữ liệu để kết luận.</div>`
+      : k.cls === 'na'
       ? `<div class="milestone"><b>${c}</b> (${trap}): không nằm trong 3 cụm yếu nhất lúc vào Boss nên không có câu Boss. Lượt này không trả lời được câu hỏi cho cụm này.</div>`
       : `<div class="milestone"><b>${c}</b> (${trap}): mốc chẩn đoán ${k.baseC}/${k.baseA} = ${fmtPct(k.baseC, k.baseA)}, Boss ${k.bossC}/${k.bossA} = ${fmtPct(k.bossC, k.bossA)}. Kết luận: ${k.text}.</div>`;
   });
   html += `</div><p class="note">Mốc chẩn đoán = Arena 1 + ${NAME('crossroads')}. Kết luận chỉ nói về lượt chơi này, mẫu mỗi cụm còn nhỏ.</p>`;
 
   // Chi tiết 9 module
-  const firstNoItem = S.records.filter(r => r.attempt === 1 && !r.item);
-  const base = moduleStats(firstNoItem.filter(r => r.arena === 'arena1' || r.arena === 'crossroads'));
-  const boss = moduleStats(firstNoItem.filter(r => r.arena === 'boss'));
+  const repRecs = reportRecords();
+  const base = moduleStats(repRecs.filter(r => r.arena === 'arena1' || r.arena === 'crossroads'));
+  const boss = moduleStats(repRecs.filter(r => r.arena === 'boss'));
   let mrows = '';
   CLUSTERS.forEach(c => CLUSTER_INFO[c].modules.forEach(m => {
     const b = base[m], s = boss[m];
