@@ -66,7 +66,7 @@ Bốn output chuẩn:
 | C3 | Nội dung `stem/options/answer/explanation/distractor_reason/hint` do nhóm tự biên soạn đủ chính xác cho prototype | O3 | Sai nội dung/đáp án làm feedback học tập sai | Peer review nội bộ theo batch | Hồng, Quỳnh | Cần review |
 | C4 | `sub_standard` chỉ dùng cho biên soạn/coverage, không cần ở runtime output | Không trực tiếp O1–O4 | Nếu code phụ thuộc field này ngoài dự kiến, Input Dictionary và source map sẽ lệch | Không đọc `sub_standard` trong engine runtime | Hồng, Trang | Đã chốt |
 | C5 | `topic="ETHICS"` và `item_type` không làm thay đổi logic MVP | Không trực tiếp O1–O4 | Nếu UI/engine branch theo hai field này, tài liệu hiện tại sẽ thiếu rule | Giữ contextual; nếu code đọc thì cập nhật Input Dictionary trước | Quỳnh | Đã chốt |
-| **C6** | **Mỗi cụm hiện chỉ có khoảng 9–10 câu khó, nên việc giữ quota hard ở các round sau vẫn có nguy cơ cạn pool khi replay** | O2 | Người chơi trượt Arena 4 nhiều lần có thể làm W2 hết câu khó trước Boss | Cho phép reuse cùng difficulty; nếu vẫn thiếu thì hạ về medium; ghi `bankLog`; bổ sung bank sau | Hồng, Trang | **Limitation đã biết** |
+| **C6** | **Mỗi cụm hiện chỉ có khoảng 17–20 câu khó, nên việc giữ quota hard ở các round sau vẫn có nguy cơ cạn pool khi replay** | O2 | Người chơi trượt Arena 4 nhiều lần có thể làm W2 hết câu khó trước Boss | Cho phép reuse cùng difficulty; nếu vẫn thiếu thì hạ về medium; ghi `bankLog`; bổ sung bank sau | Hồng, Trang | **Limitation đã biết** |
 | D1 | Prototype dùng HTML/CSS/JavaScript thuần + dữ liệu tĩnh, không cần backend/API | Toàn flow | Nếu cần sync thiết bị/account thì kiến trúc hiện tại không đủ | Giữ ngoài scope; lưu tiến trình local browser | Minh, Khôi | Đã chốt |
 | D2 | User input trong một phiên được hệ thống ghi đúng: option, timestamp render/submit, trạng thái vật phẩm | O1–O4 | Event ghi sai sẽ làm diagnosis/score/penalty sai | Validation tại submit; log event tối thiểu; test edge case | Minh | Cần test |
 | **D3** | **Khi thiếu câu mới đúng mức difficulty, cho phép dùng lại câu cùng mức đã gặp; nếu vẫn thiếu thì hạ về medium** | O2 | Repetition có thể làm kết quả bị ảnh hưởng bởi nhớ đáp án; hạ difficulty làm round không còn đúng quota ban đầu | Chỉ dùng khi pool thiếu; ghi `bankLog`; bổ sung bank dựa trên log | Trang, Hồng | **Fallback Week 7** |
@@ -162,7 +162,7 @@ Thiết kế mới tăng số câu hard:
 - Arena 4: 4 hard
 - Boss: 9 hard
 
-Mỗi cụm hiện chỉ có khoảng 9–10 câu hard.
+Mỗi cụm hiện chỉ có khoảng 17–20 câu hard.
 
 Nếu người chơi replay Arena 4 từ hai lần trở lên, W2 có thể hết câu hard mới trước Boss.
 
@@ -318,7 +318,7 @@ Các limitation sau không chỉ nằm ở file Assumptions; chúng phải đư�
 
 1. Pass threshold, timer, penalty, Boss price và Quest reward đều do nhóm tự đặt, chưa có dữ liệu người chơi thật.
 2. Arena 2 và Arena 3 cùng ngưỡng 75%; độ khó tăng giữa hai round chủ yếu đến từ difficulty mix và timer.
-3. Mỗi cụm chỉ có khoảng 9–10 câu hard; replay Arena 4 có thể làm cạn pool trước Boss.
+3. Mỗi cụm chỉ có khoảng 17–20 câu hard; replay Arena 4 có thể làm cạn pool trước Boss.
 4. Quest lặp câu cũ nên có thể dễ dần do nhớ đáp án.
 5. Browser timer có thể lệch so với thời gian người chơi thật sự suy nghĩ.
 6. Boss yêu cầu 90% trong khi có 9 câu hard; có thể quá khó với người mới học.
