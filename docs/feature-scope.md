@@ -282,7 +282,8 @@ Kết quả Quest:
 
 - Boss vẫn mở;
 - không trả thêm 15 Credit;
-- retry bằng bộ đề mới.
+- retry bằng bộ đề mới;
+- khi đỗ, cột Boss và kết luận O4 lấy lượt đỗ, loại câu lấy lại đã gặp; `performance_score` vẫn lấy lượt Boss đầu tiên.
 
 **Thoát giữa Boss:**
 
