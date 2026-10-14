@@ -9,7 +9,7 @@
 
 Thí sinh tự ôn CFA Level I môn Ethics thường biết mình sai bao nhiêu câu nhưng khó xác định lỗi đang tập trung ở Standard nào. Nếu không có chẩn đoán, lần luyện sau dễ tiếp tục làm dàn trải.
 
-**CFA Quest là một hầm ngục 5 Arena. Arena 1 tạo chẩn đoán ban đầu; các Arena sau được sinh từ dữ liệu sai của chính người học.** Hệ thống đo tỷ lệ đúng theo 5 cụm nội dung, xác định cụm yếu, rồi lọc ngân hàng **170 câu** để tạo bài luyện nhắm đúng phần đó.
+**CFA Quest là một hầm ngục 5 Arena. Arena 1 tạo chẩn đoán ban đầu; các Arena sau được sinh từ dữ liệu sai của chính người học.** Hệ thống đo tỷ lệ đúng theo 5 cụm nội dung, xác định cụm yếu, rồi lọc ngân hàng **220 câu** để tạo bài luyện nhắm đúng phần đó.
 
 Week 7 giữ nguyên core diagnostic logic nhưng tăng độ khó theo hành trình bằng:
 
@@ -240,7 +240,7 @@ Question bank nhúng:
 
 Dữ liệu gốc:
 
-[`data/ethics_bank_170.json`](data/ethics_bank_170.json)
+[`data/ethics_bank_220.json`](data/ethics_bank_220.json)
 
 ### Bản v11 dự phòng / lịch sử
 
@@ -279,7 +279,7 @@ PROJECT PROPOSAL.md
 MIDTERM_VERIFICATION.md
 
 data/
-  ethics_bank_170.json         ngân hàng 170 câu, 34 câu × 5 cụm
+  ethics_bank_220.json         ngân hàng 220 câu, 34 câu × 5 cụm
 
 src/
   cfa_quest_v11.html           file mở để chạy sản phẩm
@@ -320,7 +320,7 @@ Dữ liệu được nhúng trong `.js` để sản phẩm có thể mở trực
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Ngân hàng 170 câu | ✅ Hoàn thành |
+| Ngân hàng 220 câu | ✅ Hoàn thành |
 | Diagnostic logic O1–O4 | ✅ Hoàn thành |
 | Progressive pass threshold | ✅ Hoàn thành / đã test |
 | Difficulty mix theo round | ✅ Hoàn thành / đã test |
@@ -339,7 +339,7 @@ Dữ liệu được nhúng trong `.js` để sản phẩm có thể mở trực
 | Mốc | Thay đổi | Lý do |
 |---|---|---|
 | Week 6 | Chỉ giữ Bùa Loại Trừ 3 Credit | Freeze scope vật phẩm |
-| Week 6 | Bank 110 → 170 câu | Tăng coverage câu hỏi |
+| Week 6 | Bank 110 → 220 câu | Tăng coverage câu hỏi |
 | **Week 7** | Pass threshold → `70/75/75/85/90` | Round sau khó hơn round trước |
 | **Week 7** | Thêm difficulty quota theo round | Tăng tỷ lệ câu khó dần |
 | **Week 7** | Thêm timer `100/80/60` + Credit penalty | Tăng áp lực ở ba round cuối |
@@ -365,6 +365,6 @@ Chi tiết tại [`W6/limitations.md`](W6/limitations.md).
 
 ## Bản quyền
 
-Toàn bộ 170 câu hỏi, tình huống, lời giải và lý do gây nhiễu do nhóm tự biên soạn.
+Toàn bộ 220 câu hỏi, tình huống, lời giải và lý do gây nhiễu do nhóm tự biên soạn.
 
 Tình huống là tình huống giả định, không trích nguyên văn tài liệu CFA Institute hoặc GIPS Standards. Tên Standard được dùng cho mục đích phân loại học thuật. Không có tài liệu nguồn thương mại nào được đưa vào repo hoặc lịch sử commit.
