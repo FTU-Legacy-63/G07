@@ -7,7 +7,7 @@
    - cfa_dungeon_ui_v10_skipfix_updated.css  (giao diện cũ, dùng lại nguyên)
    - cfa_quest_v11.css         (style của v11: bảng chẩn đoán, biểu đồ, hộp thông báo)
    - cfa_quest_v12.css         (style mới của v12: đồng hồ, ô World Quest, khoá Boss)
-   - cfa_quest_v11_bank.js     (ngân hàng nhúng, sinh tự động từ ethics_bank_170.json)
+   - cfa_quest_v11_bank.js     (ngân hàng nhúng, sinh tự động từ ethics_bank_220.json)
 
    Thay đổi so với v11 (chi tiết: tài liệu "CFA Quest — Thiết kế độ khó mới (tuần 7)"):
    - Ngưỡng đỗ theo round 70/75/75/85/90%
@@ -205,7 +205,7 @@ function applyBank(raw) {
 
 async function loadBank() {
   try {
-    const r = await fetch('../data/ethics_bank_170.json', { cache: 'no-store' });
+    const r = await fetch('../data/ethics_bank_220.json', { cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     applyBank(await r.json());
   } catch {
@@ -214,7 +214,7 @@ async function loadBank() {
       applyBank(window.CFA_EMBEDDED_BANK);
     } else {
       const el = $('bankStatus');
-      el.textContent = 'Chưa nạp được ethics_bank_170.json. Dùng nút nạp file bên dưới hoặc chạy bằng local server.';
+      el.textContent = 'Chưa nạp được ethics_bank_220.json. Dùng nút nạp file bên dưới hoặc chạy bằng local server.';
       el.className = 'status error';
     }
   }
@@ -750,7 +750,7 @@ function progressChartHTML(upto = Infinity) {
   // Boss chỉ có điểm trên biểu đồ khi đã đỗ (cột Boss lấy lượt đỗ)
   const done = ARENAS.filter((a, i) => i <= upto && (a.id === 'boss' ? bossReportAttempt() !== null : S.attempts[a.id].length > 0));
   if (!done.length) return '<p class="muted">Biểu đồ hiện sau khi hoàn thành Arena 1.</p>';
-  const W = 660, H = 270, L = 46, R = 170, T = 18, B = 40;
+  const W = 660, H = 270, L = 46, R = 220, T = 18, B = 40;
   const x = i => done.length === 1 ? L + (W - L - R) / 2 : L + i * (W - L - R) / (done.length - 1);
   const y = v => T + (1 - v) * (H - T - B);
   let svg = '';
@@ -886,7 +886,7 @@ async function unlockBoss() {
 
 /* ---------- 10. Làm bài (Mục 1 Input, Mục 7 đường lỗi, Mục 8 luật vật phẩm) ---------- */
 function startRun() {
-  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_170.json hợp lệ trước khi bắt đầu.'); return; }
+  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_220.json hợp lệ trước khi bắt đầu.'); return; }
   if (S.started && !S.finished && !confirm('Bắt đầu lượt mới sẽ xoá lượt đang chơi. Tiếp tục?')) return;
   const runNo = Number(store.get(CONFIG.runCounterKey) || 0) + 1;
   store.set(CONFIG.runCounterKey, String(runNo));
@@ -900,7 +900,7 @@ function startRun() {
 
 function startArena() {
   if (!S.started || S.finished) return;
-  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_170.json hợp lệ ở màn hình đầu.'); return; }
+  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_220.json hợp lệ ở màn hình đầu.'); return; }
   const arena = ARENAS[S.stage];
   if (arena.id === 'boss' && !S.bossUnlocked) { unlockBoss(); return; }
   // Boss không hỏi lại câu đã ra ở World Quest (luật 12)
@@ -920,7 +920,7 @@ function startArena() {
 // World Quest: mở sau khi đỗ Arena 4, chơi bao nhiêu lần cũng được
 function startQuest() {
   if (!questOpen()) return;
-  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_170.json hợp lệ ở màn hình đầu.'); return; }
+  if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_220.json hợp lệ ở màn hình đầu.'); return; }
   const ctx = makeDrawContext();
   const qs = buildQuest(ctx);
   const size = CONFIG.questPerCluster * S.bossPlan.length;
