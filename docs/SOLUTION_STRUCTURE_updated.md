@@ -232,7 +232,7 @@ World Quest có luật rút riêng ở Mục 8 và không dùng chung ưu tiên 
 | `diagnostic_correct[c] / diagnostic_attempted[c]` | Tỷ lệ đúng cộng dồn của cụm | Xếp hạng tăng dần + tie-break hiện có | `accuracy_cumulative[c]`, W1, W2, `boss_clusters` | Chỉ mô tả tỷ lệ đúng trong phiên hiện tại |
 | `arena_score_correct / arena_question_count` | Điểm round, tính cả câu dùng Bùa | So với ngưỡng riêng 70/75/75/85/90 | Đỗ/trượt + bậc Credit | Ngưỡng là luật game do nhóm đặt, không phải chuẩn CFA Institute |
 | `timeMs` | Thời gian trả lời câu | Arena 3/4/Boss tính overtime và penalty | Credit penalty | Timer là luật game, không phải đo năng lực chuẩn hoá |
-| `accuracy_by_arena[c][arena]` | Tỷ lệ đúng theo từng cụm trong từng Arena | Lưu cặp `correct/attempted`; loại câu dùng Bùa | Bảng O4 | `--` nghĩa là không được hỏi |
+| `accuracy_by_arena[c][arena]` | Tỷ lệ đúng theo từng cụm trong từng Arena | Lưu cặp `correct/attempted`; loại câu dùng Bùa. Arena 1–4 lấy lượt làm đầu tiên; Boss lấy lượt đỗ và loại câu lấy lại đã gặp (Mục 5.4) | Bảng O4 | `--` nghĩa là không được hỏi |
 | `baseline_accuracy[c]` | Mốc chẩn đoán | Arena 1 + Crossroads | Baseline O4 | Chỉ có 5 câu/cụm trước khi xét Bùa |
 | `delta[c]` | Boss − baseline | Dùng rule nhãn 70% như bản cũ | Nhãn cải thiện | Không chứng minh Trap là nguyên nhân |
 | `difficulty` | Nhãn 1/2/3 | Sinh đề + performance score | `performance_score` | Difficulty do nhóm gắn, chưa calibrate |
@@ -245,11 +245,17 @@ World Quest có luật rút riêng ở Mục 8 và không dùng chung ưu tiên 
     = diagnostic_correct[cụm] ÷ diagnostic_attempted[cụm]
 ```
 
-Cả tử và mẫu chỉ tính câu trả lời **không dùng vật phẩm**. Công thức được cập nhật theo hành trình chính và dùng để xác định W1, W2 và ba cụm vào Boss.
+Cả tử và mẫu chỉ tính câu trả lời **không dùng vật phẩm** và chỉ lấy **lượt làm đầu tiên** của mỗi Arena (Mục 5.4). Công thức dùng để xác định W1, W2 và ba cụm vào Boss.
 
 World Quest **không cập nhật** công thức này.
 
-Khi các cụm bằng nhau, dùng chuỗi tie-break hiện có của game. Thay đổi Week 7 không thay logic tie-break.
+Khi các cụm có tỷ lệ đúng bằng nhau, phân định theo thứ tự:
+
+1. Độ khó trung bình của các câu làm sai cao hơn → yếu hơn.
+2. Thời gian trả lời trung bình dài hơn → yếu hơn.
+3. Thứ tự mã cụm C1 → C5.
+
+Thay đổi Week 7 không thay logic tie-break. Màn kết quả ghi rõ bước nào đã quyết định W1, W2 và cụm yếu nhất vào Boss.
 
 ### 5.2 Công thức điểm Arena
 
@@ -275,12 +281,14 @@ Ngưỡng đỗ:
 ```text
 (3) performance_score
     = Σ điểm độ khó của câu ĐÚNG và KHÔNG dùng vật phẩm
-      ÷ Σ điểm độ khó của TOÀN BỘ câu thuộc hành trình chính đã được hỏi
+      ÷ Σ điểm độ khó của TOÀN BỘ câu đã được hỏi ở lượt làm đầu tiên của mỗi Arena
 ```
 
 ```js
 const DIFFICULTY_POINTS = { 1: 1, 2: 2, 3: 3 };
 ```
+
+`performance_score` đọc lượt làm đầu tiên của cả 5 Arena, kể cả Boss. Người trượt Boss lần đầu rồi đỗ ở lượt sau vẫn có `performance_score` tính từ lượt Boss đầu tiên, vì chỉ số này đo cả hành trình theo cùng một cách cho mọi Arena.
 
 `performance_score` không quyết định W1/W2, không quyết định cụm vào Boss, không quyết định đỗ/trượt và không cấp Credit.
 
@@ -293,6 +301,22 @@ World Quest không được đưa vào `performance_score`, vì Quest là vòng 
 | `diagnostic_correct / attempted` | Loại cả tử và mẫu | Không tính | Xếp hạng cụm yếu |
 | `arena_score_correct` | Tính cả | Quest chấm riêng | Đỗ/trượt Arena và bậc thưởng |
 | `performance_score` | Loại khỏi tử, giữ ở mẫu của hành trình chính | Không tính | Chỉ số tổng hợp sau Boss |
+
+#### Lượt nào được tính khi người chơi trượt rồi chơi lại
+
+| Số liệu | Arena 1–4 | Boss | Lý do |
+|---|---|---|---|
+| Đỗ/trượt, Credit, phạt quá giờ | Từng lượt | Từng lượt | Luật game |
+| `diagnostic_correct / attempted` (xếp hạng W1, W2, ba cụm Boss) | Lượt làm đầu tiên | Không dùng | Xếp hạng xong trước khi vào Boss |
+| `accuracy_by_arena` và kết luận O4 | Lượt làm đầu tiên | **Lượt đỗ**, loại câu lấy lại đã gặp | Mốc trước luyện lấy lần đầu; trình độ sau luyện lấy lần đỗ |
+| `performance_score` | Lượt làm đầu tiên | Lượt làm đầu tiên | Đo cả hành trình theo cùng một cách |
+
+Quy tắc cho Boss áp dụng từ 14/10/2026, sau khi nhóm rà lại trường hợp trượt Boss rồi đỗ: người trượt Boss rồi đỗ với bộ câu rút mới đã có bằng chứng tiến bộ, nên kết luận O4 không đọc theo lượt trượt.
+
+- **Câu lấy lại** (`reused = true`) là câu người chơi đã gặp ở Arena 1–4 hoặc ở lượt Boss trước, được rút lại khi cụm hết câu mới đúng mức khó (Mục 4.4). Câu này vẫn tính đỗ/trượt và Credit nhưng bị loại khỏi `accuracy_by_arena`, giống câu dùng Bùa. Quy tắc áp dụng cho mọi lượt đỗ Boss, kể cả khi đỗ ngay lượt đầu.
+- Nếu mọi câu Boss của một cụm ở lượt đỗ đều là câu lấy lại hoặc câu dùng Bùa, cụm đó nhận kết luận **Chưa đủ câu mới ở Boss để kết luận**.
+- Lượt Boss trượt vẫn hiện trong bảng "Các lượt làm Arena" của bảng tổng kết. Bảng tổng kết ghi rõ lượt đỗ là lượt thứ mấy và số câu lấy lại đã loại.
+- Người chơi được chơi lại Boss tới khi đỗ, nên lượt đỗ có thể là lượt may mắn. Giới hạn này ghi ở Mục 5.11.
 
 ### 5.5 Hai quy tắc bắt buộc
 
@@ -329,16 +353,17 @@ Boss — cần 14/15 để PASS
 - **World Quest:** lưu kết quả riêng + Credit Quest, không thay đổi chẩn đoán.
 - **Boss:** bảng tổng kết hành trình chính + performance score + reward/penalty Boss.
 
-### 5.8 Bảng tổng kết sau Boss — logic nhãn giữ nguyên
+### 5.8 Bảng tổng kết sau Boss — mốc nhãn 70% giữ nguyên
 
 Ngưỡng **90% của Boss chỉ quyết định đỗ/trượt Boss**. Nó **không** thay ngưỡng 70% dùng để gắn nhãn cải thiện cho từng cụm trong bảng tổng kết.
 
 | # | Điều kiện | Kết luận |
 |---|---|---|
-| 1 | Cụm không được hỏi ở Boss | Không kiểm tra lại ở Boss |
-| 2 | Tỷ lệ đúng của cụm ở Boss ≥ 70% và `delta ≥ 0` | **Đã cải thiện** |
-| 3 | Tỷ lệ đúng của cụm ở Boss < 70% và `delta > 0` | **Đã cải thiện nhưng chưa đủ** |
-| 4 | Các trường hợp còn lại | **Cần cải thiện tiếp** |
+| 1 | Cụm không nằm trong ba cụm vào Boss | Không kiểm tra lại ở Boss |
+| 2 | Cụm có trong Boss nhưng ở lượt đỗ không còn câu nào hợp lệ (đều là câu lấy lại hoặc câu dùng Bùa) | Chưa đủ câu mới ở Boss để kết luận |
+| 3 | Tỷ lệ đúng của cụm ở Boss ≥ 70% và `delta ≥ 0` | **Đã cải thiện** |
+| 4 | Tỷ lệ đúng của cụm ở Boss < 70% và `delta > 0` | **Đã cải thiện nhưng chưa đủ** |
+| 5 | Các trường hợp còn lại | **Cần cải thiện tiếp** |
 
 Trong đó:
 
@@ -347,11 +372,17 @@ baseline_accuracy[cụm]
   = (arena1.correct + crossroads.correct)
     ÷ (arena1.attempted + crossroads.attempted)
 
+boss_accuracy[cụm]
+  = boss.correct ÷ boss.attempted của cụm ở lượt ĐỖ Boss,
+    không tính câu lấy lại đã gặp và câu dùng Bùa
+
 delta[cụm]
   = boss_accuracy[cụm] - baseline_accuracy[cụm]
 ```
 
-Câu dùng Bùa vẫn bị loại khỏi dữ liệu chẩn đoán. Vì Boss nay cho dùng tối đa 1 Bùa Loại Trừ, số câu `attempted` dùng cho O4 của cụm nhận câu đó có thể nhỏ hơn slot 7/5/3 ban đầu.
+`baseline_accuracy` lấy lượt làm đầu tiên của Arena 1 và Crossroads; `boss_accuracy` lấy lượt đỗ Boss (Mục 5.4).
+
+Câu dùng Bùa vẫn bị loại khỏi dữ liệu chẩn đoán. Vì Boss nay cho dùng tối đa 1 Bùa Loại Trừ, số câu `attempted` dùng cho O4 của cụm nhận câu đó có thể nhỏ hơn slot 7/5/3 ban đầu. Câu lấy lại đã gặp ở lượt đỗ Boss cũng làm `attempted` giảm theo cách tương tự.
 
 ### 5.9 Cấu trúc dữ liệu cho O4
 
@@ -371,6 +402,7 @@ Quy tắc lưu:
 2. Dùng dữ liệu chẩn đoán: câu dùng vật phẩm bị loại khỏi cả tử và mẫu.
 3. Arena không hỏi cụm đó thì không tạo key giả với `attempted: 0`.
 4. World Quest lưu riêng và không xuất hiện trong `accuracy_by_arena`.
+5. Arena 1–4 lấy lượt làm đầu tiên; Boss lấy lượt đỗ và loại câu lấy lại đã gặp (Mục 5.4). Trước khi đỗ Boss, `accuracy_by_arena` chưa có key `boss`.
 
 ### 5.10 Next action
 
@@ -396,6 +428,7 @@ World Quest không làm thay đổi next action vì Quest không tham gia dữ l
 Các con số của thiết kế mới là quyết định game design của nhóm, chưa được kiểm chứng bằng dữ liệu người chơi thật.
 
 - Ngưỡng đỗ, giới hạn giờ, mức phạt, giá mở Boss và bậc thưởng Quest dựa trên mô phỏng, chưa có dữ liệu người chơi thật.
+- Cột Boss ở O4 lấy lượt đỗ. Người chơi được chơi lại Boss tới khi đỗ, mỗi cụm chỉ có 3–7 câu Boss, nên lượt đỗ có thể cao hơn trình độ thật do may mắn. Bảng tổng kết hiện cả các lượt trượt để người xem đối chiếu.
 - Arena 2 và Arena 3 cùng ngưỡng 75%; độ khó tăng giữa hai round đến từ tỷ lệ câu khó và timer.
 - Mỗi cụm chỉ có số lượng câu khó hữu hạn. Người chơi replay Trap nhiều lần có thể làm cạn pool câu khó; generator phải dùng fallback ở Mục 4.4.
 - World Quest ưu tiên câu đã gặp nên có thể dễ dần khi người chơi nhớ đáp án. Vì vậy Quest không được dùng cho chẩn đoán.
@@ -484,7 +517,7 @@ Xét lại ví    Bảng tổng kết sau Boss
 ### 7.3 Đường phụ
 
 - **Trượt Arena 1–4:** hiện kết quả/lời giải, không nhận thưởng Credit của round, Arena kế tiếp vẫn khoá, cho chơi lại với đề mới.
-- **Trượt Boss:** Boss vẫn mở; người chơi rút đề Boss mới và chơi lại, **không trả thêm 15 Credit**.
+- **Trượt Boss:** Boss vẫn mở; người chơi rút đề Boss mới và chơi lại, **không trả thêm 15 Credit**. Khi đỗ, bảng tổng kết lấy lượt đỗ cho cột Boss và kết luận từng cụm (Mục 5.4).
 - **Thoát giữa Arena 3 hoặc Arena 4:** lượt bị huỷ, Bùa được hoàn theo luật cũ; penalty của các câu đã xác nhận trước khi thoát vẫn bị trừ.
 - **Thoát giữa Boss:** lượt Boss bị huỷ, 15 Credit đã trả không hoàn, Boss khoá lại; muốn vào lại phải có 15 Credit mới.
 - **Không mua Bùa:** hành trình vẫn hoàn chỉnh nếu người chơi đủ Credit.
@@ -663,6 +696,8 @@ Kết quả Quest lưu riêng. Không cộng vào `diagnostic_correct`, `diagnos
 | Mở Boss |  | −15 | 1 |
 | Boss lần 1 | 12/15, trượt; phạt 2 | −2, ví không âm | 0 |
 | Boss lần 2 | 14/15, đỗ lần đầu; phạt 1 | +4 +5 −1 | 8 |
+
+Ở ví dụ này, bảng tổng kết lấy Boss lần 2 (14/15, trừ các câu lấy lại nếu có) cho cột Boss và kết luận từng cụm. `performance_score` vẫn lấy Boss lần 1 (12/15).
 
 ---
 
