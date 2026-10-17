@@ -8,6 +8,8 @@
    - cfa_quest_v11.css         (style của v11: bảng chẩn đoán, biểu đồ, hộp thông báo)
    - cfa_quest_v12.css         (style mới của v12: đồng hồ, ô World Quest, khoá Boss)
    - cfa_quest_v11_bank.js     (ngân hàng nhúng, sinh tự động từ ethics_bank_220.json)
+   - cfa_quest_tutorial.js     (lớp hướng dẫn, nạp trước file này; nội dung thẻ nằm ở đó)
+   - cfa_quest_tutorial.css    (style của thẻ hướng dẫn và bảng Luật chơi)
 
    Thay đổi so với v11 (chi tiết: tài liệu "CFA Quest — Thiết kế độ khó mới (tuần 7)"):
    - Ngưỡng đỗ theo round 70/75/75/85/90%
@@ -20,6 +22,14 @@
    - Cột Boss ở bảng tổng kết lấy lượt ĐỖ Boss, không lấy lượt Boss đầu tiên.
      Câu lấy lại đã gặp (reused) trong lượt đó bị loại khỏi mẫu, như câu dùng Bùa.
    - Arena 1–4 vẫn lấy lượt làm đầu tiên. performance_score giữ theo lượt đầu ở cả 5 Arena.
+
+   Thêm ngày 17/10/2026 (tutorial, không NPC — đặc tả: "Tutorial — CFA Quest · Ethics (bản khớp code v12)"):
+   - Các điểm gọi TUT.* ở startRun, startArena, startQuest, beginPlay, renderTimer,
+     renderResult, openShop, openReport. Luật game không đổi.
+   - Nút "Luật chơi" trên thanh HUD, có nút "Xem lại hướng dẫn".
+   - Thêm id làm điểm neo coach mark: diagTable, creditLine, reportClusterTable.
+   - Bảng tổng kết có ghi chú cố định 3 câu (Mục 14 SOLUTION_STRUCTURE).
+   - Hộp mở khoá Boss nhấn mạnh luật thoát, thêm "kể cả tải lại trang hoặc đóng tab".
    ============================================================================= */
 
 /* ---------- 1. Cấu hình (Mục 4, 5, 8) ---------- */
@@ -656,19 +666,22 @@ function show(id) {
   document.querySelectorAll('.screen').forEach(x => x.classList.toggle('active', x.id === id));
   window.scrollTo(0, 0);
 }
-function toast(text) {
+function toast(text, ms = 2600) {
   const x = $('toast');
   x.textContent = text;
   x.classList.add('show');
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => x.classList.remove('show'), 2600);
+  toast.timer = setTimeout(() => x.classList.remove('show'), ms);
 }
 // Hộp thông báo dùng chung cho thông báo một nút (notice) và hỏi xác nhận hai nút (ask).
 // ask() thay cho confirm() của trình duyệt ở các bước mới của v12 (mở Boss, thoát Arena).
 let noticeResolve = null;
-function openOverlay(title, text, okLabel, cancelLabel) {
+// warn: dòng cảnh báo in đậm dưới nội dung (để trống thì ẩn)
+function openOverlay(title, text, okLabel, cancelLabel, warn = '') {
   $('noticeTitle').textContent = title;
   $('noticeText').textContent = text;
+  $('noticeWarn').textContent = warn;
+  $('noticeWarn').classList.toggle('hidden', !warn);
   $('noticeOk').textContent = okLabel;
   $('noticeCancel').textContent = cancelLabel || '';
   $('noticeCancel').classList.toggle('hidden', !cancelLabel);
@@ -679,10 +692,10 @@ function notice(title, text) {
   noticeResolve = null;
   openOverlay(title, text, 'Đã hiểu', null);
 }
-function ask(title, text, okLabel = 'Đồng ý', cancelLabel = 'Huỷ') {
+function ask(title, text, okLabel = 'Đồng ý', cancelLabel = 'Huỷ', warn = '') {
   return new Promise(resolve => {
     noticeResolve = resolve;
-    openOverlay(title, text, okLabel, cancelLabel);
+    openOverlay(title, text, okLabel, cancelLabel, warn);
   });
 }
 function closeNotice(answer = true) {
@@ -698,6 +711,7 @@ function updateHUD() {
   $('hudCredits').textContent = S.credits;
   $('hudStage').textContent = !S.started ? '—' : S.finished ? 'Đã vượt Boss' : ARENAS[S.stage].name;
   $('hudItems').textContent = `${S.inventory.eliminate} Bùa Loại Trừ`;
+  TUT.syncRulesButton();   // nút Luật chơi mờ khi đang làm câu có đồng hồ
 }
 
 // Dòng luật ngắn trên ô Arena: số câu cần đúng và đồng hồ
@@ -872,8 +886,9 @@ async function unlockBoss() {
     return;
   }
   const ok = await ask('Mở khoá Boss',
-    `Trả ${cost} Credit để mở Boss (còn lại ${S.credits - cost}). Trả một lần: trượt Boss thì chơi lại không mất thêm.\n\nLưu ý: thoát giữa Boss sẽ mất ${cost} Credit này và Boss khoá lại.`,
-    `Trả ${cost} Credit`, 'Để sau');
+    `Trả ${cost} Credit để mở Boss (còn lại ${S.credits - cost}). Trả một lần: trượt Boss thì chơi lại không mất thêm.`,
+    `Trả ${cost} Credit`, 'Để sau',
+    `Lưu ý: thoát giữa Boss (kể cả tải lại trang hoặc đóng tab) sẽ mất ${cost} Credit này và Boss khoá lại.`);
   if (!ok) return;
   S.credits -= cost;
   S.bossUnlocked = true;
@@ -896,6 +911,7 @@ function startRun() {
   saveState();
   renderDashboard();
   show('dashboard');
+  TUT.onStartRun();   // thẻ intro_1–3 (chỉ hiện lần đầu)
 }
 
 function startArena() {
@@ -903,6 +919,8 @@ function startArena() {
   if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_220.json hợp lệ ở màn hình đầu.'); return; }
   const arena = ARENAS[S.stage];
   if (arena.id === 'boss' && !S.bossUnlocked) { unlockBoss(); return; }
+  // Thẻ trước round: hiện trước khi sinh đề, đồng hồ chưa chạy. Bấm "Vào Arena" thì hàm này chạy lại.
+  if (TUT.gateBefore(arena.id, startArena)) return;
   // Boss không hỏi lại câu đã ra ở World Quest (luật 12)
   const ctx = makeDrawContext(arena.id === 'boss' ? S.questUsedIds : []);
   const qs = buildArena(arena.id, ctx);
@@ -921,6 +939,7 @@ function startArena() {
 function startQuest() {
   if (!questOpen()) return;
   if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_220.json hợp lệ ở màn hình đầu.'); return; }
+  if (TUT.gateBefore('quest', startQuest)) return;   // thẻ pre_quest_a, pre_quest_b
   const ctx = makeDrawContext();
   const qs = buildQuest(ctx);
   const size = CONFIG.questPerCluster * S.bossPlan.length;
@@ -952,10 +971,12 @@ function beginPlay(arena, attempt, qs, ctx) {
   saveInProgress();
   renderQuestion();
   show('quiz');
+  updateHUD();
   if (ctx.notices.length) {
     RUN.waitNotice = true;
     notice('Thông báo về câu hỏi', ctx.notices.join('\n'));
   }
+  TUT.onBeginPlay(arena);   // toast quiz_bua, không chặn
 }
 
 // Lưu tóm tắt lượt đang làm. Nếu người chơi tải lại trang hoặc đóng tab giữa chừng,
@@ -985,6 +1006,7 @@ function renderTimer() {
     const over = -left;
     el.textContent = `Quá giờ ${over} giây · −${penaltyFor(over)} Credit`;
     el.className = 'q-timer over';
+    TUT.onOvertime(penaltyFor(over));   // toast quiz_quagio, chỉ lần đầu
   }
 }
 function startTimer() {
@@ -1291,7 +1313,7 @@ function renderResult() {
   if (!L.passed) {
     html += `<p>Chưa đạt ngưỡng ${passPercentFor(a.id)}% (cần ${need}/${L.total} câu). Không cấp Credit thưởng. ${next ? esc(next.name) + ' bị khoá' : 'Bảng tổng kết bị khoá'} cho tới khi bạn chơi lại và đỗ. Lượt chơi lại dùng bộ câu rút mới.</p>`;
   }
-  html += creditLineHTML(L);
+  html += `<div id="creditLine">${creditLineHTML(L)}</div>`;   // id: điểm neo coach mark res_arena1_credit
   if (a.id === 'boss') {
     // Sửa 14/10/2026: cột Boss ở bảng tổng kết lấy lượt đỗ
     html += L.passed
@@ -1304,7 +1326,8 @@ function renderResult() {
 
   if (L.passed) html += `<div class="announce"><h3>Arena kế tiếp</h3><p>${esc(announceAfter(a.id))}</p></div>`;
 
-  html += `<h3>Bảng chẩn đoán</h3>${diagnosticTableHTML([S.w1, S.w2].filter(Boolean))}`;
+  // id diagTable: điểm neo coach mark res_arena1_bang
+  html += `<h3>Bảng chẩn đoán</h3><div id="diagTable">${diagnosticTableHTML([S.w1, S.w2].filter(Boolean))}</div>`;
   html += `<h3>Tỷ lệ đúng của các cụm qua từng Arena</h3>${progressChartHTML()}`;
 
   html += wrongAnswersHTML(L.answers.map((r, i) => ({ r, q: L.qs[i] })).filter(x => !x.r.correct));
@@ -1333,6 +1356,7 @@ function renderResult() {
       addBtn(L.passed ? `Vào ${next.name}` : `Chơi lại ${a.name}`, 'primary-btn', startArena);
     }
   }
+  TUT.onResult(L);   // coach mark sau Arena 1 và sau khi đỗ Arena 4
 }
 
 // Dòng tính Credit sau mỗi round: thưởng − phạt quá giờ = thực nhận (v12)
@@ -1449,6 +1473,7 @@ function openShop(from) {
   shopReturn = from;
   renderShop();
   show('shop');
+  TUT.onShop();   // tooltip shop_a, shop_b (lần đầu mở Shop)
 }
 
 function renderShop() {
@@ -1489,6 +1514,7 @@ function openReport() {
   show('report');
   try {
     renderReport();
+    TUT.onReport();   // coach mark report_a, report_b (lần đầu mở)
   } catch (err) {
     console.error(err);
     $('reportBody').innerHTML = `<div class="eyebrow">Bảng tổng kết</div><h1>Không dựng được bảng tổng kết</h1>
@@ -1531,8 +1557,13 @@ function renderReport() {
     rows += `<tr><th scope="row">${c}</th>${cells}<td class="verdict ${k.cls}">${k.text}</td></tr>`;
   });
   html += `<h3>Bảng A · Kết quả theo cụm</h3>
-    <div class="tbl-wrap"><table class="diag"><thead><tr><th>Cụm</th>${ARENAS.map(a => `<th>${esc(a.name.replace(' · The Gate', ''))}</th>`).join('')}<th>Kết luận</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <p class="note">Ô "--" là Arena không hỏi cụm đó, không phải trả lời sai hết. Arena 1–4 tính theo lượt làm đầu tiên; Boss tính theo lượt đỗ, không gồm câu lấy lại đã gặp. Không gồm câu dùng vật phẩm.</p>`;
+    <div class="tbl-wrap" id="reportClusterTable"><table class="diag"><thead><tr><th>Cụm</th>${ARENAS.map(a => `<th>${esc(a.name.replace(' · The Gate', ''))}</th>`).join('')}<th>Kết luận</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="note">Ô "--" là Arena không hỏi cụm đó, không phải trả lời sai hết. Arena 1–4 tính theo lượt làm đầu tiên; Boss tính theo lượt đỗ, không gồm câu lấy lại đã gặp. Không gồm câu dùng vật phẩm.</p>
+    <div class="claim-note" id="claimNote"><b>Đọc bảng này cần nhớ</b><ol>
+      <li>Tỷ lệ đúng ở Boss cao hơn mốc không chứng minh ${esc(NAME('trap1'))} và ${esc(NAME('trap2'))} làm bạn tiến bộ.</li>
+      <li>Câu dùng Bùa bị loại khỏi dữ liệu chẩn đoán.</li>
+      <li>Cụm yếu thứ ba ở Boss có tối đa ${BOSS_SPLIT[2]} câu, mẫu rất nhỏ.</li>
+    </ol></div>`;
 
   // Câu hỏi MVP phải trả lời
   const targeted = [S.w1, S.w2].filter(Boolean);
@@ -1618,6 +1649,7 @@ function init() {
   $('exitBtn').addEventListener('click', exitArena);
   $('noticeOk').addEventListener('click', () => closeNotice(true));
   $('noticeCancel').addEventListener('click', () => closeNotice(false));
+  TUT.init();   // nút Luật chơi, Xem lại hướng dẫn
   $('bankFile').addEventListener('change', e => {
     const f = e.target.files[0];
     if (!f) return;
@@ -1630,7 +1662,7 @@ function init() {
   });
   // Phím tắt: A/B/C hoặc 1/2/3 để chọn, Enter để xác nhận
   document.addEventListener('keydown', e => {
-    if (!RUN || !$('quiz').classList.contains('active') || !$('noticeOverlay').classList.contains('hidden')) return;
+    if (!RUN || !$('quiz').classList.contains('active') || !$('noticeOverlay').classList.contains('hidden') || TUT.isOpen()) return;
     const map = { a: 0, b: 1, c: 2, 1: 0, 2: 1, 3: 2 };
     const k = e.key.toLowerCase();
     if (k in map && !e.ctrlKey && !e.metaKey) { selectOption(map[k]); }
