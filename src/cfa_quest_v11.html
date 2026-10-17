@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="cfa_quest_v11.css">
   <!-- v12: đồng hồ, ô World Quest, khoá Boss -->
   <link rel="stylesheet" href="cfa_quest_v12.css">
+  <!-- Tutorial (17/10/2026): thẻ hướng dẫn, coach mark, bảng Luật chơi -->
+  <link rel="stylesheet" href="cfa_quest_tutorial.css">
 </head>
 <body>
 <header class="topbar">
@@ -17,6 +19,7 @@
     <span>Credit <b id="hudCredits">3</b></span>
     <span><b id="hudStage">—</b></span>
     <span>Vật phẩm <b id="hudItems">0 Bùa loại trừ</b></span>
+    <button type="button" class="secondary-btn rules-btn" id="rulesBtn">Luật chơi</button>
     <button type="button" class="danger-btn" id="resetBtn">Reset</button>
   </div>
 </header>
@@ -111,12 +114,30 @@
   <div class="panel notice-card">
     <h3 id="noticeTitle"></h3>
     <p id="noticeText"></p>
+    <p id="noticeWarn" class="notice-warn hidden"></p>
     <div class="notice-actions"><button type="button" class="secondary-btn hidden" id="noticeCancel">Huỷ</button><button type="button" class="primary-btn" id="noticeOk">Đã hiểu</button></div>
   </div>
 </div>
 <div id="toast" role="status"></div>
 
+<!-- Bảng Luật chơi: luôn mở được, trừ lúc đang làm câu có đồng hồ. Nội dung sinh từ CONFIG. -->
+<div id="rulesOverlay" class="notice-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+  <div class="panel rules-card">
+    <div class="eyebrow">Tra cứu</div>
+    <h3 id="rulesTitle">Luật chơi</h3>
+    <div id="rulesBody"></div>
+    <div class="notice-actions">
+      <button type="button" class="secondary-btn" id="rulesReplay">Xem lại hướng dẫn</button>
+      <button type="button" class="primary-btn" id="rulesClose">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lớp hướng dẫn (tutorial). Tách khỏi #noticeOverlay để không đè hộp notice()/ask(). -->
+<div id="tutLayer" class="tut-layer hidden"></div>
+
 <script src="cfa_quest_v11_bank.js"></script>
+<script src="cfa_quest_tutorial.js"></script>
 <script src="cfa_quest_v11.js"></script>
 </body>
 </html>
