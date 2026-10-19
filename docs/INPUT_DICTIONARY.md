@@ -2,7 +2,7 @@
 
 **Sản phẩm:** CFA Quest — Ethics diagnostic dungeon  
 **Học phần:** NHA408E · Nhóm 7  
-**Nguồn tham chiếu nội bộ:** `SOLUTION_STRUCTURE.md` bản Week 7, `ethics_bank_170.json` (170 câu)  
+**Nguồn tham chiếu nội bộ:** `SOLUTION_STRUCTURE.md` bản Week 7, `data/ethics_bank_220.json` (220 câu, 44 câu mỗi cụm)  
 **Trạng thái:** đặc tả dữ liệu đã cập nhật theo thiết kế Week 7; code phải đồng bộ lại các field và rule bên dưới
 
 ---
@@ -32,7 +32,7 @@ Sản phẩm có **bốn** output chính. Cột "Ảnh hưởng output" luôn tr
 | Field | Nghĩa | Đơn vị / Định dạng | Nguồn | Ảnh hưởng output |
 |---|---|---|---|---|
 | `selected_option` | Chỉ số phương án người học chọn cho một câu. Chỉ ghi nhận sau khi bấm Xác nhận; không cho đổi lại | int, 0–2 | Người dùng | O1, O2, O3, O4 |
-| `timeMs` | Thời gian từ lúc câu hiện lên đến lúc người học bấm Xác nhận | int, mili giây | Hệ thống đo (timestamp render → timestamp submit) | O2 — tie-break khi cần; O3 — tính quá giờ và phạt Credit ở Arena 3, Arena 4, Boss |
+| `timeMs` | Thời gian từ lúc câu hiện lên đến lúc người học bấm Xác nhận. **Không gồm thời gian di chuyển và đánh quái giữa hai câu. Ở chế độ demo, lấy từ kịch bản.** | int, mili giây | Hệ thống đo (timestamp render → timestamp submit) | O2 — tie-break khi cần; O3 — tính quá giờ và phạt Credit ở Arena 3, Arena 4, Boss |
 | `item_used` | Câu này có dùng Bùa Loại Trừ hay không | boolean | Người dùng | O1 — quyết định câu có vào mẫu chẩn đoán hay không; O4 — quyết định câu có vào tử số `performance_score` hay không |
 | `item_type_used` | Loại vật phẩm đã dùng ở câu đó, nếu có | enum: `none` / `eliminate` | Người dùng | O3 — hiển thị lại trong bảng lời giải |
 | `reused` | Câu này là câu lấy lại người chơi đã gặp trước đó (rút lại khi cụm hết câu mới đúng mức khó); thứ tự phương án đã được xáo | boolean | Hệ thống sinh đề | O4 — câu lấy lại ở lượt đỗ Boss bị loại khỏi cột Boss |
@@ -86,7 +86,7 @@ Câu trả lời đúng nhờ Bùa vẫn được tính vào `arena_score_correc
 
 ## 2. Product information — nằm sẵn trong ngân hàng câu hỏi
 
-Nguồn chung: `ethics_bank_170.json`, do nhóm tự biên soạn và gắn nhãn thủ công.
+Nguồn chung: `data/ethics_bank_220.json`, do nhóm tự biên soạn và gắn nhãn thủ công.
 
 | Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
 |---|---|---|---|
@@ -188,7 +188,7 @@ Ngưỡng đỗ:
 | `delta[c]` | `boss_accuracy[c] − baseline_accuracy[c]`; `boss_accuracy` tính trên lượt đỗ Boss | float, có thể âm | O4 |
 | `improvement_label[c]` | Nhãn kết luận của cụm c theo rule O4. Mốc đánh giá cải thiện vẫn là 70%, không đổi theo Boss pass threshold | enum: `not_retested` / `boss_insufficient` / `improved` / `improved_insufficient` / `needs_work`. `boss_insufficient`: cụm có trong Boss nhưng ở lượt đỗ mọi câu của cụm đều là câu lấy lại hoặc câu dùng Bùa | O4 |
 | `performance_by_arena[arena]` | `{points_earned, points_offered}` theo từng Arena. Quest không có entry | object | O4 |
-| `performance_score` | `Σ points_earned ÷ Σ points_offered` trên **5 Arena**, không tính Quest; mỗi Arena (kể cả Boss) lấy lượt làm đầu tiên | float, 0.0–1.0 | O4 |
+| `performance_score` | `Σ points_earned ÷ Σ points_offered` trên hành trình chính. Arena 1–4 lấy lượt làm đầu tiên; Boss lấy **lượt hoàn thành đầu tiên** (`pass`/`fail`), bỏ `white` và `quit`; không tính Quest | float, 0.0–1.0 | O4 |
 
 ### 3.4 Biến điều khiển sinh đề
 
@@ -200,7 +200,7 @@ Ngưỡng đỗ:
 | `used_question_ids` | Danh sách câu đã xuất hiện trong 5 Arena của lượt chơi | mảng string | O2 — chống lặp và hỗ trợ fallback |
 | `quest_used_question_ids` | Tập `id` đã xuất hiện trong World Quest. **Boss không được rút các id này** | mảng string | O2 |
 | `bankLog` | Log mọi trường hợp thiếu câu đúng quota/mức khó và phải dùng fallback | mảng string | O2 — kiểm tra chất lượng bank |
-| `attempt_index[arena]` | Lượt làm thứ mấy của Arena đó | int, ≥1 | O3, O4 |
+| `attempt_index[arena]` | Lượt làm thứ mấy của Arena đó. Với Boss vẫn tăng sau mỗi lượt, kể cả `white` và `quit` | int, ≥1 | O3, O4 |
 
 ### 3.5 Trạng thái mở Boss
 
@@ -210,6 +210,9 @@ Ngưỡng đỗ:
 | `boss_unlock_cost` | Giá mở Boss | int, cố định 15 Credit | O3 |
 | `boss_unlock_paid` | Đợt mở Boss hiện tại đã trừ 15 Credit hay chưa | boolean | O3 |
 | `boss_cleared_once` | Người chơi đã từng vượt Boss trong run hiện tại chưa | boolean | O3 — quyết định thưởng +5 |
+| `boss_hearts` | Số tim còn lại trong lượt Boss hiện tại. Đặt lại 2 khi bắt đầu mỗi lượt | int, 0–2 | O3 |
+| `boss_white_left` | Số lượt trắng còn lại trong lần mở khóa hiện tại. Đặt 2 khi trả 15 Credit | int, 0–2 | O3 |
+| `boss_attempt_outcome` | Kết quả một lượt Boss | enum: `pass` / `fail` / `white` / `quit` | O3, O4. Chỉ `pass` và `fail` đủ điều kiện vào bộ đếm lượt Boss |
 
 Luật cập nhật state:
 
@@ -217,6 +220,9 @@ Luật cập nhật state:
 - Nếu chưa đủ 15 Credit, Boss vẫn khoá và người chơi có thể vào World Quest.
 - **Trượt Boss:** `boss_unlocked` vẫn là `true`; chơi lại với đề mới, không trả thêm 15 Credit.
 - **Thoát giữa Boss:** lượt Boss bị huỷ, 15 Credit đã trả không hoàn, và `boss_unlocked = false`. Muốn vào lại phải kiếm đủ và trả 15 Credit lần nữa.
+- Mất hết tim khi `boss_white_left > 0`: `boss_attempt_outcome = white`; `boss_white_left` giảm 1; `boss_unlocked` vẫn là `true`.
+- Mất hết tim khi `boss_white_left = 0`: `boss_attempt_outcome = quit`; áp luật thoát giữa Boss.
+- `attempt_index` của Boss vẫn tăng 1 sau mỗi lượt, kể cả lượt trắng. `performance_score` lấy lượt Boss có `attempt_index` nhỏ nhất trong số các lượt có `boss_attempt_outcome ∈ {pass, fail}`.
 
 ### 3.6 World Quest
 
@@ -250,6 +256,17 @@ Thưởng Quest:
 | 9–11/15 | +2 |
 | 12–13/15 | +3 |
 | 14–15/15 | +4 |
+
+
+### 3.7 Chế độ demo
+
+| Field | Nghĩa | Đơn vị / Định dạng | Ảnh hưởng output |
+|---|---|---|---|
+| `demo_scenario_id` | Kịch bản đang chạy; `null` khi chơi thường | string hoặc null | O1–O4 khi chạy demo |
+
+Trong chế độ demo, đáp án và `timeMs` lấy từ dữ liệu kịch bản. Demo không được ghi đè tiến trình chơi thường đã lưu.
+
+Vị trí nhân vật, quái và đạn là **trạng thái hiển thị**, không lưu và không đi vào output, nên không đưa vào Input Dictionary.
 
 ---
 
@@ -334,6 +351,10 @@ Lúc sản phẩm chạy, `sub_standard` không xuất hiện ở màn hình ch�
 | 10 | Tách dữ liệu Quest khỏi diagnosis | Quest không làm đổi O1/O4 |
 | 11 | Loại câu Quest khỏi Boss | `quest_used_question_ids ∩ boss_question_ids = ∅` |
 | 12 | Đổi `storageKey` sang version mới | Tiến trình v11 cũ không làm hỏng state Week 7 |
+| 13 | Đứng hình khi câu hỏi hiện | Nhân vật, quái, đạn không di chuyển; đồng hồ của câu vẫn chạy |
+| 14 | Luật lượt trắng | Đúng các quy tắc ở `SOLUTION_STRUCTURE.md` Mục 15.4 |
+| 15 | `performance_score` của Boss bỏ qua lượt trắng và lượt thoát | Khớp `SOLUTION_STRUCTURE.md` Mục 5.3 |
+| 16 | Chế độ demo không ghi đè tiến trình đã lưu | Khóa lưu `cfaQuestV12` không đổi sau một lượt demo |
 
 ---
 
