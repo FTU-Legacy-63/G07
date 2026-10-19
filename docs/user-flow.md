@@ -11,6 +11,8 @@
 ## 1. Điểm vào và điểm ra
 
 - **Điểm bắt đầu:** người chơi vào chủ đề Ethics.
+- Bản cuối yêu cầu **máy tính/laptop có bàn phím**. Tutorial hướng dẫn điều khiển trước khi vào luồng chính.
+- Nếu mở trên thiết bị không hỗ trợ điều khiển bàn phím, app hiện thông báo mở trên máy tính và không vào màn chơi.
 - **Không có menu chọn cụm muốn luyện.** Hệ thống dùng dữ liệu sai của người chơi để chọn cụm tiếp theo.
 - **Điểm kết thúc:** bảng tổng kết sau khi vượt Boss.
 - **Một đường chính không trượt, không cần World Quest:** 60 câu  
@@ -48,6 +50,8 @@ Bảng tổng kết
 ---
 
 ## 2. Happy path
+
+Trong mỗi Arena 1–4 và World Quest, người chơi di chuyển bằng **W, A, S, D** và đánh quái để mở từng câu hỏi. Ở Boss, người chơi né đạn và chém trúng Boss để mở câu. Lớp game chỉ quyết định khi nào câu hỏi hiện; logic chọn câu/chấm/diagnostic giữ nguyên theo `SOLUTION_STRUCTURE.md` Mục 15.
 
 Kịch bản dưới đây giả định người chơi:
 
@@ -160,6 +164,7 @@ Một lượt World Quest có:
 - **không có ngưỡng đỗ/trượt**;
 - **không được dùng Bùa**;
 - có thể chơi **bao nhiêu lần cũng được**.
+- chơi trên cùng lớp quái của Arena 1–4; đánh quái để mở câu hỏi.
 
 Nguồn câu:
 
@@ -240,7 +245,7 @@ Nếu người chơi đã trả 15 Credit và vào Boss nhưng **trượt Boss**
 - không yêu cầu trả thêm 15 Credit;
 - lần sau rút một bộ Boss mới;
 - người chơi được retry cho tới khi vượt Boss;
-- khi đỗ, bảng tổng kết lấy **lượt đỗ** cho cột Boss và kết luận từng cụm, không tính câu lấy lại đã gặp; lượt trượt vẫn hiện trong bảng "Các lượt làm Arena"; `performance_score` vẫn lấy lượt Boss đầu tiên.
+- khi đỗ, bảng tổng kết lấy **lượt đỗ** cho cột Boss và kết luận từng cụm, không tính câu lấy lại đã gặp; lượt trượt vẫn hiện trong bảng "Các lượt làm Arena"; `performance_score` lấy lượt Boss hoàn thành đầu tiên, không tính lượt trắng và lượt thoát.
 
 ```text
 Boss
@@ -266,10 +271,12 @@ Retry
 Thoát Boss khác với trượt Boss:
 
 - lượt Boss bị huỷ;
+- `boss_attempt_outcome = quit`;
 - **15 Credit đã trả không hoàn**;
 - Boss bị khoá lại;
 - muốn vào Boss lại phải có và trả **15 Credit mới**;
-- các penalty đã phát sinh trước khi thoát vẫn phải được xử lý theo luật timer.
+- penalty của lượt Boss bị thoát **không bị trừ**;
+- Bùa đã dùng trong lượt bị thoát được hoàn lại.
 
 Mục đích của rule này là tránh việc người chơi thoát Boss khi gặp đề khó chỉ để đổi sang đề khác.
 
@@ -289,6 +296,27 @@ Nếu nhiều cụm có cùng tỷ lệ đúng sau Arena 1, hệ thống dùng *
 
 Week 7 **không thay đổi logic tie-break**.
 
+
+### A7. Thua Boss vì mất hết tim
+
+Nếu người chơi mất hết 2 tim khi `boss_white_left > 0`:
+
+- lượt hiện tại kết thúc với `boss_attempt_outcome = white`;
+- Boss vẫn mở;
+- không trừ lại 15 Credit mở khóa;
+- `boss_white_left` giảm 1;
+- lượt tiếp theo dùng đề Boss mới;
+- dữ liệu lượt trắng không vào diagnostic, O4 hoặc `performance_score`;
+- Bùa đã dùng không hoàn và penalty đã phát sinh vẫn tính.
+
+### A8. Mất hết tim lần thứ 3 trong cùng một lần mở khóa
+
+Khi `boss_white_left = 0` mà người chơi tiếp tục mất hết tim:
+
+- xử lý như A4 — **thoát giữa Boss**;
+- Boss bị khóa;
+- 15 Credit mở khóa không hoàn;
+- muốn chơi lại phải kiếm và trả 15 Credit mới.
 ---
 
 ## 5. Timer và phạt quá giờ
@@ -418,10 +446,11 @@ World Quest là cơ chế kiếm thêm Credit nếu người chơi thiếu tiề
 | E9 | Người chơi chưa đủ 15 Credit nhưng bấm vào Boss | Chặn, hiển thị số Credit còn thiếu và đường sang World Quest |
 | E10 | Quest đã dùng một câu | Ghi `question_id` để Boss loại câu đó |
 | E11 | Mất dữ liệu trình duyệt | Khởi tạo tiến trình mới, báo bắt đầu lại |
+| E12 | Mở bằng thiết bị không có bàn phím | Hiện thông báo mở trên máy tính; không vào màn chơi |
 
 Các lỗi chia thành ba nhóm:
 
-1. **Chặn thao tác:** E1–E5, E9.  
+1. **Chặn thao tác:** E1–E5, E9, E12.  
    Giao diện phải nói rõ vì sao thao tác bị chặn.
 
 2. **Engine tự fallback:** E6, E8, E10.  
@@ -452,6 +481,3 @@ Câu trả lời đúng nhờ Bùa:
 Boss được dùng tối đa 1 Bùa. Đây là thay đổi so với v11.
 
 ---
-
-
-```
