@@ -56,17 +56,19 @@ Bốn output chuẩn:
 | B9 | Mốc chẩn đoán chỉ gồm Arena 1 + Crossroads, loại Trap ra khỏi baseline | O4 | Baseline chỉ có 5 câu/cụm; mỗi câu thay đổi tỷ lệ mạnh | Luôn hiển thị mẫu số; không dùng baseline để so giữa người chơi | Quỳnh, Minh | Đã chốt |
 | B10 | `accuracy_cumulative` bao gồm cả câu ở Trap và được dùng để xếp hạng `boss_clusters` | O1, O2, O4 | Trap có thể đẩy chính cụm vừa luyện ra khỏi top 3 yếu nhất, làm Boss không đo lại cụm đó | Khi báo cáo, chỉ kết luận trên cụm thực sự xuất hiện ở Boss và nêu riêng cụm bị rơi khỏi Boss | Quỳnh | Đã chốt về cơ chế |
 | B11 | `difficulty` 1–3 đủ tin cậy để làm trọng số cho `performance_score` | O4 | Nhãn difficulty chủ quan, chưa calibrate | Chỉ gọi đây là chỉ số nội bộ sản phẩm; calibrate sau playtest | Hồng, Minh | Chấp nhận cho MVP |
-| B12 | Khi người chơi trượt và chơi lại: mốc chẩn đoán Arena 1–4 và `performance_score` ghi theo lượt làm đầu tiên; cột Boss và kết luận O4 ghi theo **lượt đỗ Boss**, loại câu lấy lại đã gặp; điểm và Credit ghi theo từng lượt | O3, O4 | Lượt đỗ Boss có thể là lượt may mắn sau nhiều lần thử; câu lấy lại có thể làm điểm tăng do nhớ đáp án | Lưu `attempt_index` và cờ `reused`; loại câu lấy lại khỏi cột Boss; bảng tổng kết ghi lượt đỗ là lượt thứ mấy và hiện cả các lượt trượt | Quỳnh, Minh | Đã chốt, sửa 14/10/2026 |
+| B12 | Khi người chơi trượt và chơi lại: mốc chẩn đoán Arena 1–4 ghi theo lượt làm đầu tiên; `performance_score` ghi theo lượt làm đầu tiên ở Arena 1–4 và lượt Boss hoàn thành đầu tiên; cột Boss và kết luận O4 ghi theo **lượt đỗ Boss**, loại câu lấy lại đã gặp; điểm và Credit ghi theo từng lượt | O3, O4 | Lượt đỗ Boss có thể là lượt may mắn sau nhiều lần thử; câu lấy lại có thể làm điểm tăng do nhớ đáp án | Lưu `attempt_index` và cờ `reused`; loại câu lấy lại khỏi cột Boss; bảng tổng kết ghi lượt đỗ là lượt thứ mấy và hiện cả các lượt trượt | Quỳnh, Minh | Đã chốt, sửa 14/10/2026 và 17/10/2026 |
 | **B13** | **Difficulty quota theo round — Arena 2 = 4/4/2, Arena 3 = 2/5/3, Arena 4 = 2/4/4, Boss = 2/4/9 — là mức tăng độ khó hợp lý cho prototype** | O2, O3 | Tỷ lệ câu khó có thể tăng quá nhanh; Boss có 9 câu khó có thể quá khó với người mới | Playtest clear-rate theo round; nếu thay quota phải cập nhật generation, test và tài liệu cùng lúc | Quỳnh, Hồng, Minh | **Chưa kiểm chứng bằng người chơi thật** |
 | **B14** | **Boss Gate giá 15 Credit tạo được mức "phải cày tới một mức nhất định" mà không chặn người chơi giỏi** | O3 | 15 có thể quá thấp khiến Quest vô nghĩa hoặc quá cao khiến người yếu phải grind quá lâu | Dùng mô phỏng hiện tại làm baseline; theo dõi số lượt Quest cần chơi trong playtest | Quỳnh, Minh | **Chấp nhận theo mô phỏng tay** |
 | **B15** | **World Quest là cách hợp lý để người thiếu Credit tiếp tục progression mà không làm bẩn chẩn đoán** | O2, O3 | Quest lặp câu cũ nên dễ dần; người chơi có thể farm Credit bằng nhớ đáp án | Không đưa Quest vào diagnostic/O4; theo dõi số lượt Quest; giữ reward thấp hơn mức khiến farm quá nhanh | Quỳnh, Minh | **Chấp nhận cho MVP** |
 | **B16** | **Câu đã xuất hiện ở World Quest phải bị loại khỏi Boss để tránh Boss kiểm tra lại đúng câu vừa được luyện** | O2 | Nếu Quest chơi nhiều lần, pool câu dành cho Boss có thể cạn nhanh hơn | Quest ưu tiên câu cũ trước; Boss dùng fallback/log khi pool thiếu | Trang, Hồng, Minh | **Đã chốt Week 7** |
+| **B17** | **Kỹ năng né đạn ở Boss không làm lệch dữ liệu chẩn đoán, vì lượt trắng bị loại khỏi mọi bộ đếm** | O1, O4 | Người chơi cố tình để trúng đạn để bỏ lượt Boss tệ, làm `performance_score` cao hơn thực tế | Giới hạn 2 lượt trắng mỗi lần mở khóa; test T-B14, T-B20; ghi vào limitations | — | **Đã chốt 17/10/2026** |
+| **B18** | **Thời gian di chuyển và đánh quái giữa hai câu không bị tính vào `timeMs`** | O2, O3 | Nếu code đo sai, bước phân định theo thời gian và phạt quá giờ bị lệch | Test T-A06 | — | **Cần code đúng** |
 | C1 | Ngân hàng câu hỏi hiện có đủ để phục vụ một lượt chính và các allocation của Arena | O2 | Nếu một cụm/mức difficulty thiếu câu, engine phải reuse hoặc hạ difficulty | Validation bank trước khi chạy; fallback và `bankLog` | Hồng, Trang | Cần kiểm tra tự động |
 | **C2** | **`difficulty` 1–3 do nhóm tự gắn đủ dùng cho bốn việc: cân bằng Arena 1, difficulty quota theo round, tie-break và trọng số `performance_score`** | O2, O4 | Nhãn difficulty chủ quan có thể làm cả generation và performance score lệch | Không diễn giải difficulty như kết luận học tập; calibrate sau playtest | Hồng, Quỳnh | **Đã mở rộng vai trò ở Week 7, chưa kiểm định** |
 | C3 | Nội dung `stem/options/answer/explanation/distractor_reason/hint` do nhóm tự biên soạn đủ chính xác cho prototype | O3 | Sai nội dung/đáp án làm feedback học tập sai | Peer review nội bộ theo batch | Hồng, Quỳnh | Cần review |
 | C4 | `sub_standard` chỉ dùng cho biên soạn/coverage, không cần ở runtime output | Không trực tiếp O1–O4 | Nếu code phụ thuộc field này ngoài dự kiến, Input Dictionary và source map sẽ lệch | Không đọc `sub_standard` trong engine runtime | Hồng, Trang | Đã chốt |
 | C5 | `topic="ETHICS"` và `item_type` không làm thay đổi logic MVP | Không trực tiếp O1–O4 | Nếu UI/engine branch theo hai field này, tài liệu hiện tại sẽ thiếu rule | Giữ contextual; nếu code đọc thì cập nhật Input Dictionary trước | Quỳnh | Đã chốt |
-| **C6** | **Mỗi cụm hiện chỉ có khoảng 17–20 câu khó, nên việc giữ quota hard ở các round sau vẫn có nguy cơ cạn pool khi replay** | O2 | Người chơi trượt Arena 4 nhiều lần có thể làm W2 hết câu khó trước Boss | Cho phép reuse cùng difficulty; nếu vẫn thiếu thì hạ về medium; ghi `bankLog`; bổ sung bank sau | Hồng, Trang | **Limitation đã biết** |
+| **C6** | **Mỗi cụm hiện có khoảng 17–20 câu khó (C1:20, C2:18, C3:17, C4:17, C5:19), nhưng replay vẫn có thể làm cạn pool phù hợp trước Boss** | O2 | Người chơi trượt Arena 4 nhiều lần có thể làm W2 hết câu khó trước Boss | Cho phép reuse cùng difficulty; nếu vẫn thiếu thì hạ về medium; ghi `bankLog`; bổ sung bank sau | Hồng, Trang | **Limitation đã biết** |
 | D1 | Prototype dùng HTML/CSS/JavaScript thuần + dữ liệu tĩnh, không cần backend/API | Toàn flow | Nếu cần sync thiết bị/account thì kiến trúc hiện tại không đủ | Giữ ngoài scope; lưu tiến trình local browser | Minh, Khôi | Đã chốt |
 | D2 | User input trong một phiên được hệ thống ghi đúng: option, timestamp render/submit, trạng thái vật phẩm | O1–O4 | Event ghi sai sẽ làm diagnosis/score/penalty sai | Validation tại submit; log event tối thiểu; test edge case | Minh | Cần test |
 | **D3** | **Khi thiếu câu mới đúng mức difficulty, cho phép dùng lại câu cùng mức đã gặp; nếu vẫn thiếu thì hạ về medium** | O2 | Repetition có thể làm kết quả bị ảnh hưởng bởi nhớ đáp án; hạ difficulty làm round không còn đúng quota ban đầu | Chỉ dùng khi pool thiếu; ghi `bankLog`; bổ sung bank dựa trên log | Trang, Hồng | **Fallback Week 7** |
@@ -74,6 +76,9 @@ Bốn output chuẩn:
 | **D5** | **Timer trình duyệt đủ dùng cho prototype để đo `timeMs` và tính overtime** | O3 | Chuyển tab, máy chậm hoặc scheduler của browser có thể làm thời gian ghi được lệch | Ghi limitation; không coi timer là đo năng lực chuẩn hoá; playtest trên nhiều máy | Minh, Khôi | **Chưa kiểm chứng** |
 | **D6** | **State Boss có thể phân biệt rõ "trượt Boss" và "thoát giữa Boss"** | O3 | Nếu hai trạng thái bị gộp, engine có thể trừ 15 Credit sai hoặc cho retry miễn phí sai luật | State riêng cho `boss_unlocked`, phí đã trả và quit/fail; test hai nhánh riêng | Minh | **Cần test** |
 | **D7** | **World Quest được lưu riêng khỏi dữ liệu Arena chẩn đoán và có danh sách câu đã dùng để Boss loại** | O1, O2, O3, O4 | Nếu state bị trộn, Quest làm tăng Accuracy giả hoặc Boss lặp đúng câu Quest | Tách `quest_history` / `quest_used_question_ids`; unit test bảo đảm Quest không chạm counter diagnosis | Minh, Trang | **Cần test** |
+
+
+> Lớp game hành động dựa trên giả định A2. A2 vẫn chưa được kiểm chứng, nên nhóm không được nói lớp game làm người học luyện nhiều hơn.
 
 ---
 
@@ -162,7 +167,7 @@ Thiết kế mới tăng số câu hard:
 - Arena 4: 4 hard
 - Boss: 9 hard
 
-Mỗi cụm hiện chỉ có khoảng 17–20 câu hard.
+Mỗi cụm hiện có khoảng 17–20 câu hard (C1:20, C2:18, C3:17, C4:17, C5:19).
 
 Nếu người chơi replay Arena 4 từ hai lần trở lên, W2 có thể hết câu hard mới trước Boss.
 
@@ -318,7 +323,9 @@ Các limitation sau không chỉ nằm ở file Assumptions; chúng phải đư�
 
 1. Pass threshold, timer, penalty, Boss price và Quest reward đều do nhóm tự đặt, chưa có dữ liệu người chơi thật.
 2. Arena 2 và Arena 3 cùng ngưỡng 75%; độ khó tăng giữa hai round chủ yếu đến từ difficulty mix và timer.
-3. Mỗi cụm chỉ có khoảng 17–20 câu hard; replay Arena 4 có thể làm cạn pool trước Boss.
+3. Mỗi cụm có khoảng 17–20 câu hard; replay Arena 4 vẫn có thể làm cạn pool phù hợp trước Boss.
 4. Quest lặp câu cũ nên có thể dễ dần do nhớ đáp án.
 5. Browser timer có thể lệch so với thời gian người chơi thật sự suy nghĩ.
 6. Boss yêu cầu 90% trong khi có 9 câu hard; có thể quá khó với người mới học.
+7. **Limitation 25:** kỹ năng né đạn ảnh hưởng khả năng hoàn thành Boss, nhưng không phải dữ liệu chẩn đoán.
+8. **Limitation 26:** lượt trắng có thể bị lợi dụng để bỏ tối đa 2 lượt Boss tệ trong mỗi lần mở khóa.
