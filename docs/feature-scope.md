@@ -160,6 +160,9 @@ Các feature dưới đây không thay thế core diagnostic process, nhưng c�
 | Boss Gate 15 Credit | Buộc người chơi đạt đủ tài nguyên trước khi vào Boss |
 | World Quest | Cho người thiếu Credit một đường luyện tập để kiếm thêm Credit |
 | Lưu tiến trình trên trình duyệt | Không có tài khoản/backend nên cần local storage để giữ state |
+| Lớp game hành động | Mỗi câu hỏi mở ra qua một trận đánh; không đổi logic sinh đề và chấm |
+| Tutorial | Dạy luật và điều khiển bằng thẻ, coach mark và toast |
+| Chế độ demo `?demo=1` | Chạy 4 kịch bản có kết quả tính trước; không ghi đè tiến trình chơi thường |
 
 ### Một điểm phải nói rõ khi bảo vệ
 
@@ -278,12 +281,14 @@ Kết quả Quest:
 
 ### 4.4 Retry và quit Boss
 
+Ngoài fail/quit thông thường, bản cuối có **lượt trắng** khi người chơi mất hết tim; xem `SOLUTION_STRUCTURE.md` Mục 15.4.
+
 **Trượt Boss:**
 
 - Boss vẫn mở;
 - không trả thêm 15 Credit;
 - retry bằng bộ đề mới;
-- khi đỗ, cột Boss và kết luận O4 lấy lượt đỗ, loại câu lấy lại đã gặp; `performance_score` vẫn lấy lượt Boss đầu tiên.
+- khi đỗ, cột Boss và kết luận O4 lấy lượt đỗ, loại câu lấy lại đã gặp; `performance_score` lấy lượt Boss hoàn thành đầu tiên, không tính lượt trắng và lượt thoát.
 
 **Thoát giữa Boss:**
 
@@ -350,7 +355,10 @@ Câu đúng nhờ Bùa:
 | Vật phẩm thứ hai | Chưa thuộc bản Week 7 |
 | Báo cáo chi tiết 9 module | Có thể chỉ giữ 5 cụm |
 | Các hiệu ứng UI phụ | Không được làm ảnh hưởng logic sinh đề |
+| Hoạt ảnh nhân vật, quái, cảnh chuyển | Có thể cắt hoặc giữ hình tĩnh; không được đổi logic question engine |
 | Các cơ chế hỗ trợ ngoài World Quest | Không thuộc thiết kế hiện tại |
+
+> Nếu phải cắt lớp game hành động vì chưa ổn định trước ngày đánh giá, quay về release **`v1.0-core`**.
 
 > **World Quest không xếp optional trong Week 7.**  
 > Với Boss Gate 15 Credit, người chơi thiếu Credit phải có một đường hợp lệ để kiếm thêm Credit. Nếu bỏ Quest mà vẫn giữ Boss Gate, một số người chơi có thể bị chặn progression.
@@ -361,7 +369,15 @@ Câu đúng nhờ Bùa:
 
 ### Week 5–6
 
-Week 5 và Week 6 giữ scope cũ
+Week 5 và Week 6 giữ scope cũ:
+
+- không thêm màn hình mới;
+- không thêm timer;
+- không thêm World Quest;
+- pass threshold dùng chung 70%;
+- Boss mở sau Arena 4.
+
+Đây là **snapshot lịch sử**, không phải scope hiện hành.
 
 ### Week 7
 
@@ -371,7 +387,24 @@ Week 7 thay đổi scope sau feedback:
 2. Người chơi phải đạt một mức progression nhất định mới được vào Boss.
 3. Game phải có cách giúp người chơi vượt phần khó.
 
-Các feature mới được đưa vào scope, Core diagnostic logic không thay đổi.
+Các feature mới được đưa vào scope:
+
+- pass threshold theo round;
+- difficulty ratio theo round;
+- timer ở Arena 3/4/Boss;
+- penalty Credit khi quá giờ;
+- Boss Gate 15 Credit;
+- Boss được dùng tối đa 1 Bùa;
+- World Quest;
+- state retry/quit Boss;
+- loại câu đã xuất hiện trong Quest khỏi Boss.
+
+Core diagnostic logic không thay đổi.
+
+### Week 7 — đợt 2 (17/10/2026)
+
+Sau góp ý về mức đầu tư giao diện, nhóm thêm **lớp game hành động**, tutorial và chế độ demo. Trước khi code, nhóm bỏ bốn tính năng kiểu Prometric (**Back, Flag, Section Review, gạch đáp án**) và bỏ chế độ cổ điển. Logic chẩn đoán, sinh đề, threshold, Credit, timer, Boss Gate, World Quest và O4 giữ nguyên.
+
 
 ---
 
@@ -388,12 +421,14 @@ Các nội dung sau vẫn **không làm** trong bản hiện tại:
 - Cảnh báo lệ thuộc vật phẩm
 - Hệ thống adaptive difficulty dựa trên dữ liệu người chơi thật
 - Tự hiệu chỉnh ngưỡng pass, timer, penalty, Boss price hoặc Quest reward bằng thống kê người chơi
+- Chơi trên điện thoại hoặc màn hình cảm ứng
+- Quay lại câu đã trả lời, gắn cờ, xem lại theo section, gạch đáp án
 
 > **Giới hạn thời gian mỗi câu không còn nằm trong Out of Scope.**  
 > Week 7 đã đưa timer 100/80/60 giây và overtime penalty vào feature chính thức.
 
-
 ---
+
 
 ## 9. Ownership theo feature
 
