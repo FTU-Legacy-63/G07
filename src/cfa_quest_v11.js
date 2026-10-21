@@ -4,6 +4,7 @@
 
    File đi kèm:
    - cfa_quest_v11.html        (khung màn hình; giữ tên file cũ, nội dung là v12)
+   - cfa_quest_engine.js       (luật game: cấu hình, sinh đề, chấm điểm, Credit, trạng thái; nạp trước file này)
    - cfa_dungeon_ui_v10_skipfix_updated.css  (giao diện cũ, dùng lại nguyên)
    - cfa_quest_v11.css         (style của v11: bảng chẩn đoán, biểu đồ, hộp thông báo)
    - cfa_quest_v12.css         (style mới của v12: đồng hồ, ô World Quest, khoá Boss)
@@ -30,630 +31,21 @@
    - Thêm id làm điểm neo coach mark: diagTable, creditLine, reportClusterTable.
    - Bảng tổng kết có ghi chú cố định 3 câu (Mục 14 SOLUTION_STRUCTURE).
    - Hộp mở khoá Boss nhấn mạnh luật thoát, thêm "kể cả tải lại trang hoặc đóng tab".
+
+   Tách engine ngày 21/10/2026 (sau tag v1.0-core):
+   - Khối 1–6 và các bước đổi trạng thái (vào Arena, ghi câu trả lời, dùng Bùa, thoát, chấm round,
+     mở Boss, mua Bùa) chuyển sang cfa_quest_engine.js. File này chỉ còn phần giao diện.
+   - Luật và thứ tự gọi rng không đổi: cùng seed, cùng thao tác thì ra cùng kết quả như v1.0-core.
    ============================================================================= */
 
-/* ---------- 1. Cấu hình (Mục 4, 5, 8) ---------- */
-const CONFIG = {
-  // Ngưỡng đỗ theo round (luật v12). Xét trên arena_score_correct, tính cả câu dùng Bùa.
-  passPercentByArena: { arena1: 70, trap1: 75, crossroads: 75, trap2: 85, boss: 90 },
-  // Nhãn "Đã cải thiện" ở bảng tổng kết vẫn dùng mốc 70% như v11 (luật 15)
-  diagnosticPassPercent: 70,
-  startCredits: 3,               // Mục 8: số dư khởi đầu
-  creditTiers: [                 // Mục 8: Credit khi đỗ Arena (xét từ trên xuống), giữ như v11
-    { minPercent: 90, credit: 4 },
-    { minPercent: 80, credit: 3 },
-    { minPercent: 70, credit: 2 }
-  ],
-  bossFirstClearBonus: 5,        // Mục 8: vượt Boss lần đầu +5 Credit
-  // Đồng hồ mỗi câu (giây). Round không có trong danh sách thì không có đồng hồ.
-  timeLimitSec: { crossroads: 100, trap2: 80, boss: 60 },
-  penaltyStepSec: 10,            // mỗi 10 giây quá giờ (làm tròn lên) trừ 1 Credit
-  bossUnlockCost: 15,            // trả 1 lần để mở Boss
-  questPerCluster: 5,            // World Quest: 5 câu x 3 cụm yếu nhất
-  questTiers: [                  // World Quest không có ngưỡng đỗ, chỉ thưởng theo bậc
-    { minPercent: 90, credit: 4 },
-    { minPercent: 80, credit: 3 },
-    { minPercent: 60, credit: 2 }
-  ],
-  // Mục 7 chỉ ghi rõ Arena 1 không hiện đúng/sai ngay. Để false thì mọi Arena
-  // đều chờ tới màn kết quả mới hiện. Đổi thành true nếu nhóm muốn Trap/Crossroads
-  // hiện đáp án ngay sau từng câu (Arena 1 luôn không hiện).
-  showFeedbackImmediately: false,
-  // Khoá lưu mới: tiến trình v11 còn trên trình duyệt không làm hỏng v12
-  storageKey: 'cfaQuestV12',
-  inProgressKey: 'cfaQuestV12_inProgress',
-  runCounterKey: 'cfaQuestV12_runCount'
-};
+/* Khối 1–6 (cấu hình, ngân hàng, trạng thái, sinh đề, tính toán) và khối 6b (đổi trạng thái)
+   nằm ở cfa_quest_engine.js. Các tên CONFIG, S, RUN, LAST, BANK_OK, rankClusters… ở file này
+   là biến toàn cục của engine. */
 
-// Tỉ lệ dễ/vừa/khó quy ra số câu (luật 5, 6). Khoá là mức khó 1/2/3.
-const DIFFICULTY_MIX = {
-  trap1: { 1: 4, 2: 4, 3: 2 },
-  crossroads: { 1: 2, 2: 5, 3: 3 },     // chia cho 5 cụm, mỗi cụm 2 câu
-  trap2: { 1: 2, 2: 4, 3: 4 }
-};
-// Boss 2/4/9, chia theo thứ tự cụm yếu nhất → yếu thứ ba (7/5/3 câu)
-const BOSS_MIX = [
-  { 1: 1, 2: 2, 3: 4 },
-  { 1: 1, 2: 1, 3: 3 },
-  { 1: 0, 2: 1, 3: 2 }
-];
-
-const DIFFICULTY_POINTS = { 1: 1, 2: 2, 3: 3 };   // Mục 5, công thức (3)
-
-// Mục 2: 9 module gom thành 5 cụm
-const CLUSTERS = ['C1', 'C2', 'C3', 'C4', 'C5'];
-const CLUSTER_INFO = {
-  C1: { name: 'Khung đạo đức nền', modules: ['GIPS', 'CODE'] },
-  C2: { name: 'Standards I–II', modules: ['S1', 'S2'] },
-  C3: { name: 'Standard III', modules: ['S3'] },
-  C4: { name: 'Standards IV–V', modules: ['S4', 'S5'] },
-  C5: { name: 'Standards VI–VII', modules: ['S6', 'S7'] }
-};
-const MODULE_NAMES = {
-  GIPS: 'GIPS',
-  CODE: 'Code of Ethics',
-  S1: 'I. Professionalism',
-  S2: 'II. Integrity of Capital Markets',
-  S3: 'III. Duties to Clients',
-  S4: 'IV. Duties to Employers',
-  S5: 'V. Investment Analysis, Recommendations & Actions',
-  S6: 'VI. Conflicts of Interest',
-  S7: 'VII. Responsibilities as CFA Member/Candidate'
-};
-
-// Mục 4 + Mục 8 (luật dùng vật phẩm)
-const ARENAS = [
-  { id: 'arena1',     name: 'Arena 1 · The Gate', size: 15, itemsAllowed: false },
-  { id: 'trap1',      name: 'Arena 2',            size: 10, itemsAllowed: true },   // trước 28/09: Trap I
-  { id: 'crossroads', name: 'Arena 3',            size: 10, itemsAllowed: true },   // trước 28/09: The Crossroads
-  { id: 'trap2',      name: 'Arena 4',            size: 10, itemsAllowed: true },   // trước 28/09: Trap II
-  { id: 'boss',       name: 'Boss',               size: 15, itemsAllowed: true }    // v12: Boss được dùng 1 Bùa
-];
-// World Quest không nằm trong chuỗi 5 Arena: không có ngưỡng đỗ, không vào dữ liệu chẩn đoán
-const QUEST = { id: 'quest', name: 'World Quest', size: 15, itemsAllowed: false, isQuest: true };
-const ARENA_INDEX = Object.fromEntries(ARENAS.map((a, i) => [a.id, i]));
-// Tên hiển thị của Arena theo mã nội bộ. Đổi tên thì chỉ sửa mảng ARENAS ở trên.
-const NAME = id => ARENAS[ARENA_INDEX[id]].name;
-const BOSS_SPLIT = [7, 5, 3];   // Mục 4: 3 cụm yếu nhất, yếu nhất nhận 7 câu
-
-// Mục 8 (Shop): đúng 1 vật phẩm
-const ITEMS = {
-  eliminate: { name: 'Bùa Loại Trừ', cost: 3, desc: 'Loại 1 phương án sai của câu đang làm (3 còn 2 phương án).' },
-};
-// Vật phẩm đã bỏ ở tuần 6 nhưng có thể còn trong tiến trình lưu từ bản cũ trên trình duyệt
-const RETIRED_ITEMS = { hint: 'Cuộn Giấy Gợi Ý (bản cũ)' };
-// Tên vật phẩm để hiển thị; không bao giờ lỗi kể cả khi gặp mã vật phẩm lạ
-function itemName(id) { return ITEMS[id]?.name ?? RETIRED_ITEMS[id] ?? String(id); }
-
-
-/* ---------- 2. Ngẫu nhiên có thể cố định seed (phục vụ kiểm thử, demo lặp lại được) ---------- */
-let rng = Math.random;
-function mulberry32(seed) {
-  return function () {
-    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function shuffle(list) {
-  const a = [...list];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-
-/* ---------- 3. Ngân hàng câu hỏi (Mục 1 Input, Mục 2 định dạng, Mục 9) ---------- */
-let BANK = [];
-let BANK_OK = false;
-
-function normalizeQuestion(q) {
-  return {
-    id: String(q.id ?? ''),
-    cluster: String(q.cluster ?? '').trim(),
-    module: String(q.module ?? '').trim(),
-    subStandard: String(q.sub_standard ?? ''),
-    difficulty: Number(q.difficulty),
-    stem: String(q.stem ?? ''),
-    options: Array.isArray(q.options) ? q.options.map(String) : [],
-    answer: Number(q.answer),
-    distractorReason: Array.isArray(q.distractor_reason) ? q.distractor_reason.map(x => String(x ?? '')) : [],
-    hint: String(q.hint ?? ''),
-    explanation: String(q.explanation ?? '')
-  };
-}
-
-function validateBank(list) {
-  const errors = [];
-  const warnings = [];
-  if (!list.length) errors.push('ngân hàng rỗng');
-  const seen = new Set();
-  list.forEach((q, i) => {
-    const tag = q.id || `#${i + 1}`;
-    if (!q.id) errors.push(`câu #${i + 1} thiếu id`);
-    else if (seen.has(q.id)) errors.push(`trùng id ${q.id}`);
-    seen.add(q.id);
-    const info = CLUSTER_INFO[q.cluster];
-    if (!info) errors.push(`${tag}: cụm "${q.cluster}" không có trong bảng cụm`);
-    else if (!info.modules.includes(q.module)) errors.push(`${tag}: module ${q.module} không thuộc ${q.cluster}`);
-    if (q.options.length !== 3) errors.push(`${tag}: cần đúng 3 phương án`);
-    if (!Number.isInteger(q.answer) || q.answer < 0 || q.answer > 2) errors.push(`${tag}: answer phải là 0, 1 hoặc 2`);
-    if (![1, 2, 3].includes(q.difficulty)) errors.push(`${tag}: difficulty phải là 1, 2 hoặc 3`);
-    if (!q.stem) errors.push(`${tag}: thiếu stem`);
-  });
-  Object.keys(MODULE_NAMES).forEach(m => {
-    if (!list.some(q => q.module === m)) errors.push(`module ${m} không có câu nào`);
-  });
-  CLUSTERS.forEach(c => {
-    const n = list.filter(q => q.cluster === c).length;
-    if (n < 22) warnings.push(`${c} có ${n} câu (target 22)`);
-  });
-  return { errors, warnings };
-}
-
-function applyBank(raw) {
-  const arr = Array.isArray(raw) ? raw : (raw?.questions ?? raw?.bank ?? []);
-  const list = arr.map(normalizeQuestion);
-  const { errors, warnings } = validateBank(list);
-  BANK = list;
-  BANK_OK = errors.length === 0;
-  const el = $('bankStatus');
-  if (el) {
-    if (BANK_OK) {
-      el.textContent = `Ngân hàng hợp lệ: ${list.length} câu, 5 cụm, 9 module.` + (warnings.length ? ` Lưu ý: ${warnings.join('; ')}.` : '');
-      el.className = 'status ok';
-    } else {
-      el.textContent = `Ngân hàng chưa hợp lệ: ${errors.slice(0, 3).join('; ')}${errors.length > 3 ? '…' : ''}`;
-      el.className = 'status error';
-    }
-  }
-  return BANK_OK;
-}
-
-async function loadBank() {
-  try {
-    const r = await fetch('../data/ethics_bank_220.json', { cache: 'no-store' });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    applyBank(await r.json());
-  } catch {
-    // Mở bằng file:// thì trình duyệt chặn fetch, dùng bản nhúng.
-    if (Array.isArray(window.CFA_EMBEDDED_BANK) && window.CFA_EMBEDDED_BANK.length) {
-      applyBank(window.CFA_EMBEDDED_BANK);
-    } else {
-      const el = $('bankStatus');
-      el.textContent = 'Chưa nạp được ethics_bank_220.json. Dùng nút nạp file bên dưới hoặc chạy bằng local server.';
-      el.className = 'status error';
-    }
-  }
-}
-
-
-/* ---------- 4. Trạng thái và lưu trữ (Mục 5 cấu trúc dữ liệu, Mục 7 đường lỗi) ---------- */
-const store = {
-  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
-  set(k, v) { try { localStorage.setItem(k, v); return true; } catch { return false; } },
-  del(k) { try { localStorage.removeItem(k); } catch { /* bỏ qua */ } }
-};
-
-function freshState() {
-  return {
-    version: 12,
-    started: false,
-    finished: false,
-    runNo: 0,
-    stage: 0,                                   // chỉ số Arena kế tiếp cần đỗ
-    credits: CONFIG.startCredits,
-    inventory: { eliminate: 0 },
-    w1: null, w1Why: '',
-    w2: null, w2Why: '',
-    bossPlan: null, bossWhy: '',
-    usedIds: [],                                // câu đã xuất hiện trong lượt chơi
-    // Mỗi câu đã xác nhận là một bản ghi:
-    // { arena, attempt, qid, cluster, module, difficulty, choice, answer, correct, item, timeMs, reused, order }
-    records: [],
-    attempts: { arena1: [], trap1: [], crossroads: [], trap2: [], boss: [] },
-    accuracy_by_arena: {},                      // dựng lại từ records sau mỗi Arena
-    performance_by_arena: {},                   // dựng lại từ records sau mỗi Arena
-    bankLog: [],                                // log thiếu câu để nhóm bổ sung ngân hàng
-    hadFailure: false,
-    bossClearedOnce: false,
-    // v12
-    bossUnlocked: false,                        // đã trả 15 Credit mở Boss
-    questUsedIds: [],                           // câu đã ra ở World Quest: Boss không hỏi lại
-    questRecords: [],                           // câu trả lời ở Quest, tách khỏi records (không vào chẩn đoán)
-    questRuns: [],                              // { n, correct, total, credit, at }
-    quits: []                                   // các lần thoát giữa chừng: { arena, penalty, at }
-  };
-}
-
-function loadState() {
-  const raw = store.get(CONFIG.storageKey);
-  if (raw === null) return { state: freshState(), problem: null };
-  try {
-    const x = JSON.parse(raw);
-    if (!x || x.version !== 12) throw new Error('sai phiên bản');
-    return { state: Object.assign(freshState(), x), problem: null };
-  } catch {
-    store.del(CONFIG.storageKey);
-    return { state: freshState(), problem: 'corrupt' };
-  }
-}
-
-function saveState() {
-  if (!store.set(CONFIG.storageKey, JSON.stringify(S))) {
-    toast('Trình duyệt không cho lưu tiến trình. Lượt chơi vẫn chạy nhưng sẽ mất khi tải lại trang.');
-  }
-}
-
-let S = freshState();
-let RUN = null;     // Arena đang làm. Không bao giờ lưu (Mục 7: thoát giữa Arena thì huỷ lượt)
-let LAST = null;    // Kết quả Arena vừa xong, dùng cho màn kết quả
 let shopReturn = 'dashboard';
 
-
-/* ---------- 5. Sinh đề (Mục 2 ba quy tắc phủ module, Mục 4, Mục 7 đường lỗi) ---------- */
-// banned: câu tuyệt đối không được bốc (Boss loại các câu đã ra ở World Quest, luật 12)
-function makeDrawContext(banned = []) {
-  return { used: new Set(S.usedIds), taken: new Set(), banned: new Set(banned), log: [], notices: [], reused: {} };
-}
-
-// Câu chưa từng xuất hiện trong lượt chơi và chưa bốc vào Arena này
-function freshPool(ctx, filter) {
-  return BANK.filter(q => filter(q) && !ctx.used.has(q.id) && !ctx.taken.has(q.id) && !ctx.banned.has(q.id));
-}
-
-// Câu đã gặp trong lượt chơi (dùng khi hết câu mới), chưa bốc vào Arena này
-function seenPool(ctx, filter) {
-  return BANK.filter(q => filter(q) && ctx.used.has(q.id) && !ctx.taken.has(q.id) && !ctx.banned.has(q.id));
-}
-
-// Câu lấy lại thì xáo thứ tự phương án (Mục 7, Mục 9)
-function takeQuestion(ctx, q, reused) {
-  ctx.taken.add(q.id);
-  if (!reused) return { ...q, reused: false };
-  const order = shuffle([0, 1, 2]);
-  return {
-    ...q,
-    options: order.map(i => q.options[i]),
-    distractorReason: order.map(i => q.distractorReason[i] ?? ''),
-    answer: order.indexOf(q.answer),
-    order,                       // lưu thứ tự đã xáo để màn xem lại hiện đúng A/B/C
-    reused: true
-  };
-}
-
-// Arena 1: 3 câu mỗi cụm, rải hết module, mỗi mức khó 1 câu.
-// Cụm 2 module: module "nặng" nhận mức 1 và 3, module còn lại nhận mức 2.
-// Module nặng luân phiên giữa hai lần chơi theo số thứ tự lượt chơi (runNo).
-function arena1Slots(modules, heavyIndex) {
-  if (modules.length === 1) return [1, 2, 3].map(d => ({ module: modules[0], difficulty: d }));
-  if (modules.length === 2) {
-    const heavy = modules[heavyIndex];
-    const light = modules[1 - heavyIndex];
-    return [
-      { module: heavy, difficulty: 1 },
-      { module: light, difficulty: 2 },
-      { module: heavy, difficulty: 3 }
-    ];
-  }
-  return [1, 2, 3].map((d, i) => ({ module: modules[i % modules.length], difficulty: d }));
-}
-
-function buildArena1(ctx) {
-  const heavyIndex = S.runNo % 2 === 1 ? 0 : 1;
-  const qs = [];
-  CLUSTERS.forEach(c => {
-    let reusedCount = 0;
-    arena1Slots(CLUSTER_INFO[c].modules, heavyIndex).forEach(({ module, difficulty }) => {
-      // Đề cố định: lấy câu đầu tiên theo thứ tự ngân hàng, không bốc ngẫu nhiên
-      let q = freshPool(ctx, x => x.module === module && x.difficulty === difficulty)[0];
-      if (q) { qs.push(takeQuestion(ctx, q, false)); return; }
-      q = freshPool(ctx, x => x.cluster === c && x.difficulty === difficulty)[0];
-      if (q) {
-        ctx.log.push(`Arena 1: ${module} hết câu mới mức ${difficulty}, bù bằng ${q.module}`);
-        qs.push(takeQuestion(ctx, q, false));
-        return;
-      }
-      q = shuffle(BANK.filter(x => x.module === module && x.difficulty === difficulty && !ctx.taken.has(x.id)))[0];
-      if (q) { reusedCount++; qs.push(takeQuestion(ctx, q, true)); return; }
-      ctx.log.push(`Arena 1: ${c} không có câu mức ${difficulty}`);
-    });
-    if (reusedCount) ctx.notices.push(`Cụm ${c} đã hết câu mới cho Arena 1: lấy lại ${reusedCount} câu đã gặp, thứ tự phương án đã được xáo lại.`);
-  });
-  return qs;
-}
-
-// v12: bốc câu của một cụm theo số câu từng mức khó, ví dụ { 1: 4, 2: 4, 3: 2 }.
-// Mức khó nhất bốc trước (câu khó ít nhất trong ngân hàng). Trong mỗi mức, ưu tiên
-// module đang có ít câu hơn để vẫn rải đều module (Mục 2 quy tắc 2).
-// Hết câu mới đúng mức khó thì (luật đã chốt, tài liệu mục 4):
-//   1) lấy câu cùng mức khó đã gặp trong lượt chơi (xáo lại phương án)
-//   2) hết nữa thì hạ một mức (khó → vừa, vừa → dễ; dễ thì lên vừa), mới trước, đã gặp sau
-//   3) vẫn thiếu thì lấy bất kỳ câu nào của cụm. Mỗi lần như vậy đều ghi log.
-const STEP_DOWN = { 3: 2, 2: 1, 1: 2 };
-
-function drawMix(ctx, cluster, mix, label) {
-  const modules = CLUSTER_INFO[cluster].modules;
-  const perModule = Object.fromEntries(modules.map(m => [m, 0]));
-  const out = [];
-  const pickFresh = filter => {
-    // module ít câu nhất trước; bằng nhau thì ngẫu nhiên
-    const order = shuffle(modules).sort((a, b) => perModule[a] - perModule[b]);
-    for (const m of order) {
-      const q = shuffle(freshPool(ctx, x => x.module === m && filter(x)))[0];
-      if (q) return q;
-    }
-    return null;
-  };
-  const pickSeen = filter => shuffle(seenPool(ctx, x => x.cluster === cluster && filter(x)))[0] || null;
-  const take = (q, reused) => {
-    perModule[q.module] = (perModule[q.module] || 0) + 1;
-    if (reused) ctx.reused[cluster] = (ctx.reused[cluster] || 0) + 1;
-    out.push(takeQuestion(ctx, q, reused));
-  };
-
-  [3, 2, 1].forEach(d => {
-    for (let k = 0; k < (mix[d] || 0); k++) {
-      const down = STEP_DOWN[d];
-      let q = pickFresh(x => x.difficulty === d);
-      if (q) { take(q, false); continue; }
-      q = pickSeen(x => x.difficulty === d);
-      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mới mức ${d}, lấy lại câu mức ${d} đã gặp (${q.id})`); take(q, true); continue; }
-      q = pickFresh(x => x.difficulty === down);
-      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mức ${d}, hạ xuống câu mới mức ${down} (${q.id})`); take(q, false); continue; }
-      q = pickSeen(x => x.difficulty === down);
-      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mức ${d}, hạ xuống câu đã gặp mức ${down} (${q.id})`); take(q, true); continue; }
-      q = pickFresh(() => true);
-      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mức ${d} và ${down}, lấy câu mới mức ${q.difficulty} (${q.id})`); take(q, false); continue; }
-      q = pickSeen(() => true);
-      if (q) { ctx.log.push(`${label}: ${cluster} hết câu mức ${d} và ${down}, lấy câu đã gặp mức ${q.difficulty} (${q.id})`); take(q, true); continue; }
-      ctx.log.push(`${label}: ${cluster} không đủ câu kể cả khi lấy lại`);
-    }
-  });
-  return out;
-}
-
-function reusedNotice(ctx) {
-  Object.entries(ctx.reused).forEach(([c, n]) => {
-    ctx.notices.push(`Cụm ${c} đã hết câu mới ở mức khó cần bốc: lấy lại ${n} câu đã gặp, thứ tự phương án đã được xáo lại.`);
-  });
-}
-
-// Arena 3: 2 câu mỗi cụm, cả round đủ 2 dễ / 5 vừa / 3 khó. Mức khó chia ngẫu nhiên cho các cụm.
-function buildCrossroads(ctx) {
-  const slots = shuffle(Object.entries(DIFFICULTY_MIX.crossroads).flatMap(([d, n]) => Array(n).fill(Number(d))));
-  return CLUSTERS.flatMap((c, i) => {
-    const mix = {};
-    [slots[2 * i], slots[2 * i + 1]].forEach(d => { mix[d] = (mix[d] || 0) + 1; });
-    return drawMix(ctx, c, mix, NAME('crossroads'));
-  });
-}
-
-function buildArena(id, ctx) {
-  let qs;
-  switch (id) {
-    case 'arena1':     return buildArena1(ctx);
-    case 'trap1':      qs = drawMix(ctx, S.w1, DIFFICULTY_MIX.trap1, NAME('trap1')); break;
-    case 'crossroads': qs = buildCrossroads(ctx); break;
-    case 'trap2':      qs = drawMix(ctx, S.w2, DIFFICULTY_MIX.trap2, NAME('trap2')); break;
-    case 'boss':       qs = S.bossPlan.flatMap((p, i) => drawMix(ctx, p.cluster, BOSS_MIX[i], 'Boss')); break;
-    default:           return [];
-  }
-  reusedNotice(ctx);
-  return shuffle(qs);
-}
-
-// World Quest (luật 12, 13): 5 câu mỗi cụm trong 3 cụm yếu nhất, độ khó ngẫu nhiên.
-// Ưu tiên câu đã gặp (ở Arena 1–4 hoặc Quest trước); thiếu mới lấy câu mới.
-// Câu nào đã ra ở Quest thì ghi vào questUsedIds để Boss không hỏi lại.
-function buildQuest(ctx) {
-  const seen = new Set([...S.usedIds, ...S.questUsedIds]);
-  const qs = [];
-  S.bossPlan.forEach(({ cluster }) => {
-    const old = shuffle(BANK.filter(q => q.cluster === cluster && seen.has(q.id)));
-    const got = old.slice(0, CONFIG.questPerCluster);
-    got.forEach(q => qs.push(takeQuestion(ctx, q, true)));      // câu cũ: xáo phương án
-    const need = CONFIG.questPerCluster - got.length;
-    if (need > 0) {
-      const fresh = shuffle(BANK.filter(q => q.cluster === cluster && !seen.has(q.id) && !ctx.taken.has(q.id))).slice(0, need);
-      fresh.forEach(q => qs.push(takeQuestion(ctx, q, false)));
-      if (fresh.length) ctx.log.push(`World Quest: ${cluster} chưa đủ câu đã gặp, lấy thêm ${fresh.length} câu mới (Boss sẽ không hỏi lại các câu này)`);
-    }
-  });
-  return shuffle(qs);
-}
-
-
-/* ---------- 6. Tính toán (Mục 5: ba công thức, phân định khi bằng nhau) ---------- */
-
-// Mẫu chẩn đoán dùng để xếp hạng cụm yếu (W1, W2, 3 cụm vào Boss):
-// chỉ lượt làm đầu tiên của mỗi Arena, bỏ câu dùng vật phẩm
-function diagnosticRecords(uptoArenaIndex = Infinity) {
-  return S.records.filter(r => r.attempt === 1 && !r.item && ARENA_INDEX[r.arena] <= uptoArenaIndex);
-}
-
-// Lượt Boss dùng cho bảng tổng kết: lượt đỗ Boss. Chưa đỗ thì trả về null.
-function bossReportAttempt() {
-  const t = (S.attempts.boss || []).find(x => x.passed);
-  return t ? t.attempt : null;
-}
-
-// Mẫu dùng cho bảng tổng kết và biểu đồ (sửa 14/10/2026):
-// - Arena 1–4: lượt làm đầu tiên (trình độ trước khi luyện)
-// - Boss: lượt đỗ (trình độ sau khi luyện), bỏ câu lấy lại đã gặp
-// Cả hai đều bỏ câu dùng vật phẩm.
-function reportRecords(uptoArenaIndex = Infinity) {
-  const bossAt = bossReportAttempt();
-  return S.records.filter(r => {
-    if (r.item || ARENA_INDEX[r.arena] > uptoArenaIndex) return false;
-    if (r.arena === 'boss') return r.attempt === bossAt && !r.reused;
-    return r.attempt === 1;
-  });
-}
-
-// Số câu lấy lại đã gặp bị loại khỏi cột Boss (để ghi chú trên bảng tổng kết)
-function bossReusedExcluded() {
-  const bossAt = bossReportAttempt();
-  return S.records.filter(r => r.arena === 'boss' && r.attempt === bossAt && !r.item && r.reused).length;
-}
-
-// Công thức (1) accuracy_cumulative + dữ liệu phụ để phân định
-function clusterStats(records) {
-  const m = Object.fromEntries(CLUSTERS.map(c => [c, { cluster: c, correct: 0, attempted: 0, wrongDiffSum: 0, wrongCount: 0, timeSum: 0 }]));
-  records.forEach(r => {
-    const s = m[r.cluster];
-    if (!s) return;
-    s.attempted++;
-    s.timeSum += r.timeMs;
-    if (r.correct) s.correct++;
-    else { s.wrongCount++; s.wrongDiffSum += r.difficulty; }
-  });
-  return CLUSTERS.map(c => {
-    const s = m[c];
-    return {
-      ...s,
-      rate: s.attempted ? s.correct / s.attempted : null,
-      wrongDiffAvg: s.wrongCount ? s.wrongDiffSum / s.wrongCount : 0,
-      avgTimeMs: s.attempted ? s.timeSum / s.attempted : 0
-    };
-  });
-}
-
-function moduleStats(records) {
-  const m = {};
-  Object.keys(MODULE_NAMES).forEach(k => { m[k] = { module: k, correct: 0, attempted: 0 }; });
-  records.forEach(r => {
-    if (!m[r.module]) return;
-    m[r.module].attempted++;
-    if (r.correct) m[r.module].correct++;
-  });
-  return m;
-}
-
-// Kết quả âm nghĩa là a yếu hơn b. So tỷ lệ bằng nhân chéo để tránh sai số số thực.
-const TIE_STEPS = [
-  {
-    label: 'tỷ lệ đúng thấp hơn',
-    cmp: (a, b) => {
-      if (!a.attempted && !b.attempted) return 0;
-      if (!a.attempted) return 1;
-      if (!b.attempted) return -1;
-      return a.correct * b.attempted - b.correct * a.attempted;
-    }
-  },
-  {
-    label: 'độ khó trung bình của câu làm sai cao hơn',
-    cmp: (a, b) => { const d = b.wrongDiffAvg - a.wrongDiffAvg; return Math.abs(d) < 1e-9 ? 0 : d; }
-  },
-  { label: 'thời gian trả lời trung bình dài hơn', cmp: (a, b) => b.avgTimeMs - a.avgTimeMs },
-  { label: 'thứ tự mã cụm', cmp: (a, b) => CLUSTERS.indexOf(a.cluster) - CLUSTERS.indexOf(b.cluster) }
-];
-
-function rankClusters(records, exclude = []) {
-  return clusterStats(records)
-    .filter(s => !exclude.includes(s.cluster))
-    .sort((a, b) => {
-      for (const step of TIE_STEPS) {
-        const v = step.cmp(a, b);
-        if (v !== 0) return v;
-      }
-      return 0;
-    });
-}
-
-function decidingStep(a, b) {
-  for (let i = 0; i < TIE_STEPS.length; i++) if (TIE_STEPS[i].cmp(a, b) !== 0) return i;
-  return TIE_STEPS.length - 1;
-}
-
-function statText(s) {
-  return `${s.correct}/${s.attempted} = ${fmtPct(s.correct, s.attempted)}`;
-}
-
-function explainPick(ranked, label) {
-  const [first, second] = ranked;
-  if (!second) return `${label} = ${first.cluster} (${statText(first)}).`;
-  const step = decidingStep(first, second);
-  if (step === 0) return `${label} = ${first.cluster} vì có tỷ lệ đúng thấp nhất (${statText(first)}).`;
-  const tied = ranked.filter(s => TIE_STEPS[0].cmp(s, first) === 0).map(s => s.cluster);
-  let detail = '';
-  if (step === 1) detail = ` (độ khó TB câu sai: ${first.cluster} ${first.wrongDiffAvg.toFixed(2)}, ${second.cluster} ${second.wrongDiffAvg.toFixed(2)})`;
-  if (step === 2) detail = ` (thời gian TB: ${first.cluster} ${(first.avgTimeMs / 1000).toFixed(1)} giây, ${second.cluster} ${(second.avgTimeMs / 1000).toFixed(1)} giây)`;
-  return `${tied.join(', ')} bằng tỷ lệ đúng (${statText(first)}). Phân định theo ${TIE_STEPS[step].label}${detail}: ${label} = ${first.cluster}.`;
-}
-
-// Ngưỡng đỗ của từng round (v12)
-function passPercentFor(arenaId) { return CONFIG.passPercentByArena[arenaId]; }
-function passed(correct, total, arenaId) { return correct * 100 >= total * passPercentFor(arenaId); }
-function needToPass(total, arenaId) { return Math.ceil(total * passPercentFor(arenaId) / 100); }
-
-function tierCredit(tiers, correct, total) {
-  for (const t of tiers) if (correct * 100 >= total * t.minPercent) return t.credit;
-  return 0;
-}
-function creditFor(correct, total) { return tierCredit(CONFIG.creditTiers, correct, total); }
-function questCredit(correct, total) { return tierCredit(CONFIG.questTiers, correct, total); }
-
-// Đồng hồ và phạt quá giờ (luật 1–5). Thời gian tính theo giây tròn đã trôi qua,
-// khớp với số giây hiện trên đồng hồ: trả lời ở giây thứ 100 của giới hạn 100 giây không bị phạt.
-function timeLimitFor(arenaId) { return CONFIG.timeLimitSec[arenaId] || 0; }
-function overtimeSec(timeMs, arenaId) {
-  const limit = timeLimitFor(arenaId);
-  if (!limit) return 0;
-  return Math.max(0, Math.floor(timeMs / 1000) - limit);
-}
-function penaltyFor(overSec) { return overSec > 0 ? Math.ceil(overSec / CONFIG.penaltyStepSec) : 0; }
-function sumPenalty(answers) { return answers.reduce((s, a) => s + (a.penalty || 0), 0); }
-
-// accuracy_by_arena[cụm][arena] = { correct, attempted } — Mục 5, các quy tắc lưu
-// Arena 1–4 theo lượt đầu; Boss theo lượt đỗ, bỏ câu lấy lại (reportRecords)
-function buildAccuracyByArena() {
-  const out = {};
-  reportRecords().forEach(r => {
-    out[r.cluster] ??= {};
-    const cell = (out[r.cluster][r.arena] ??= { correct: 0, attempted: 0 });
-    cell.attempted++;
-    if (r.correct) cell.correct++;
-  });
-  return out;
-}
-
-// performance_by_arena[arena] = { points_earned, points_offered } — Mục 5, công thức (3)
-// Giữ theo lượt làm đầu tiên ở cả 5 Arena, kể cả Boss (chốt 14/10/2026)
-function buildPerformanceByArena() {
-  const out = {};
-  S.records.filter(r => r.attempt === 1).forEach(r => {
-    const p = (out[r.arena] ??= { points_earned: 0, points_offered: 0 });
-    const pts = DIFFICULTY_POINTS[r.difficulty];
-    p.points_offered += pts;
-    if (r.correct && !r.item) p.points_earned += pts;
-  });
-  return out;
-}
-
-// Mục 5: bốn điều kiện kết luận, chạy theo thứ tự
-function conclude(cluster) {
-  const d = S.accuracy_by_arena[cluster] || {};
-  if (!d.boss) {
-    // Cụm có trong kế hoạch Boss nhưng mọi câu Boss của cụm đều là câu lấy lại hoặc câu dùng Bùa
-    const planned = (S.bossPlan || []).some(p => p.cluster === cluster);
-    return planned
-      ? { text: 'Chưa đủ câu mới ở Boss để kết luận', cls: 'na', noData: true }
-      : { text: 'Không kiểm tra lại ở Boss', cls: 'na' };
-  }
-  const baseC = (d.arena1?.correct || 0) + (d.crossroads?.correct || 0);
-  const baseA = (d.arena1?.attempted || 0) + (d.crossroads?.attempted || 0);
-  // Nhãn cụm dùng mốc chẩn đoán 70%, không dùng ngưỡng đỗ 90% của Boss (luật 15)
-  const bossOk = d.boss.correct * 100 >= d.boss.attempted * CONFIG.diagnosticPassPercent;
-  const change = Math.sign(d.boss.correct * baseA - baseC * d.boss.attempted);   // dấu của (Boss − mốc)
-  const detail = { baseC, baseA, bossC: d.boss.correct, bossA: d.boss.attempted };
-  if (bossOk && change >= 0) return { text: 'Đã cải thiện', cls: 'good', ...detail };
-  if (!bossOk && change > 0) return { text: 'Đã cải thiện nhưng chưa đủ', cls: 'mid', ...detail };
-  return { text: 'Cần cải thiện tiếp', cls: 'weak', ...detail };
-}
+// Engine gọi khi trình duyệt không cho lưu tiến trình
+ENGINE_HOOKS.saveFailed = () => toast('Trình duyệt không cho lưu tiến trình. Lượt chơi vẫn chạy nhưng sẽ mất khi tải lại trang.');
 
 
 /* ---------- 7. Tiện ích giao diện ---------- */
@@ -661,7 +53,6 @@ const $ = id => document.getElementById(id);
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
-function fmtPct(c, a) { return a ? (c / a * 100).toFixed(1) + '%' : '--'; }
 function show(id) {
   document.querySelectorAll('.screen').forEach(x => x.classList.toggle('active', x.id === id));
   window.scrollTo(0, 0);
@@ -810,9 +201,6 @@ function makeClickable(card, fn) {
 
 // v12: 7 ô — Arena 1–4, World Quest, Boss, Bảng tổng kết
 const TOTAL_CARDS = 7;
-const BOSS_INDEX = ARENA_INDEX.boss;
-
-function questOpen() { return S.started && S.stage >= BOSS_INDEX && !!S.bossPlan; }
 
 function renderDashboard() {
   updateHUD();
@@ -889,10 +277,7 @@ async function unlockBoss() {
     `Trả ${cost} Credit để mở Boss (còn lại ${S.credits - cost}). Trả một lần: trượt Boss thì chơi lại không mất thêm.`,
     `Trả ${cost} Credit`, 'Để sau',
     `Lưu ý: thoát giữa Boss (kể cả tải lại trang hoặc đóng tab) sẽ mất ${cost} Credit này và Boss khoá lại.`);
-  if (!ok) return;
-  S.credits -= cost;
-  S.bossUnlocked = true;
-  saveState();
+  if (!ok || !payBossUnlock()) return;
   renderDashboard();
   show('dashboard');
   toast(`Đã mở Boss. Còn ${S.credits} Credit.`);
@@ -903,12 +288,7 @@ async function unlockBoss() {
 function startRun() {
   if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_220.json hợp lệ trước khi bắt đầu.'); return; }
   if (S.started && !S.finished && !confirm('Bắt đầu lượt mới sẽ xoá lượt đang chơi. Tiếp tục?')) return;
-  const runNo = Number(store.get(CONFIG.runCounterKey) || 0) + 1;
-  store.set(CONFIG.runCounterKey, String(runNo));
-  S = freshState();
-  S.started = true;
-  S.runNo = runNo;
-  saveState();
+  newRun();
   renderDashboard();
   show('dashboard');
   TUT.onStartRun();   // thẻ intro_1–3 (chỉ hiện lần đầu)
@@ -917,22 +297,13 @@ function startRun() {
 function startArena() {
   if (!S.started || S.finished) return;
   if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_220.json hợp lệ ở màn hình đầu.'); return; }
-  const arena = ARENAS[S.stage];
+  const arena = currentArena();
   if (arena.id === 'boss' && !S.bossUnlocked) { unlockBoss(); return; }
   // Thẻ trước round: hiện trước khi sinh đề, đồng hồ chưa chạy. Bấm "Vào Arena" thì hàm này chạy lại.
   if (TUT.gateBefore(arena.id, startArena)) return;
-  // Boss không hỏi lại câu đã ra ở World Quest (luật 12)
-  const ctx = makeDrawContext(arena.id === 'boss' ? S.questUsedIds : []);
-  const qs = buildArena(arena.id, ctx);
-  if (qs.length !== arena.size) {
-    notice('Không sinh được đề', `${arena.name} cần ${arena.size} câu nhưng chỉ bốc được ${qs.length}. Chi tiết: ${ctx.log.join('; ')}`);
-    return;
-  }
-  if (arena.id === 'arena1') {
-    const pts = qs.reduce((s, q) => s + DIFFICULTY_POINTS[q.difficulty], 0);
-    if (pts !== 30) ctx.log.push(`Kiểm tra tự động: tổng điểm độ khó Arena 1 = ${pts}, phải bằng 30`);
-  }
-  beginPlay(arena, S.attempts[arena.id].length + 1, qs, ctx);
+  const p = prepareArena();
+  if (p.error) { notice('Không sinh được đề', p.error); return; }
+  beginPlay(p.arena, p.attempt, p.qs, p.ctx);
 }
 
 // World Quest: mở sau khi đỗ Arena 4, chơi bao nhiêu lần cũng được
@@ -940,35 +311,16 @@ function startQuest() {
   if (!questOpen()) return;
   if (!BANK_OK) { notice('Chưa có ngân hàng câu hỏi', 'Hãy nạp ethics_bank_220.json hợp lệ ở màn hình đầu.'); return; }
   if (TUT.gateBefore('quest', startQuest)) return;   // thẻ pre_quest_a, pre_quest_b
-  const ctx = makeDrawContext();
-  const qs = buildQuest(ctx);
-  const size = CONFIG.questPerCluster * S.bossPlan.length;
-  if (qs.length !== size) {
-    notice('Không sinh được đề', `${QUEST.name} cần ${size} câu nhưng chỉ bốc được ${qs.length}.`);
-    return;
-  }
-  beginPlay(QUEST, S.questRuns.length + 1, qs, ctx);
+  const p = prepareQuest();
+  if (p.error) { notice('Không sinh được đề', p.error); return; }
+  beginPlay(p.arena, p.attempt, p.qs, p.ctx);
 }
 
 function beginPlay(arena, attempt, qs, ctx) {
   ctx.log.forEach(t => console.warn('[CFA Quest]', t));
-  RUN = {
-    arena,
-    attempt,
-    qs, ctx,
-    qi: 0,
-    answers: [],
-    itemUsedInArena: null,
-    itemOnQuestion: null,
-    selected: null,
-    eliminated: null,
-    locked: false,
-    shownAt: 0,
-    limit: timeLimitFor(arena.id),
-    timerId: null,
-    waitNotice: false
-  };
-  saveInProgress();
+  beginRun(arena, attempt, qs, ctx);
+  // Trường riêng của giao diện: mốc giờ câu hiện, id đồng hồ, chờ đóng thông báo
+  Object.assign(RUN, { shownAt: 0, timerId: null, waitNotice: false });
   renderQuestion();
   show('quiz');
   updateHUD();
@@ -977,17 +329,6 @@ function beginPlay(arena, attempt, qs, ctx) {
     notice('Thông báo về câu hỏi', ctx.notices.join('\n'));
   }
   TUT.onBeginPlay(arena);   // toast quiz_bua, không chặn
-}
-
-// Lưu tóm tắt lượt đang làm. Nếu người chơi tải lại trang hoặc đóng tab giữa chừng,
-// lần mở sau áp đúng luật thoát (phạt giờ ở Arena 3/4, khoá Boss) thay vì bỏ qua.
-function saveInProgress() {
-  if (!RUN) return;
-  store.set(CONFIG.inProgressKey, JSON.stringify({
-    arena: RUN.arena.id,
-    penalty: sumPenalty(RUN.answers),
-    shown: RUN.qs.slice(0, RUN.qi + 1).map(q => q.id)
-  }));
 }
 
 // ---------- Đồng hồ mỗi câu (Arena 3, 4, Boss) ----------
@@ -1019,11 +360,7 @@ function stopTimer() {
 }
 
 function renderQuestion() {
-  const q = RUN.qs[RUN.qi];
-  RUN.selected = null;
-  RUN.eliminated = null;
-  RUN.itemOnQuestion = null;
-  RUN.locked = false;
+  const q = beginQuestion();
   $('quizArena').textContent = RUN.attempt > 1 ? `${RUN.arena.name} · ${RUN.arena.isQuest ? 'lần' : 'lượt'} ${RUN.attempt}` : RUN.arena.name;
   $('quizCount').textContent = `${RUN.qi + 1} / ${RUN.qs.length}`;
   $('progress').style.width = (RUN.qi / RUN.qs.length * 100) + '%';
@@ -1070,19 +407,8 @@ function confirmAnswer() {
   }
   const q = RUN.qs[RUN.qi];
   const timeMs = Math.round(performance.now() - RUN.shownAt);
-  const correct = RUN.selected === q.answer;
-  const overSec = overtimeSec(timeMs, RUN.arena.id);
-  RUN.answers.push({
-    arena: RUN.arena.id, attempt: RUN.attempt, qid: q.id,
-    cluster: q.cluster, module: q.module, difficulty: q.difficulty,
-    choice: RUN.selected, answer: q.answer, correct,
-    item: RUN.itemOnQuestion, timeMs, reused: !!q.reused,
-    order: q.reused ? q.order : null,
-    overSec, penalty: penaltyFor(overSec)              // v12: phạt quá giờ của câu này
-  });
-  RUN.locked = true;
+  const { correct } = recordAnswer(RUN.selected, timeMs);   // ghi câu trả lời, khoá câu
   stopTimer();
-  saveInProgress();
   if (CONFIG.showFeedbackImmediately && RUN.arena.id !== 'arena1') {
     const bs = [...$('qOptions').children];
     bs.forEach(b => { b.disabled = true; });
@@ -1098,8 +424,7 @@ function confirmAnswer() {
 }
 
 function nextQuestion() {
-  RUN.qi++;
-  if (RUN.qi >= RUN.qs.length) finishArena();
+  if (advanceQuestion()) finishArena();
   else renderQuestion();
 }
 
@@ -1119,21 +444,19 @@ function renderItemBox() {
 }
 
 function useItem(id) {
-  if (!RUN || RUN.locked || !RUN.arena.itemsAllowed) return;
-  if (RUN.itemOnQuestion) { notice('Không dùng thêm được', 'Mỗi câu tối đa 1 vật phẩm.'); return; }
-  if (RUN.itemUsedInArena) { notice('Không dùng thêm được', 'Mỗi arena sử dụng tối đa 1 vật phẩm.'); return; }
-  if (!S.inventory[id]) { toast('Bạn chưa có vật phẩm này.'); return; }
-  const q = RUN.qs[RUN.qi];
-  S.inventory[id]--;
-  RUN.itemUsedInArena = id;
-  RUN.itemOnQuestion = id;
+  const r = applyItem(id);
+  if (!r.ok) {
+    if (r.reason === 'perQuestion') notice('Không dùng thêm được', 'Mỗi câu tối đa 1 vật phẩm.');
+    else if (r.reason === 'perArena') notice('Không dùng thêm được', 'Mỗi arena sử dụng tối đa 1 vật phẩm.');
+    else if (r.reason === 'notOwned') toast('Bạn chưa có vật phẩm này.');
+    return;
+  }
   if (id === 'eliminate') {
-    const drop = shuffle([0, 1, 2].filter(i => i !== q.answer))[0];   // chỉ loại 1 phương án sai
-    RUN.eliminated = drop;
-    const b = $('qOptions').children[drop];
+    // Engine đã bỏ chọn nếu phương án đang chọn bị loại
+    const b = $('qOptions').children[r.eliminated];
     b.disabled = true;
     b.classList.add('eliminated');
-    if (RUN.selected === drop) { RUN.selected = null; b.classList.remove('selected'); }
+    b.classList.remove('selected');
     toast('Đã dùng Bùa Loại Trừ.');
   }
   renderItemBox();
@@ -1152,40 +475,12 @@ function exitWarning(id, penalty) {
   return base + ' Thoát?';
 }
 
-// Áp hậu quả của việc thoát. S lúc này đã được đọc lại từ bản lưu trước khi vào Arena.
-function applyQuit(info) {
-  const id = info.arena;
-  let msg = '';
-  if (timeLimitFor(id) && id !== 'boss' && info.penalty > 0) {
-    const before = S.credits;
-    S.credits = Math.max(0, S.credits - info.penalty);
-    msg = `Bị trừ ${before - S.credits} Credit tiền phạt quá giờ.`;
-  }
-  if (id === 'boss') {
-    S.bossUnlocked = false;
-    S.usedIds = [...new Set([...S.usedIds, ...(info.shown || [])])];
-    msg = `Boss đã khoá lại. ${CONFIG.bossUnlockCost} Credit đã trả không được hoàn.`;
-  }
-  if (id !== 'quest') {
-    S.quits = S.quits || [];
-    S.quits.push({ arena: id, penalty: id === 'boss' ? 0 : (info.penalty || 0), at: new Date().toISOString() });
-  }
-  saveState();
-  return msg;
-}
-
 async function exitArena() {
   if (!RUN) return;
-  const id = RUN.arena.id;
-  const penalty = sumPenalty(RUN.answers);
-  const ok = await ask('Thoát giữa chừng?', exitWarning(id, penalty), 'Thoát', 'Ở lại làm tiếp');
+  const ok = await ask('Thoát giữa chừng?', exitWarning(RUN.arena.id, runPenalty()), 'Thoát', 'Ở lại làm tiếp');
   if (!ok || !RUN) return;
-  const shown = RUN.qs.slice(0, RUN.qi + 1).map(q => q.id);
   stopTimer();
-  RUN = null;
-  S = loadState().state;
-  store.del(CONFIG.inProgressKey);
-  const msg = applyQuit({ arena: id, penalty, shown });
+  const msg = abandonRun();   // huỷ lượt, đọc lại bản lưu, áp luật thoát
   renderDashboard();
   show('dashboard');
   if (msg) toast(msg);
@@ -1193,73 +488,9 @@ async function exitArena() {
 
 function finishArena() {
   stopTimer();
-  if (RUN.arena.isQuest) { finishQuest(); return; }
-  const { arena, attempt, answers, ctx, qs } = RUN;
-  const correct = answers.filter(a => a.correct).length;   // công thức (2): tính cả câu dùng vật phẩm
-  const total = answers.length;
-  const ok = passed(correct, total, arena.id);
-  const credit = ok ? creditFor(correct, total) : 0;
-  let bossBonus = 0;
-  if (arena.id === 'boss' && ok && !S.bossClearedOnce) { bossBonus = CONFIG.bossFirstClearBonus; S.bossClearedOnce = true; }
-  // v12: thưởng − phạt quá giờ, ví không âm. Trượt round vẫn bị phạt (luật 2, 3).
-  const penalty = sumPenalty(answers);
-  const before = S.credits;
-  S.credits = Math.max(0, S.credits + credit + bossBonus - penalty);
-  const net = S.credits - before;
-  const overCount = answers.filter(a => a.penalty > 0).length;
-  S.records.push(...answers);
-  S.usedIds = [...new Set([...S.usedIds, ...qs.map(q => q.id)])];
-  S.attempts[arena.id].push({ attempt, correct, total, passed: ok, credit, bossBonus, penalty, net, itemUsed: RUN.itemUsedInArena, at: new Date().toISOString() });
-  S.bankLog.push(...ctx.log.map(text => ({ arena: arena.id, attempt, text })));
-  if (!ok) S.hadFailure = true;
-
-  if (ok) {
-    if (arena.id === 'arena1') {
-      const r = rankClusters(diagnosticRecords());
-      S.w1 = r[0].cluster;
-      S.w1Why = explainPick(r, 'W1');
-    }
-    if (arena.id === 'crossroads') {
-      const r = rankClusters(diagnosticRecords(), [S.w1]);   // W2 khác W1
-      S.w2 = r[0].cluster;
-      S.w2Why = explainPick(r, 'W2');
-    }
-    if (arena.id === 'trap2') {
-      const r = rankClusters(diagnosticRecords());           // Boss không loại trừ cụm nào
-      S.bossPlan = r.slice(0, 3).map((s, i) => ({ cluster: s.cluster, count: BOSS_SPLIT[i] }));
-      S.bossWhy = r.slice(0, 3).map((s, i) => `${s.cluster} ${BOSS_SPLIT[i]} câu (${statText(s)})`).join('; ') + '. ' + explainPick(r, 'Cụm yếu nhất');
-    }
-    if (arena.id === 'boss') S.finished = true;
-    S.stage++;
-  }
-  S.accuracy_by_arena = buildAccuracyByArena();
-  S.performance_by_arena = buildPerformanceByArena();
-  saveState();
-  store.del(CONFIG.inProgressKey);
-
-  LAST = { arena, attempt, correct, total, passed: ok, credit, bossBonus, penalty, net, overCount, qs, answers, notices: ctx.notices, log: ctx.log };
-  RUN = null;
-  renderResult();
-  show('result');
-  updateHUD();
-}
-
-// World Quest: chỉ cộng Credit theo bậc, không ngưỡng đỗ, không vào dữ liệu chẩn đoán (luật 11, 14)
-function finishQuest() {
-  const { attempt, answers, ctx, qs } = RUN;
-  const correct = answers.filter(a => a.correct).length;
-  const total = answers.length;
-  const credit = questCredit(correct, total);
-  S.credits += credit;
-  S.questRecords.push(...answers);
-  S.questUsedIds = [...new Set([...S.questUsedIds, ...qs.map(q => q.id)])];
-  S.questRuns.push({ n: attempt, correct, total, credit, at: new Date().toISOString() });
-  S.bankLog.push(...ctx.log.map(text => ({ arena: 'quest', attempt, text })));
-  saveState();
-  store.del(CONFIG.inProgressKey);
-  LAST = { arena: QUEST, attempt, correct, total, passed: true, credit, bossBonus: 0, penalty: 0, net: credit, overCount: 0, qs, answers, notices: ctx.notices, log: ctx.log };
-  RUN = null;
-  renderQuestResult();
+  const L = finishRun();   // chấm round, cộng trừ Credit, chọn cụm yếu, lưu
+  if (L.arena.isQuest) renderQuestResult();
+  else renderResult();
   show('result');
   updateHUD();
 }
@@ -1489,10 +720,7 @@ function renderShop() {
       <button type="button" class="primary-btn" ${lack > 0 ? 'disabled' : ''}>Mua</button>
       ${lack > 0 ? `<p class="lack">Còn thiếu ${lack} Credit</p>` : ''}`;
     d.querySelector('button').addEventListener('click', () => {
-      if (S.credits < it.cost) return;
-      S.credits -= it.cost;
-      S.inventory[id]++;
-      saveState();
+      if (!buyItem(id)) return;
       renderShop();
       updateHUD();
       toast(`Đã mua ${it.name}.`);
@@ -1526,7 +754,7 @@ function openReport() {
 
 function renderReport() {
   // Dựng lại để tiến trình lưu từ bản trước 14/10/2026 cũng hiện đúng luật mới
-  S.accuracy_by_arena = buildAccuracyByArena();
+  refreshAccuracy();
   const abya = S.accuracy_by_arena;
   const perf = S.performance_by_arena;
   let earned = 0, offered = 0;
@@ -1621,26 +849,54 @@ function renderReport() {
 
 
 /* ---------- 14. Khởi động ---------- */
+// Nạp ngân hàng vào engine và hiện dòng trạng thái ở màn đầu. Trả về true nếu hợp lệ.
+function applyBank(raw) {
+  const r = loadBankData(raw);
+  const el = $('bankStatus');
+  if (el) {
+    if (r.ok) {
+      el.textContent = `Ngân hàng hợp lệ: ${r.count} câu, 5 cụm, 9 module.` + (r.warnings.length ? ` Lưu ý: ${r.warnings.join('; ')}.` : '');
+      el.className = 'status ok';
+    } else {
+      el.textContent = `Ngân hàng chưa hợp lệ: ${r.errors.slice(0, 3).join('; ')}${r.errors.length > 3 ? '…' : ''}`;
+      el.className = 'status error';
+    }
+  }
+  return r.ok;
+}
+
+async function loadBank() {
+  try {
+    const r = await fetch('../data/ethics_bank_220.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    applyBank(await r.json());
+  } catch {
+    // Mở bằng file:// thì trình duyệt chặn fetch, dùng bản nhúng.
+    if (Array.isArray(window.CFA_EMBEDDED_BANK) && window.CFA_EMBEDDED_BANK.length) {
+      applyBank(window.CFA_EMBEDDED_BANK);
+    } else {
+      const el = $('bankStatus');
+      el.textContent = 'Chưa nạp được ethics_bank_220.json. Dùng nút nạp file bên dưới hoặc chạy bằng local server.';
+      el.className = 'status error';
+    }
+  }
+}
+
 function resetRun() {
   if (RUN && !confirm('Đang làm dở một Arena. Reset sẽ xoá toàn bộ lượt chơi. Tiếp tục?')) return;
   if (!RUN && !confirm('Reset sẽ xoá toàn bộ dữ liệu lượt chơi hiện tại. Tiếp tục?')) return;
-  store.del(CONFIG.storageKey);
-  store.del(CONFIG.inProgressKey);
-  S = freshState();
-  RUN = null;
-  LAST = null;
+  wipeAll();
   updateHUD();
   show('home');
   toast('Đã xoá lượt chơi.');
 }
 
 function init() {
-  const loaded = loadState();
-  S = loaded.state;
+  const problem = restoreState();
 
   $('startBtn').addEventListener('click', startRun);
   $('resetBtn').addEventListener('click', resetRun);
-  $('newRunBtn').addEventListener('click', () => { store.del(CONFIG.storageKey); S = freshState(); startRun(); });
+  $('newRunBtn').addEventListener('click', () => { discardSave(); startRun(); });
   $('shopBtn').addEventListener('click', () => openShop('dashboard'));
   $('shopBack').addEventListener('click', closeShop);
   $('reportBack').addEventListener('click', () => { renderDashboard(); show('dashboard'); });
@@ -1674,21 +930,17 @@ function init() {
   loadBank().then(() => {
     if (S.started) { renderDashboard(); show('dashboard'); } else show('home');
     const messages = [];
-    const leftover = store.get(CONFIG.inProgressKey);
-    if (leftover) {
-      store.del(CONFIG.inProgressKey);
-      let info;
-      try { info = JSON.parse(leftover); } catch { info = { arena: leftover, penalty: 0, shown: [] }; }
-      const name = info.arena === 'quest' ? QUEST.name : (ARENAS[ARENA_INDEX[info.arena]]?.name ?? 'Arena');
-      // Tải lại trang giữa chừng được tính như thoát: áp đúng luật thoát của v12
-      const extra = S.started ? applyQuit(info) : '';
+    // Tải lại trang giữa chừng được tính như thoát: engine áp đúng luật thoát của v12
+    const left = takeLeftoverRun();
+    if (left) {
+      const { name, extra } = left;
       messages.push(`Lần trước bạn rời ${name} khi chưa làm xong. Lượt đó không được lưu, hãy vào lại để làm từ đầu.${extra ? ' ' + extra : ''}`);
       if (S.started) renderDashboard();
     }
-    if (loaded.problem === 'corrupt') {
+    if (problem === 'corrupt') {
       messages.push('Dữ liệu tiến trình lưu trên trình duyệt bị lỗi hoặc không còn. Hệ thống đã khởi tạo tiến trình rỗng, hãy bắt đầu lại.');
     }
-    if (messages.length) notice(loaded.problem === 'corrupt' ? 'Không đọc được tiến trình' : 'Lượt làm dở đã bị huỷ', messages.join('\n\n'));
+    if (messages.length) notice(problem === 'corrupt' ? 'Không đọc được tiến trình' : 'Lượt làm dở đã bị huỷ', messages.join('\n\n'));
   });
 }
 
@@ -1697,7 +949,7 @@ window.CFAQ = {
   get state() { return S; },
   get current() { return RUN ? RUN.qs[RUN.qi] : null; },
   ranking: () => rankClusters(diagnosticRecords()),
-  setSeed: n => { rng = mulberry32(n); return `Đã cố định seed = ${n}`; },
+  setSeed: n => { setSeed(n); return `Đã cố định seed = ${n}`; },
   config: CONFIG
 };
 
