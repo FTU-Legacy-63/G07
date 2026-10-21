@@ -20,6 +20,10 @@
    - Số liệu trên thẻ đọc từ CONFIG, không gõ tay.
 
    Muốn sửa chữ trên thẻ: sửa trong CARDS bên dưới, giữ nguyên ID.
+
+   Thêm 21/10/2026 cho lớp game hành động (SOLUTION_STRUCTURE Mục 15): thẻ game_move (trước
+   Arena 1), boss_dodge và boss_white (trước Boss), toast game_coin (lần đầu rơi xu).
+   Số liệu đọc từ GAME_CONFIG và CONFIG, không gõ tay.
    ============================================================================= */
 
 const TUT = (() => {
@@ -88,6 +92,24 @@ const TUT = (() => {
     intro_3: {
       title: 'Credit',
       body: () => `<p>Bạn có ${CONFIG.startCredits} Credit khởi đầu. Credit dùng để mua Bùa và mở Boss. Credit không bao giờ xuống dưới 0.</p>`
+    },
+
+    game_move: {
+      title: 'Đánh quái để mở câu hỏi',
+      body: () => `<p><span class="tut-keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span> để di chuyển. Quái tự đuổi theo bạn; vào tầm thì nhân vật tự chém và câu hỏi hiện ra.</p>
+        <p>Khi câu hỏi hiện, cả khung cảnh đứng yên. Trả lời xong, quái biến mất và trận đánh chạy tiếp. Quái biến mất giống nhau dù bạn trả lời đúng hay sai.</p>
+        <p>Số quái bằng số câu của màn. Đánh hết quái là làm xong màn; Credit thưởng rơi ra thành đồng xu.</p>`
+    },
+    boss_dodge: {
+      title: 'Né đạn Boss',
+      body: () => `<p>Boss đứng yên và bắn đạn thành ${GAME_CONFIG.boss.pattern.rays} cánh xoắn. Trước mỗi đợt bắn, Boss sáng lên và hiện ${GAME_CONFIG.boss.pattern.rays} vạch mờ; <b>vạch đầu tiên chĩa vào bạn</b>.</p>
+        <p>Thấy vạch chĩa vào mình thì bước sang khe giữa hai vạch rồi mới tiến vào. Vào tầm là tự chém, mỗi lần chém mở 1 câu. Trả lời xong, Boss hất bạn ra xa rồi báo hiệu đợt bắn mới.</p>
+        <p>Thanh máu Boss có ${sizeOf('boss')} nấc, giảm 1 nấc mỗi lần chém, dù bạn trả lời đúng hay sai.</p>`
+    },
+    boss_white: {
+      title: '2 tim và lượt trắng',
+      body: () => `<p>Mỗi lượt Boss bạn có ${GAME_CONFIG.boss.hearts} tim. Trúng đạn mất 1 tim. Mất hết tim là <b>lượt trắng</b>: câu trả lời của lượt đó không được tính, Boss vẫn mở, không mất Credit mở khoá. Bùa đã dùng không được hoàn, phạt quá giờ vẫn trừ.</p>
+        <p>Mỗi lần mở Boss có ${CONFIG.bossWhiteRuns} lượt trắng. <b>Mất hết tim lần thứ ${CONFIG.bossWhiteRuns + 1} tính là thoát Boss</b>: mất ${bossCost()} Credit và Boss khoá lại.</p>`
     },
 
     pre_arena1: {
@@ -218,17 +240,18 @@ const TUT = (() => {
   // Toast trong màn câu hỏi (không chặn)
   const TOASTS = {
     quiz_bua: () => 'Bấm Bùa ở cột bên phải để loại 1 phương án sai của câu này.',
-    quiz_quagio: penalty => `Câu này đang quá giờ, hiện bị tính −${penalty} Credit. Tiền phạt trừ khi bạn làm xong round.`
+    quiz_quagio: penalty => `Câu này đang quá giờ, hiện bị tính −${penalty} Credit. Tiền phạt trừ khi bạn làm xong round.`,
+    game_coin: n => `Đã cộng ${n} Credit vào ví. Đồng xu chỉ là hình ảnh: chạy tới nhặt hoặc chờ vài giây xu tự bay về.`
   };
 
   // Thẻ trước round, theo mã nội bộ của round
   const BEFORE = {
-    arena1: ['pre_arena1'],
+    arena1: ['game_move', 'pre_arena1'],
     trap1: ['pre_arena2'],
     crossroads: ['pre_arena3_a', 'pre_arena3_b', 'pre_arena3_c'],
     trap2: ['pre_arena4'],
-    boss: ['pre_boss_a', 'pre_boss_b'],
-    quest: ['pre_quest_a', 'pre_quest_b']
+    boss: ['pre_boss_a', 'pre_boss_b', 'boss_dodge', 'boss_white'],
+    quest: ['game_move', 'pre_quest_a', 'pre_quest_b']
   };
   const GO_LABEL = { quest: 'Vào Quest', boss: 'Vào Boss' };
 
@@ -456,6 +479,9 @@ const TUT = (() => {
   // Trong renderTimer(), khi câu đang quá giờ
   function onOvertime(penalty) { toastOnce('quiz_quagio', penalty); }
 
+  // Lớp game: lần đầu rơi đồng xu
+  function onCoins(n) { if (n > 0) toastOnce('game_coin', n); }
+
   /* ---------- 6. Bảng Luật chơi (luôn mở được, trừ khi đang làm câu có đồng hồ) ---------- */
   const ROUNDS = ['arena1', 'trap1', 'crossroads', 'trap2', 'boss', 'quest'];
   const roundName = id => (id === 'quest' ? QUEST.name : NAME(id).replace(' · The Gate', ''));
@@ -468,7 +494,7 @@ const TUT = (() => {
   }
   function quitText(id) {
     if (id === 'quest') return 'Huỷ, không nhận Credit';
-    if (id === 'boss') return `Mất ${CONFIG.bossUnlockCost} Credit, Boss khoá lại, hoàn Bùa`;
+    if (id === 'boss') return `Mất ${CONFIG.bossUnlockCost} Credit, Boss khoá lại, hoàn Bùa (mất hết tim lần thứ ${CONFIG.bossWhiteRuns + 1} cũng vậy)`;
     const arena = arenaOf(id);
     return 'Huỷ lượt' + (arena.itemsAllowed ? ', hoàn Bùa' : '') + (timeLimitFor(id) ? ', vẫn trừ phạt' : '');
   }
@@ -499,6 +525,8 @@ const TUT = (() => {
         <li>Quá giờ: mỗi ${step()} giây trừ 1 Credit. Credit không xuống dưới 0.</li>
         <li>Bảng chẩn đoán tính lần làm đầu tiên của Arena 1–4. Cột Boss ở Bảng tổng kết tính lượt đỗ Boss.</li>
         <li>Game chỉ báo đúng/sai sau khi làm xong cả round.</li>
+        <li>Điều khiển: W, A, S, D. Quái vào tầm thì tự chém, câu hỏi hiện ra và khung cảnh đứng yên; đồng hồ câu vẫn chạy.</li>
+        <li>Boss: ${GAME_CONFIG.boss.hearts} tim mỗi lượt. Mất hết tim là lượt trắng (không tính điểm, Boss vẫn mở); mỗi lần mở Boss có ${CONFIG.bossWhiteRuns} lượt trắng.</li>
       </ul>`;
   }
 
@@ -533,7 +561,7 @@ const TUT = (() => {
   }
 
   return {
-    init, onStartRun, gateBefore, onResult, onShop, onReport, onBeginPlay, onOvertime, syncRulesButton,
+    init, onStartRun, gateBefore, onResult, onShop, onReport, onBeginPlay, onOvertime, onCoins, syncRulesButton,
     // Bảng tutorial hoặc bảng Luật chơi đang mở: phím tắt A/B/C/Enter của màn câu hỏi phải tắt
     isOpen: () => open || !$('rulesOverlay').classList.contains('hidden'),
     // Cho nhóm kiểm thử trong Console: TUT.debug.seen(), TUT.debug.reset()
