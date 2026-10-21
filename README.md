@@ -279,7 +279,7 @@ PROJECT PROPOSAL.md
 MIDTERM_VERIFICATION.md
 
 data/
-  ethics_bank_220.json         ngân hàng 220 câu, 34 câu × 5 cụm
+  ethics_bank_220.json         ngân hàng 220 câu, 44 câu × 5 cụm
 
 src/
   cfa_quest_v11.html           file mở để chạy sản phẩm
