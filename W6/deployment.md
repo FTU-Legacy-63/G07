@@ -8,8 +8,9 @@
 ## 2. Chạy offline 
 
 1. Vào repo G07 → nút **Code** → **Download ZIP**
-2. Giải nén, mở thư mục `src/`. Thư mục phải có đủ **8 file**: file HTML và 7 file nó nạp qua các thẻ `<link>`, `<script>`:
+2. Giải nén, mở thư mục `src/`. Thư mục phải có đủ **9 file**: file HTML và 8 file nó nạp qua các thẻ `<link>`, `<script>`:
    - `cfa_quest_v11.html`
+   - `cfa_quest_engine.js`
    - `cfa_quest_v11.js`
    - `cfa_quest_v11_bank.js`
    - `cfa_quest_tutorial.js`
