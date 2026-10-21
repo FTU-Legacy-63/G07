@@ -36,6 +36,7 @@ const CONFIG = {
   timeLimitSec: { crossroads: 100, trap2: 80, boss: 60 },
   penaltyStepSec: 10,            // mỗi 10 giây quá giờ (làm tròn lên) trừ 1 Credit
   bossUnlockCost: 15,            // trả 1 lần để mở Boss
+  bossWhiteRuns: 2,              // Mục 15.4: mỗi lần mở Boss có 2 lượt trắng
   questPerCluster: 5,            // World Quest: 5 câu x 3 cụm yếu nhất
   questTiers: [                  // World Quest không có ngưỡng đỗ, chỉ thưởng theo bậc
     { minPercent: 90, credit: 4 },
@@ -224,6 +225,7 @@ function freshState() {
     bossClearedOnce: false,
     // v12
     bossUnlocked: false,                        // đã trả 15 Credit mở Boss
+    bossWhiteLeft: null,                        // Mục 15.4: lượt trắng còn lại của lần mở khoá này (null = bản lưu cũ)
     questUsedIds: [],                           // câu đã ra ở World Quest: Boss không hỏi lại
     questRecords: [],                           // câu trả lời ở Quest, tách khỏi records (không vào chẩn đoán)
     questRuns: [],                              // { n, correct, total, credit, at }
@@ -587,10 +589,19 @@ function buildAccuracyByArena() {
 }
 
 // performance_by_arena[arena] = { points_earned, points_offered } — Mục 5, công thức (3)
-// Giữ theo lượt làm đầu tiên ở cả 5 Arena, kể cả Boss (chốt 14/10/2026)
+// Giữ theo lượt làm đầu tiên ở cả 5 Arena, kể cả Boss (chốt 14/10/2026).
+// Mục 15.4: lượt trắng và lượt thoát vẫn tăng số lượt nhưng không có bản ghi trong S.records,
+// nên "lượt đầu tiên" là lượt có số nhỏ nhất trong các lượt đã làm đủ câu (đỗ hoặc trượt).
+// Arena 1–4 không có lượt trắng, lượt đó luôn là lượt 1 như trước.
+function firstFinishedAttempt() {
+  const first = {};
+  S.records.forEach(r => { if (!(r.arena in first) || r.attempt < first[r.arena]) first[r.arena] = r.attempt; });
+  return first;
+}
 function buildPerformanceByArena() {
   const out = {};
-  S.records.filter(r => r.attempt === 1).forEach(r => {
+  const first = firstFinishedAttempt();
+  S.records.filter(r => r.attempt === first[r.arena]).forEach(r => {
     const p = (out[r.arena] ??= { points_earned: 0, points_offered: 0 });
     const pts = DIFFICULTY_POINTS[r.difficulty];
     p.points_offered += pts;
@@ -691,6 +702,26 @@ function prepareQuest() {
   return { arena: QUEST, attempt: S.questRuns.length + 1, qs, ctx };
 }
 
+// Chế độ demo (Mục 15.6): đề cố định theo danh sách mã câu của kịch bản, đúng thứ tự kịch bản.
+// Không bốc ngẫu nhiên, không xáo phương án (để chữ A/B/C khớp kịch bản). Câu đã gặp vẫn được
+// đánh dấu reused để bảng tổng kết loại khỏi cột Boss như bình thường.
+function prepareFixed(ids, isQuest = false) {
+  const arena = isQuest ? QUEST : currentArena();
+  const ctx = makeDrawContext();
+  const byId = new Map(BANK.map(q => [q.id, q]));
+  const missing = ids.filter(id => !byId.has(id));
+  if (missing.length) return { error: `Kịch bản có mã câu không có trong ngân hàng: ${missing.join(', ')}` };
+  const qs = ids.map(id => {
+    ctx.taken.add(id);
+    const q = byId.get(id);
+    return ctx.used.has(id) ? { ...q, order: [0, 1, 2], reused: true } : { ...q, reused: false };
+  });
+  const size = isQuest ? CONFIG.questPerCluster * (S.bossPlan || []).length : arena.size;
+  if (qs.length !== size) return { error: `${arena.name} cần ${size} câu nhưng kịch bản có ${qs.length} câu.` };
+  const attempt = isQuest ? S.questRuns.length + 1 : S.attempts[arena.id].length + 1;
+  return { arena, attempt, qs, ctx };
+}
+
 // Vào Arena (hoặc World Quest) với đề đã sinh. RUN không bao giờ lưu nguyên (Mục 7);
 // chỉ lưu tóm tắt vào inProgressKey để lần mở sau áp luật thoát nếu người chơi tải lại trang.
 // Lớp giao diện được gắn thêm trường của riêng nó vào RUN (mốc giờ, id đồng hồ).
@@ -706,6 +737,7 @@ function beginRun(arena, attempt, qs, ctx) {
     selected: null,       // phương án đang chọn, chưa xác nhận
     eliminated: null,     // phương án Bùa đã loại ở câu đang làm
     locked: false,        // câu đang làm đã xác nhận
+    shown: 0,             // số câu đã hiện lên màn hình (lớp game chỉ mở câu khi chém trúng)
     limit: timeLimitFor(arena.id)
   };
   saveInProgress();
@@ -719,8 +751,16 @@ function saveInProgress() {
   store.set(CONFIG.inProgressKey, JSON.stringify({
     arena: RUN.arena.id,
     penalty: sumPenalty(RUN.answers),
-    shown: RUN.qs.slice(0, RUN.qi + 1).map(q => q.id)
+    shown: shownIds()
   }));
+}
+
+// Mã các câu đã hiện trong Arena đang làm. Giao diện cũ hiện câu ngay khi vào câu (qi + 1 câu);
+// lớp game chỉ hiện câu khi chém trúng quái, nên đếm theo RUN.shown do beginQuestion() ghi.
+function shownIds() {
+  if (!RUN) return [];
+  const n = Number.isInteger(RUN.shown) ? RUN.shown : RUN.qi + 1;
+  return RUN.qs.slice(0, n).map(q => q.id);
 }
 
 // Mở câu RUN.qi: xoá lựa chọn, Bùa và khoá của câu trước. Trả về câu hỏi.
@@ -729,6 +769,7 @@ function beginQuestion() {
   RUN.eliminated = null;
   RUN.itemOnQuestion = null;
   RUN.locked = false;
+  RUN.shown = Math.max(RUN.shown || 0, RUN.qi + 1);
   return RUN.qs[RUN.qi];
 }
 
@@ -790,7 +831,7 @@ function abandonRun() {
   if (!RUN) return '';
   const id = RUN.arena.id;
   const penalty = sumPenalty(RUN.answers);
-  const shown = RUN.qs.slice(0, RUN.qi + 1).map(q => q.id);
+  const shown = shownIds();
   RUN = null;
   S = loadState().state;
   store.del(CONFIG.inProgressKey);
@@ -812,7 +853,10 @@ function applyQuit(info) {
   }
   if (id === 'boss') {
     S.bossUnlocked = false;
+    S.bossWhiteLeft = 0;
     S.usedIds = [...new Set([...S.usedIds, ...(info.shown || [])])];
+    // Mục 15.4: lượt thoát vẫn tăng số lượt Boss, không có điểm, không vào dữ liệu
+    S.attempts.boss.push({ attempt: S.attempts.boss.length + 1, outcome: 'quit', correct: null, total: null, passed: false, credit: 0, bossBonus: 0, penalty: 0, net: 0, itemUsed: null, at: new Date().toISOString() });
     msg = `Boss đã khoá lại. ${CONFIG.bossUnlockCost} Credit đã trả không được hoàn.`;
   }
   if (id !== 'quest') {
@@ -855,7 +899,7 @@ function finishRun() {
   const overCount = answers.filter(a => a.penalty > 0).length;
   S.records.push(...answers);
   S.usedIds = [...new Set([...S.usedIds, ...qs.map(q => q.id)])];
-  S.attempts[arena.id].push({ attempt, correct, total, passed: ok, credit, bossBonus, penalty, net, itemUsed: RUN.itemUsedInArena, at: new Date().toISOString() });
+  S.attempts[arena.id].push({ attempt, outcome: ok ? 'pass' : 'fail', correct, total, passed: ok, credit, bossBonus, penalty, net, itemUsed: RUN.itemUsedInArena, at: new Date().toISOString() });
   S.bankLog.push(...ctx.log.map(text => ({ arena: arena.id, attempt, text })));
   if (!ok) S.hadFailure = true;
 
@@ -883,9 +927,48 @@ function finishRun() {
   saveState();
   store.del(CONFIG.inProgressKey);
 
-  LAST = { arena, attempt, correct, total, passed: ok, credit, bossBonus, penalty, net, overCount, qs, answers, notices: ctx.notices, log: ctx.log };
+  LAST = { arena, attempt, outcome: ok ? 'pass' : 'fail', correct, total, passed: ok, credit, bossBonus, penalty, net, overCount, qs, answers, notices: ctx.notices, log: ctx.log };
   RUN = null;
   return LAST;
+}
+
+// Lượt trắng còn lại của lần mở khoá Boss hiện tại (Mục 15.4). Bản lưu cũ chưa có trường này
+// mà Boss đang mở thì coi như còn đủ 2 lượt.
+function whiteLeft() {
+  if (!S.bossUnlocked) return 0;
+  return Number.isInteger(S.bossWhiteLeft) ? S.bossWhiteLeft : CONFIG.bossWhiteRuns;
+}
+
+// Lớp game gọi khi người chơi mất hết tim ở Boss (Mục 15.4).
+// Còn lượt trắng: outcome 'white' — Boss vẫn mở, lượt trắng giảm 1, câu trả lời trong lượt
+//   không vào diagnostic/O4/performance, câu đã hiện tính là đã gặp, Bùa không hoàn,
+//   phạt quá giờ đã phát sinh vẫn trừ.
+// Hết lượt trắng: outcome 'quit' — áp nguyên luật thoát Boss (abandonRun): Bùa hoàn,
+//   không trừ phạt, mất 15 Credit, Boss khoá lại.
+// Trả về { outcome, msg, last } (last = LAST của lượt trắng, null nếu là thoát).
+function whiteRun() {
+  if (!RUN || RUN.arena.id !== 'boss') return null;
+  if (whiteLeft() <= 0) {
+    const msg = abandonRun();
+    return { outcome: 'quit', msg, last: null };
+  }
+  const { arena, attempt, answers, ctx, qs } = RUN;
+  const correct = answers.filter(a => a.correct).length;
+  const penalty = sumPenalty(answers);
+  const before = S.credits;
+  S.credits = Math.max(0, S.credits - penalty);
+  const net = S.credits - before;
+  const overCount = answers.filter(a => a.penalty > 0).length;
+  S.usedIds = [...new Set([...S.usedIds, ...shownIds()])];
+  S.bossWhiteLeft = whiteLeft() - 1;
+  S.attempts.boss.push({ attempt, outcome: 'white', correct, total: answers.length, passed: false, credit: 0, bossBonus: 0, penalty, net, itemUsed: RUN.itemUsedInArena, at: new Date().toISOString() });
+  S.bankLog.push(...ctx.log.map(text => ({ arena: arena.id, attempt, text })));
+  saveState();
+  store.del(CONFIG.inProgressKey);
+  LAST = { arena, attempt, outcome: 'white', correct, total: answers.length, size: qs.length, passed: false, credit: 0, bossBonus: 0, penalty, net, overCount, whiteLeft: S.bossWhiteLeft, qs: qs.slice(0, answers.length), answers, notices: ctx.notices, log: ctx.log };
+  RUN = null;
+  const msg = `Lượt trắng: lượt Boss này không được tính. Còn ${S.bossWhiteLeft} lượt trắng.` + (penalty ? ` Bị trừ ${before - S.credits} Credit tiền phạt quá giờ.` : '');
+  return { outcome: 'white', msg, last: LAST };
 }
 
 // World Quest: chỉ cộng Credit theo bậc, không ngưỡng đỗ, không vào dữ liệu chẩn đoán (luật 11, 14)
@@ -913,6 +996,7 @@ function payBossUnlock() {
   if (S.credits < CONFIG.bossUnlockCost) return false;
   S.credits -= CONFIG.bossUnlockCost;
   S.bossUnlocked = true;
+  S.bossWhiteLeft = CONFIG.bossWhiteRuns;   // Mục 15.4: mỗi lần mở khoá có 2 lượt trắng mới
   saveState();
   return true;
 }
@@ -930,7 +1014,7 @@ function buyItem(id) {
 
 /* ---------- 6c. Cổng dùng chung cho lớp game và kiểm thử ---------- */
 // Trong trang, các hàm trên đã là biến toàn cục. CFAE gom lại một chỗ để lớp game canvas
-// gọi cho gọn và để Node nạp được file này khi chạy kiểm thử (tests/engine_seed7.test.js).
+// gọi cho gọn và để Node nạp được file này khi chạy kiểm thử (test/engine_seed7.test.js).
 const CFAE = {
   get state() { return S; },
   get run() { return RUN; },
@@ -944,6 +1028,7 @@ const CFAE = {
   currentArena, questOpen, prepareArena, prepareQuest,
   beginRun, beginQuestion, recordAnswer, advanceQuestion, applyItem, runPenalty,
   abandonRun, takeLeftoverRun, finishRun, payBossUnlock, buyItem, refreshAccuracy,
+  whiteRun, whiteLeft, shownIds, prepareFixed,
   // Đọc số liệu: màn kết quả, bảng tổng kết, lớp game
   rankClusters, diagnosticRecords, reportRecords, clusterStats, moduleStats, conclude, explainPick,
   passPercentFor, needToPass, timeLimitFor, overtimeSec, penaltyFor, creditFor, questCredit,
