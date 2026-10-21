@@ -1,6 +1,6 @@
 # Limitations — CFA Quest Week 7
 
-Tài liệu này cập nhật theo thiết kế Week 7 trong `SOLUTION_STRUCTURE.md`, `INPUT_DICTIONARY.md`, `user-flow.md`, `feature-scope.md` và ngân hàng 170 câu hiện tại.
+Tài liệu này cập nhật theo thiết kế Week 7 trong `SOLUTION_STRUCTURE.md`, `INPUT_DICTIONARY.md`, `user-flow.md`, `feature-scope.md` và ngân hàng 220 câu hiện tại.
 
 Mỗi limitation đều kèm **Impact** để dùng trực tiếp trong README/final report.
 
@@ -14,12 +14,12 @@ Engine ưu tiên câu chưa xuất hiện trong lượt chơi. Khi pool câu ph�
 
 ---
 
-## 2. Bank 170 câu vẫn hữu hạn, đặc biệt ở nhóm câu khó
+## 2. Bank 220 câu vẫn hữu hạn, đặc biệt ở nhóm câu khó
 
 Bank hiện tại có:
 
 ```text
-170 câu = 34 câu / cluster
+220 câu = 44 câu / cluster
 ```
 
 Thiết kế Week 7 còn yêu cầu tỷ lệ câu khó tăng dần:
