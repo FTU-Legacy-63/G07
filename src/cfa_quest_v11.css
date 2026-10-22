@@ -738,7 +738,7 @@ body.skin .ans {
   line-height: 1.45;
 }
 body.skin .ans:hover:not(:disabled) { border-image-source: var(--ui-option-hover); }
-body.skin .ans.selected { border-image-source: var(--ui-option-selected); font-weight: 800; }
+/* Đáp án đang chọn: nổi rõ hơn (22/10) */ body.skin .ans { transition: transform .12s ease, filter .12s ease, opacity .12s ease; } body.skin .ans.selected {   border-image-source: var(--ui-option-selected);   font-weight: 800;   color: #4a2a00;   transform: scale(1.015);   filter: drop-shadow(0 0 4px #ffc21e) drop-shadow(0 0 8px rgba(255, 170, 0, .8));   animation: ans-pop .25s ease-out; } body.skin .ans.selected::before { content: '▶ '; color: #e08a00; } body.skin .answers:has(.ans.selected) .ans:not(.selected):not(:disabled) { opacity: .6; } @keyframes ans-pop { 0% { transform: scale(.97); } 60% { transform: scale(1.04); } 100% { transform: scale(1.015); } } @media (prefers-reduced-motion: reduce) { body.skin .ans.selected { animation: none; } }
 body.skin .ans.correct { border-image-source: var(--ui-option-correct); }
 body.skin .ans.wrong { border-image-source: var(--ui-option-wrong); }
 body.skin .ans:disabled:not(.selected) { opacity: .55; }
