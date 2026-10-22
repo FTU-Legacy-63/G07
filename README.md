@@ -1,365 +1,120 @@
-# CFA Quest — Ethics
+# CFA QUEST — ETHICS
 
-**Học phần:** NHA408E — Technology Applications in Banking and Finance · FTU 2026  
-**Nhóm 7:** Quỳnh (trưởng nhóm) · Hồng · Trang · Minh · Khôi
+## Mã nhóm
 
----
+G07 — Nhóm 7, học phần NHA408E (Technology Applications in Banking and Finance), FTU 2026
 
-## Project statement
+## Thành viên
 
-Thí sinh tự ôn CFA Level I môn Ethics thường biết mình sai bao nhiêu câu nhưng khó xác định lỗi đang tập trung ở Standard nào. Nếu không có chẩn đoán, lần luyện sau dễ tiếp tục làm dàn trải.
+| Họ tên | Mã sinh viên | Vai trò chính |
+| ------ | ------------ | ------------- |
+| Quỳnh  |              | Trưởng nhóm; luật chẩn đoán và công thức tính điểm; tích hợp code; tài liệu |
+| Hồng   |              | Biên soạn và rà soát ngân hàng câu hỏi; kịch bản demo |
+| Trang  |              | Quy tắc sinh đề cho 5 Arena; công cụ kiểm tra ngân hàng câu hỏi |
+| Minh   |              | Cơ chế Credit và vật phẩm; kiểm thử chấm điểm |
+| Khôi   |              | Giao diện, hình ảnh game; kiểm thử thao tác và thiết bị |
 
-**CFA Quest là một hầm ngục 5 Arena. Arena 1 tạo chẩn đoán ban đầu; các Arena sau được sinh từ dữ liệu sai của chính người học.** Hệ thống đo tỷ lệ đúng theo 5 cụm nội dung, xác định cụm yếu, rồi lọc ngân hàng **220 câu** để tạo bài luyện nhắm đúng phần đó.
+## Mô tả ngắn về sản phẩm
 
-Week 7 giữ nguyên core diagnostic logic nhưng tăng độ khó theo hành trình bằng:
+CFA Quest là một web game giúp người tự ôn CFA Level I biết mình đang yếu ở nhóm Standards nào trong môn Ethics, rồi tự sinh bài luyện nhắm đúng phần đó. Người chơi đi qua 5 Arena như một hầm ngục: Arena đầu tiên dùng để chẩn đoán, các Arena sau được tạo từ chính những câu người chơi làm sai. Cuối hành trình, game cho biết cụm kiến thức nào đã cải thiện và cụm nào cần ôn tiếp.
 
-- pass threshold tăng theo round;
-- tỷ lệ câu khó tăng theo round;
-- timer ở Arena 3, Arena 4 và Boss;
-- Credit penalty khi quá giờ;
-- Boss Gate yêu cầu 15 Credit;
-- World Quest để người thiếu Credit luyện thêm trước Boss.
+## Vấn đề sản phẩm giải quyết
 
-Người học không tự chọn mình luyện gì. **Dữ liệu sai của họ chọn hộ.**
+Khi tự luyện trắc nghiệm Ethics, người học thường chỉ biết điểm tổng, ví dụ đúng 10/15 câu. Con số này không cho biết lỗi sai đang dồn vào Standard nào. Các Standards trong Ethics lại có nhiều tình huống gần giống nhau, nên người học dễ ôn dàn trải theo cảm giác: luyện tiếp phần đã chắc, bỏ sót phần đang sai nhiều.
 
-**Người dùng mục tiêu:** thí sinh đã học xong lý thuyết Ethics và đang ở giai đoạn luyện MCQ.  
-**User task:** đi hết 5 Arena và biết cụm nào đã cải thiện, cụm nào vẫn cần luyện tiếp.  
-**Main output:** bảng chẩn đoán 5 cụm / 9 module + đề luyện được sinh tự động từ bảng chẩn đoán đó.
+CFA Quest nối bốn bước mà bộ đề cố định không làm được: ghi nhận lỗi sai theo từng cụm kiến thức → xác định cụm yếu → sinh đề luyện nhắm vào cụm đó → kiểm tra lại ở vòng cuối. Người chơi không phải tự chọn luyện gì; dữ liệu bài làm của họ chọn hộ.
 
----
+## Người dùng mục tiêu
 
-## Luồng Week 7
+Người dùng chính là thí sinh đang tự ôn CFA Level I, đã học xong lý thuyết Ethics và chuyển sang giai đoạn luyện câu hỏi trắc nghiệm.
 
-```text
-Arena 1
-15 câu · pass 70%
-        ↓
-Xác định W1
-        ↓
-Arena 2
-10 câu W1 · pass 75%
-        ↓
-Arena 3
-10 câu · pass 75% · 100 giây/câu
-        ↓
-Xác định W2 khác W1
-        ↓
-Arena 4
-10 câu W2 · pass 85% · 80 giây/câu
-        ↓
-Xác định 3 cụm yếu nhất
-        ↓
-Credit ≥ 15?
-   ├── Không → World Quest → cộng Credit → xét lại
-   └── Có   → trả 15 Credit
-                    ↓
-                  Boss
-          15 câu · pass 90%
-          60 giây/câu
-                    ↓
-             Bảng tổng kết
-```
+Việc người dùng cần làm (user task): đi hết hành trình 5 Arena và biết sau đó nên ôn lại cụm Standards nào.
 
-### Pass threshold
+Sản phẩm cũng có thể dùng trong lớp học hoặc buổi ôn nhóm để minh họa cách dữ liệu bài làm được dùng để cá nhân hóa bài luyện.
 
-| Round | Số câu | Ngưỡng đỗ | Số câu đúng tối thiểu |
-|---|---:|---:|---:|
-| Arena 1 | 15 | 70% | 11/15 |
-| Arena 2 | 10 | 75% | 8/10 |
-| Arena 3 | 10 | 75% | 8/10 |
-| Arena 4 | 10 | 85% | 9/10 |
-| Boss | 15 | 90% | 14/15 |
+## Tính năng chính
 
-### Difficulty mix
+* Ngân hàng 220 câu hỏi Ethics do nhóm tự biên soạn, gắn nhãn theo 5 cụm chẩn đoán, 9 module và 3 mức độ khó. Mỗi câu có lời giải và phân tích phương án gây nhiễu.
+* Hành trình 5 Arena (60 câu nếu không phải chơi lại). Arena 1 chẩn đoán ban đầu; Arena 2 luyện cụm yếu nhất, Arena 4 luyện cụm yếu tiếp theo; Boss kiểm tra lại 3 cụm yếu nhất.
+* Độ khó tăng dần theo vòng: ngưỡng đỗ cao hơn, nhiều câu khó hơn, có giới hạn thời gian ở 3 vòng cuối.
+* Credit, Shop và Bùa Loại Trừ để hỗ trợ người chơi ở vòng khó; World Quest để luyện thêm và kiếm Credit trước khi mở Boss.
+* Lớp game hành động: di chuyển bằng W, A, S, D, đánh quái để mở câu hỏi, né đạn ở Boss. Lớp này chỉ quyết định khi nào câu hỏi hiện ra, không ảnh hưởng chấm điểm hay chẩn đoán.
+* Bảng chẩn đoán sau mỗi Arena và bảng tổng kết sau Boss, cho biết cụm nào đã cải thiện, cụm nào cần ôn tiếp.
+* Chế độ demo có 4 kịch bản dựng sẵn để tái hiện kết quả đã tính trước khi trình bày.
 
-| Round | Easy / Medium / Hard |
-|---|---|
-| Arena 1 | mỗi cụm 1 / 1 / 1 |
-| Arena 2 | 4 / 4 / 2 |
-| Arena 3 | 2 / 5 / 3 |
-| Arena 4 | 2 / 4 / 4 |
-| Boss | 2 / 4 / 9 |
-
-Boss vẫn lấy ba cụm yếu nhất theo tỷ lệ:
+## Cách hoạt động
 
 ```text
-7 / 5 / 3 câu
+Arena 1: 15 câu, đủ 5 cụm  →  xác định cụm yếu nhất (W1)
+Arena 2: 10 câu thuộc W1
+Arena 3: 10 câu, đủ 5 cụm  →  xác định cụm yếu thứ hai (W2, khác W1)
+Arena 4: 10 câu thuộc W2   →  xác định 3 cụm yếu nhất
+Boss:    15 câu chia 7/5/3 cho 3 cụm yếu nhất (cần 15 Credit để mở)
+         →  Bảng tổng kết: cụm nào cải thiện, cụm nào cần ôn tiếp
 ```
 
----
+Ngưỡng đỗ tăng dần 70% / 75% / 75% / 85% / 90%. Câu trả lời đúng nhờ Bùa vẫn tính cho đỗ/trượt nhưng không được dùng để chẩn đoán, để kết quả chẩn đoán phản ánh đúng phần người chơi tự làm.
 
-## Boss Gate và World Quest
+Chi tiết luật, công thức và cách phân định khi hai cụm bằng điểm: [`docs/SOLUTION_STRUCTURE.md`](docs/SOLUTION_STRUCTURE.md) (Mục 5: công thức, Mục 15: lớp hành động).
 
-Đỗ Arena 4 chưa đủ để vào Boss.
+## Cách mở hoặc chạy sản phẩm
 
-Người chơi phải có và trả:
+Cách nhanh nhất:
 
 ```text
-15 Credit
+1. Mở link demo bằng máy tính có bàn phím.
+2. Bấm bắt đầu, đọc các thẻ hướng dẫn luật chơi.
+3. Dùng W, A, S, D di chuyển; nhân vật tự chém quái trong tầm, mỗi con quái mở một câu hỏi.
+4. Chọn đáp án và bấm Xác nhận. Hết quái thì màn kết thúc, xem kết quả và bảng chẩn đoán.
+5. Đi tiếp qua Arena 2–4, mua Bùa ở Shop nếu cần, chơi World Quest nếu thiếu Credit mở Boss.
+6. Vượt Boss để xem bảng tổng kết.
 ```
 
-Nếu thiếu Credit, **World Quest** được mở:
-
-- 15 câu;
-- 3 cụm yếu nhất, mỗi cụm 5 câu;
-- không timer;
-- không pass/fail;
-- không dùng Bùa;
-- có thể chơi nhiều lần.
-
-Reward Quest:
-
-| Kết quả | Credit |
-|---|---:|
-| 0–8/15 | 0 |
-| 9–11/15 | +2 |
-| 12–13/15 | +3 |
-| 14–15/15 | +4 |
-
-World Quest chỉ phục vụ luyện tập và kiếm Credit. Kết quả Quest **không được cộng vào dữ liệu chẩn đoán và không đi vào bảng tổng kết sau Boss**.
-
----
-
-## Timer và Credit penalty
-
-Timer áp dụng ở ba round cuối:
-
-| Round | Giới hạn |
-|---|---:|
-| Arena 3 | 100 giây/câu |
-| Arena 4 | 80 giây/câu |
-| Boss | 60 giây/câu |
-
-Hết giờ không auto-submit. Người chơi vẫn được trả lời và hệ thống tính overtime.
+Chạy từ repo (không cần cài đặt, không cần server):
 
 ```text
-penalty = ceil(max(0, t - L) / 10)
+1. Tải repo về máy (Code → Download ZIP) và giải nén.
+2. Mở thư mục src/, bấm đúp cfa_quest_v11.html.
+3. Màn hình đầu hiện dòng "Ngân hàng hợp lệ: 220 câu, 5 cụm, 9 module." là chạy đúng.
 ```
 
-Trong đó:
+Chạy bộ kiểm thử tự động (cần Node.js): mở thư mục repo và gõ `node --test`.
 
-- `t` = số giây đã dùng;
-- `L` = giới hạn của round.
+Sản phẩm chạy hoàn toàn trên trình duyệt, không cần đăng nhập, không gọi API bên ngoài; tiến trình lưu trên trình duyệt của người chơi. Chưa hỗ trợ thiết bị chỉ có màn hình cảm ứng.
 
-Mỗi block 10 giây quá giờ bị trừ 1 Credit. Trượt round vẫn bị phạt và ví không xuống dưới 0.
+## Link demo
 
----
+* Bản chính thức (đề bốc ngẫu nhiên): https://ftu-legacy-63.github.io/G07/src/cfa_quest_v11.html
+* Chế độ demo có kịch bản: https://ftu-legacy-63.github.io/G07/src/cfa_quest_v11.html?demo=1
+* Bản dự phòng và hướng dẫn chạy offline: [`W6/deployment.md`](W6/deployment.md)
+* Tài khoản demo: không cần.
 
-## Credit và Bùa
+## Ví dụ sử dụng
 
-Người chơi bắt đầu với:
+Kịch bản 1 trong chế độ demo đi hết 5 Arena với đáp án cố định. Arena 1 đúng 11/15 câu (đỗ), cụm yếu nhất là C2, nên Arena 2 gồm 10 câu C2. Arena 3 xác định cụm yếu tiếp theo là C1, nên Arena 4 gồm 10 câu C1. Sau Arena 4, Boss được chia C2 (7 câu), C1 (5 câu), C3 (3 câu). Bảng tổng kết cho kết quả C1 và C2 đã cải thiện, C3 cần cải thiện tiếp.
 
-```text
-3 Credit
-```
+Bốn kịch bản (chuẩn, lật đỗ/trượt, hòa điểm, bật/tắt Bùa) và kết quả mong đợi của từng kịch bản: [`W6/demo-input.md`](W6/demo-input.md).
 
-Reward khi **đỗ** round:
+## Ghi chú về dữ liệu
 
-| Tỷ lệ đúng | Credit |
-|---|---:|
-| từ 70% | +2 |
-| từ 80% | +3 |
-| từ 90% | +4 |
+Toàn bộ 220 câu hỏi, tình huống, lời giải và lý do gây nhiễu do nhóm tự biên soạn cho mục đích học tập. Tình huống là giả định, không trích nguyên văn tài liệu của CFA Institute hay GIPS Standards; tên Standard chỉ dùng để phân loại. Nhóm không đưa tài liệu luyện thi thương mại nào vào repo.
 
-Lần đầu vượt Boss được thêm:
+Các con số như ngưỡng đỗ, tỷ lệ câu khó, giới hạn thời gian, giá mở Boss và mức thưởng Credit là lựa chọn thiết kế của nhóm, chưa được kiểm chứng bằng dữ liệu người chơi thật.
 
-```text
-+5 Credit
-```
+* Dữ liệu câu hỏi: [`data/ethics_bank_220.json`](data/ethics_bank_220.json)
+* Định nghĩa trường dữ liệu: [`docs/INPUT_DICTIONARY.md`](docs/INPUT_DICTIONARY.md)
+* Nguồn và cách dùng: [`docs/SOURCE_USE_MAP.md`](docs/SOURCE_USE_MAP.md)
+* Giả định thiết kế: [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md)
 
-**Bùa Loại Trừ:** 3 Credit.
+## Kiểm thử
 
-Rule vật phẩm:
+20 test tự động kiểm tra luật game (chấm điểm, sinh đề, Credit, Boss, World Quest) và 4 kịch bản demo, hiện đều đạt. Danh sách test case và kết quả: [`W6/testing.md`](W6/testing.md). Lỗi đã gặp và cách xử lý: [`W6/bug-log.md`](W6/bug-log.md).
 
-- Arena 1: không dùng Bùa;
-- Arena 2–4: tối đa 1 Bùa/round;
-- Boss: tối đa 1 Bùa;
-- World Quest: không dùng Bùa.
+## Hạn chế
 
-Câu đúng nhờ Bùa vẫn tính vào điểm pass/fail nhưng không được dùng làm dữ liệu chẩn đoán.
+Sản phẩm chỉ xác định cụm có tỷ lệ đúng thấp trong một lượt chơi. Nó không đo năng lực Ethics theo chuẩn, không dự báo kết quả thi CFA thật, và chưa chứng minh được rằng việc luyện trong game làm người chơi tiến bộ. Số câu mỗi cụm trong một lượt còn ít, nên kết quả chẩn đoán chỉ nên dùng làm gợi ý ôn tập.
 
----
-
-## Ranh giới của sản phẩm
-
-Main path không retry và không cần World Quest vẫn có:
-
-```text
-15 + 10 + 10 + 10 + 15 = 60 câu
-```
-
-Nếu người chơi retry hoặc làm World Quest, tổng số câu sẽ lớn hơn 60.
-
-Sản phẩm **xác định cụm có tỷ lệ đúng thấp trong phạm vi một lượt chơi**. Nó không:
-
-- chẩn đoán năng lực Ethics theo chuẩn psychometric;
-- dự báo kết quả thi CFA thật;
-- chứng minh Trap hoặc World Quest gây ra learning;
-- coi timer là thước đo năng lực chuẩn hóa.
-
-`performance_score` là chỉ số nội bộ của sản phẩm, không phải standardized ability score.
-
-Các giá trị sau là **design choices của project**, chưa được kiểm chứng bằng dữ liệu người chơi đủ lớn:
-
-- pass threshold `70/75/75/85/90`;
-- difficulty mix từng round;
-- timer `100/80/60`;
-- penalty theo block 10 giây;
-- Boss Gate 15 Credit;
-- Quest reward `0/+2/+3/+4`;
-- mapping 9 module → 5 cụm;
-- difficulty label 1–3.
-
-Chi tiết:
-
-- [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md)
-- [`W6/limitations.md`](W6/limitations.md)
-- [`docs/SOLUTION_STRUCTURE.md`](docs/SOLUTION_STRUCTURE.md)
-
-> **Không nhầm hai ngưỡng:** Boss cần 90% để pass, nhưng nhãn cải thiện của từng cluster trong O4 vẫn dùng mốc 70% theo logic reporting hiện tại.
-
----
-
-## Chạy sản phẩm
-
-### Bản hiện tại
-
-Mở:
-
-[`src/cfa_quest_v11.html`](src/cfa_quest_v11.html)
-
-> Tên file `v11` được giữ để không phá các link cũ trong repo; tài liệu Week 7 mô tả logic hiện hành cần được đồng bộ vào build này.
-
-Engine:
-
-[`src/cfa_quest_v11.js`](src/cfa_quest_v11.js)
-
-Question bank nhúng:
-
-[`src/cfa_quest_v11_bank.js`](src/cfa_quest_v11_bank.js)
-
-Dữ liệu gốc:
-
-[`data/ethics_bank_220.json`](data/ethics_bank_220.json)
-
-### Bản v11 dự phòng / lịch sử
-
-Lịch sử của file chạy v11 được giữ trong GitHub:
-
-[History — `src/cfa_quest_v11.html`](https://github.com/FTU-Legacy-63/G07/commits/main/src/cfa_quest_v11.html)
-
-[History — `src/cfa_quest_v11.js`](https://github.com/FTU-Legacy-63/G07/commits/main/src/cfa_quest_v11.js)
-
-Nếu nhóm tách Week 7 thành file `v12` riêng sau này, thay phần **Bản hiện tại** bằng link `v12` và giữ hai link history/v11 này làm fallback.
-
----
-
-## Midterm evidence links
-
-Phần dưới giữ vai trò **historical evidence** của các checkpoint trước. Week 7 không viết lại nội dung Midterm.
-
-| Yêu cầu Week 4 | Tìm ở đâu |
-|---|---|
-| **Logic chain** — user → input → process → output → user action | [`docs/SOLUTION_STRUCTURE.md`](docs/SOLUTION_STRUCTURE.md) |
-| **Input dictionary** | [`docs/INPUT_DICTIONARY.md`](docs/INPUT_DICTIONARY.md) |
-| **Source & use** | [`docs/SOURCE_USE_MAP.md`](docs/SOURCE_USE_MAP.md) |
-| **Assumptions** | [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md) |
-| **Expected result** | [`docs/SAMPLE_INPUT_OUTPUT.md`](docs/SAMPLE_INPUT_OUTPUT.md) |
-| **Progress evidence** | [`docs/MIDTERM_REVIEW.md`](docs/MIDTERM_REVIEW.md) |
-| **Midterm verification** | [`MIDTERM_VERIFICATION.md`](MIDTERM_VERIFICATION.md) |
-
----
-
-## Cấu trúc repo
-
-```text
-README.md
-
-PROJECT PROPOSAL.md
-MIDTERM_VERIFICATION.md
-
-data/
-  ethics_bank_220.json         ngân hàng 220 câu, 44 câu × 5 cụm
-
-src/
-  cfa_quest_v11.html           file mở để chạy sản phẩm
-  cfa_quest_v11.js             engine
-  cfa_quest_v11_bank.js        bản nhúng của bank để chạy bằng file://
-  cfa_quest_v11.css
-  cfa_dungeon_ui_v10_skipfix_updated.css
-
-docs/
-  SOLUTION_STRUCTURE.md        core flow + diagnostic + Week 7 progression
-  INPUT_DICTIONARY.md          field/state/counter definitions
-  user-flow.md                 main path + alternative/error path
-  feature-scope.md             core/supporting/out-of-scope
-  ASSUMPTIONS.md               design assumptions + risks
-  SOURCE_USE_MAP.md            source & field traceability
-  SAMPLE_INPUT_OUTPUT.md       sample input/output
-  MIDTERM_REVIEW.md            historical Midterm document
-  WEEK5_CHECKPOINT.md          historical checkpoint
-
-W6/
-  testing.md                   test suite Week 7
-  demo-input.md                deterministic demo input
-  limitations.md               limitations và interpretation boundary
-
-W4/
-  CFA_Quest_user_flow.xlsm     historical v11 workbook
-  VBA_CFA_Quest.bas
-
-tools/
-  validate_question_bank.html  offline question-bank validator
-```
-
-Dữ liệu được nhúng trong `.js` để sản phẩm có thể mở trực tiếp bằng `file://`, không cần dựng local server.
-
----
-
-## Trạng thái hiện tại
-
-| Hạng mục | Trạng thái |
-|---|---|
-| Ngân hàng 220 câu | ✅ Hoàn thành |
-| Diagnostic logic O1–O4 | ✅ Hoàn thành |
-| Progressive pass threshold | ✅ Hoàn thành / đã test |
-| Difficulty mix theo round | ✅ Hoàn thành / đã test |
-| Timer + overtime penalty | ✅ Hoàn thành / đã test |
-| Boss Gate 15 Credit | ✅ Hoàn thành / đã test |
-| World Quest | ✅ Hoàn thành / đã test |
-| Boss dùng 1 Bùa | ✅ Hoàn thành / đã test |
-| Test suite Week 7 | ✅ Pass |
-| Demo seed 7 | ✅ Có kịch bản deterministic |
-| Observation/interview người dùng thật | Chưa đủ dữ liệu để validate các design assumptions |
-
----
-
-## Revision
-
-| Mốc | Thay đổi | Lý do |
-|---|---|---|
-| Week 6 | Chỉ giữ Bùa Loại Trừ 3 Credit | Freeze scope vật phẩm |
-| Week 6 | Bank 110 → 220 câu | Tăng coverage câu hỏi |
-| **Week 7** | Pass threshold → `70/75/75/85/90` | Round sau khó hơn round trước |
-| **Week 7** | Thêm difficulty quota theo round | Tăng tỷ lệ câu khó dần |
-| **Week 7** | Thêm timer `100/80/60` + Credit penalty | Tăng áp lực ở ba round cuối |
-| **Week 7** | Boss cần trả 15 Credit | Tạo progression gate trước Boss |
-| **Week 7** | Boss được dùng tối đa 1 Bùa | Thêm hỗ trợ ở round khó nhất |
-| **Week 7** | Thêm World Quest | Cho người thiếu Credit có đường luyện và kiếm thêm Credit |
-
----
-
-## Open questions / limitations cần theo dõi
-
-1. Boss 90% với 9 câu hard có thể quá khó; chưa có clear-rate từ sample người chơi đủ lớn.
-2. Arena 2 và Arena 3 cùng threshold 75%; khác biệt difficulty phụ thuộc question mix và timer.
-3. Replay Arena 4 có thể làm cạn pool câu hard của W2.
-4. Quest lặp câu cũ nên có thể dễ dần do memory effect.
-5. Browser timer có thể lệch khi đổi tab hoặc máy chậm.
-6. Mốc O4 70% trên slot Boss 7/5/3 có độ chặt khác nhau.
-7. Các design assumptions cần được validate bằng user testing thật.
-
-Chi tiết tại [`W6/limitations.md`](W6/limitations.md).
+Danh sách đầy đủ: [`W6/limitations.md`](W6/limitations.md).
 
 ---
 
@@ -368,3 +123,9 @@ Chi tiết tại [`W6/limitations.md`](W6/limitations.md).
 Toàn bộ 220 câu hỏi, tình huống, lời giải và lý do gây nhiễu do nhóm tự biên soạn.
 
 Tình huống là tình huống giả định, không trích nguyên văn tài liệu CFA Institute hoặc GIPS Standards. Tên Standard được dùng cho mục đích phân loại học thuật. Không có tài liệu nguồn thương mại nào được đưa vào repo hoặc lịch sử commit.
+
+## Ghi chú thêm
+
+CFA Quest là sản phẩm MVP cho môn học, hiện chỉ làm môn Ethics trong 10 môn của CFA Level I. Nhóm ưu tiên phần lõi là chẩn đoán điểm yếu và sinh đề theo dữ liệu sai; lớp game hành động được xây sau, trên một engine đã khóa luật và có kiểm thử.
+
+Nếu phát triển tiếp, nhóm có thể mở rộng ngân hàng câu hỏi để chẩn đoán đáng tin hơn, thêm các môn khác của CFA Level I, chỉnh độ khó dựa trên dữ liệu chơi thử với người dùng thật, và làm điều khiển cảm ứng cho điện thoại.
