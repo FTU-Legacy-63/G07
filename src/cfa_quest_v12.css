@@ -1,0 +1,33 @@
+/* CFA Quest demo v12 — chỉ bổ sung cho phần mới: đồng hồ, World Quest, khoá Boss.
+   Màu lấy từ biến trong cfa_dungeon_ui_v10_skipfix_updated.css. */
+
+/* Bảng tiến trình 7 ô: Arena 1–4, World Quest, Boss, Bảng tổng kết */
+@media (min-width: 801px) {
+  .stage-grid { grid-template-columns: repeat(7, 1fr); }
+}
+.dash-note { margin: 4px 0 0; font-size: 12px; }
+.stage .rule-line { margin-top: 8px; font-weight: 700; color: var(--ink); }
+.stage.locked .rule-line { color: #7f8998; }
+.stage.quest-card.active { border-color: #ecd788; background: var(--yellow-soft); }
+.stage.quest-card.active .badge { color: #8a6a00; }
+.stage.boss-gate { border: 1px dashed var(--red); background: var(--red-soft); cursor: pointer; }
+.stage.boss-gate .gate-line { margin-top: 8px; color: var(--ink); }
+.stage.boss-gate .gate-lack { margin-top: 6px; color: var(--red); font-weight: 700; }
+.stage.boss-gate .gate-ok { margin-top: 6px; color: var(--green); font-weight: 700; }
+
+/* Đồng hồ mỗi câu */
+.quiz-right { display: flex; align-items: center; gap: 12px; }
+.q-timer { font-weight: 800; font-size: 14px; padding: 6px 12px; border-radius: 8px; background: var(--blue-soft); color: var(--blue); border: 1px solid #c4d5fb; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.q-timer.warn { background: var(--yellow-soft); color: #8a6a00; border-color: #ecd788; }
+.q-timer.over { background: var(--red-soft); color: var(--red); border-color: #efb0b8; }
+
+/* Dòng tính Credit ở màn kết quả */
+.credit-line { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; border-radius: 10px; background: #f7f9fc; border: 1px solid var(--line); margin: 8px 0 14px; font-size: 13px; }
+.credit-line b { font-size: 15px; }
+
+/* Hộp xác nhận hai nút */
+.notice-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+
+@media (max-width: 520px) {
+  .quiz-right { flex-direction: column; align-items: flex-end; gap: 6px; }
+}
