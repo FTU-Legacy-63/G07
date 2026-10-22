@@ -11,7 +11,7 @@ G07 — Nhóm 7, học phần NHA408E (Technology Applications in Banking and Fi
 | Nguyễn Lê Phương Quỳnh | 2412380042 | **Project Leader · Main Developer**: điều phối nhóm và phạm vi sản phẩm; thiết kế logic chẩn đoán, công thức tính điểm; code chính từ giữa kì đến cuối kì (engine, giao diện, lớp game, chế độ demo, công cụ, kiểm thử tự động); tích hợp và tài liệu chính |
 | Trần Nhật Hồng | 2412380019 | **Content Leader**: biên soạn và rà soát ngân hàng câu hỏi Ethics; kịch bản demo; tổng hợp giới hạn sản phẩm |
 | Kim Mai Trang | 2412380048 | **Generation Logic & QA**: quy tắc sinh đề cho 5 Arena; kiểm thử sinh đề; ràng buộc kiểm tra ngân hàng câu hỏi; rà soát nhất quán tài liệu |
-| Nguyễn Vũ Anh Minh |  | **Game Economy & Testing**: cơ chế Credit, Shop và vật phẩm; kiểm thử chấm điểm; đồng thiết kế tutorial |
+| Nguyễn Vũ Anh Minh | 2412380032 | **Game Economy & Testing**: cơ chế Credit, Shop và vật phẩm; kiểm thử chấm điểm; đồng thiết kế tutorial |
 | Nguyễn Minh Khôi | 2412380021  | **UI/UX & Art**: thiết kế giao diện, bộ hình pixel-art và asset; thiết kế tutorial; kiểm thử thao tác và thiết bị |
 
 ## Mô tả ngắn về sản phẩm
