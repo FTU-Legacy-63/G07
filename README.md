@@ -12,7 +12,7 @@ G07 — Nhóm 7, học phần NHA408E (Technology Applications in Banking and Fi
 | Trần Nhật Hồng |  | **Content Leader**: biên soạn và rà soát ngân hàng câu hỏi Ethics; kịch bản demo; tổng hợp giới hạn sản phẩm |
 | Kim Mai Trang |  | **Generation Logic & QA**: quy tắc sinh đề cho 5 Arena; kiểm thử sinh đề; ràng buộc kiểm tra ngân hàng câu hỏi; rà soát nhất quán tài liệu |
 | Nguyễn Vũ Anh Minh |  | **Game Economy & Testing**: cơ chế Credit, Shop và vật phẩm; kiểm thử chấm điểm; đồng thiết kế tutorial |
-| Nguyễn Minh Khôi |  | **UI/UX & Art**: thiết kế giao diện, bộ hình pixel-art và asset; thiết kế tutorial; kiểm thử thao tác và thiết bị |
+| Nguyễn Minh Khôi | 2412380021  | **UI/UX & Art**: thiết kế giao diện, bộ hình pixel-art và asset; thiết kế tutorial; kiểm thử thao tác và thiết bị |
 
 ## Mô tả ngắn về sản phẩm
 
