@@ -8,16 +8,14 @@
 ## 2. Chạy offline 
 
 1. Vào repo G07 → nút **Code** → **Download ZIP**
-2. Giải nén, mở thư mục `src/`. Thư mục phải có đủ **9 file**: file HTML và 8 file nó nạp qua các thẻ `<link>`, `<script>`:
+2. Giải nén, mở thư mục `src/`. Thư mục phải có đủ **6 file** và thư mục `asset/` (file HTML nạp 5 file còn lại và ảnh trong `asset/` qua các thẻ `<link>`, `<script>`):
    - `cfa_quest_v11.html`
-   - `cfa_quest_engine.js`
-   - `cfa_quest_v11.js`
-   - `cfa_quest_v11_bank.js`
-   - `cfa_quest_tutorial.js`
-   - `cfa_dungeon_ui_v10_skipfix_updated.css`
    - `cfa_quest_v11.css`
-   - `cfa_quest_v12.css`
-   - `cfa_quest_tutorial.css`
+   - `cfa_quest_v11.js`
+   - `cfa_quest_engine.js`
+   - `cfa_quest_scenarios.js`
+   - `cfa_quest_v11_bank.js`
+   - thư mục `asset/` (gồm `assets.js` và 3 thư mục ảnh `bg/`, `sprites/`, `ui/`)
 3. Bấm đúp `cfa_quest_v11.html`.
 4. Màn hình đầu phải hiện dòng **"Ngân hàng hợp lệ: 220 câu, 5 cụm, 9 module."** Có dòng này là chạy đúng.
 
