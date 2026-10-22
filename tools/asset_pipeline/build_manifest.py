@@ -37,6 +37,8 @@ for k, m in S.items():
     sprites[k] = d
 
 bg = {k: dict(file=v['file'], w=v['w'], h=v['h']) for k, v in B.items()}
+# 22/10/2026: bg_map thay bang ban moi (Quynh tai len GitHub), co anh khac meta_bg.json cu
+bg['bg_map'].update(w=2688, h=1520)
 
 # Vung di duoc: dung so cua SOLUTION_STRUCTURE muc 15.8 cho moi san (walkDefault).
 # walkMeasured la so do tu tung anh (khung logic 960x540), chi de tham khao khi can chinh tay.
@@ -55,15 +57,16 @@ floors = {
 }
 
 # Ban do the gioi: vung bam va diem dat node, don vi % anh bg_map
+# 22/10/2026: bg_map doi sang ban moi 2688x1520 (dao noi, nhin xa hon), do lai toan bo node va rect.
 mapdata = dict(image='bg_map', zones={
-    'arena1':      dict(rect=[17, 66, 21, 32], node=[36, 87], transition='cc_arena1'),
-    'arena2':      dict(rect=[34, 17, 11, 27], node=[40.5, 41], transition='cc_arena2'),
-    'arena3':      dict(rect=[40, 44, 21, 28], node=[56, 65], transition='cc_arena3'),
-    'arena4':      dict(rect=[46, 19, 16, 21], node=[53, 36], transition='cc_arena4'),
-    'world_quest': dict(rect=[63, 19, 16, 25], node=[76, 38], transition='cc_world_quest'),
-    'boss':        dict(rect=[79, 3, 21, 32], node=[90, 33], transition='cc_boss'),
-    'report':      dict(rect=[14, 0, 19, 58], node=[29, 52], transition='cc_report'),
-    'shop':        dict(rect=[70, 62, 14, 30], node=[76, 72], transition='cc_shop', inside='bg_shop'),
+    'arena1':      dict(rect=[16, 62, 19, 30], node=[34, 81], transition='cc_arena1'),
+    'arena2':      dict(rect=[34, 21, 8, 24], node=[39, 43], transition='cc_arena2'),
+    'arena3':      dict(rect=[39, 41, 18, 25], node=[53, 63.5], transition='cc_arena3'),
+    'arena4':      dict(rect=[40, 21, 18, 20], node=[50.3, 38], transition='cc_arena4'),
+    'world_quest': dict(rect=[59, 22, 14, 20], node=[69.5, 39], transition='cc_world_quest'),
+    'boss':        dict(rect=[72, 12, 25, 28], node=[80.6, 35], transition='cc_boss'),
+    'report':      dict(rect=[13, 5, 20, 55], node=[28, 50.5], transition='cc_report'),
+    'shop':        dict(rect=[64, 58, 14, 25], node=[71.5, 70], transition='cc_shop', inside='bg_shop'),
 })
 
 # Thu tu hoat canh cua Boss (khop muc 15.3, 15.8)
