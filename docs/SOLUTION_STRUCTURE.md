@@ -6,13 +6,11 @@
 
 ---
 
-## 0. Sản phẩm trong một đoạn
+## 0. Giới thiệu sản phẩm
 
-CFA Quest là một hầm ngục gồm 5 Arena. **Arena 1 là bài chẩn đoán gốc**; các Arena sau được sinh từ dữ liệu sai của chính người học. Hệ thống đo tỷ lệ đúng theo từng cụm nội dung, tìm cụm yếu nhất, rồi lọc ngân hàng câu hỏi để kiểm tra lại phần kiến thức đó.
+CFA Quest là một quest game lấy chủ đề Dungeon gồm 5 Arena. **Arena 1 là bài chẩn đoán gốc**; các Arena sau được sinh từ dữ liệu sai của chính người học. Hệ thống đo tỷ lệ đúng theo từng cụm nội dung, tìm cụm yếu nhất, rồi lọc ngân hàng câu hỏi để kiểm tra lại phần kiến thức đó.
 
-Thiết kế mới giữ nguyên logic chẩn đoán, nhưng làm độ khó tăng dần theo hành trình bằng ba cơ chế: **ngưỡng đỗ tăng theo round, tỷ lệ câu khó tăng theo round, và giới hạn thời gian ở 3 round cuối**. Sau Arena 4, Boss không tự mở: người chơi cần **15 Credit**. Nếu thiếu Credit, người chơi có thể làm **World Quest** để ôn lại 3 cụm yếu nhất và kiếm thêm Credit. Bản cuối thêm một **lớp game hành động** (Mục 15): người chơi đánh quái để mở từng câu hỏi. Lớp này không đổi cách chọn câu, cách chấm và cách chẩn đoán.
-
-Người học không tự chọn mình luyện gì. **Dữ liệu sai của họ chọn hộ.**
+Người học không tự chọn mình luyện gì. **Dữ liệu sai của họ chọn hộ.**. Độ khó tăng dần theo hành trình bằng ba cơ chế: **ngưỡng đỗ tăng theo round, tỷ lệ câu khó tăng theo round, và giới hạn thời gian ở 3 round cuối**. Sau Arena 4, Boss không tự mở: người chơi cần **15 Credit**. Nếu thiếu Credit, người chơi có thể làm **World Quest** để ôn lại 3 cụm yếu nhất và kiếm thêm Credit. 
 
 ---
 
