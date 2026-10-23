@@ -253,8 +253,6 @@ Khi các cụm có tỷ lệ đúng bằng nhau, phân định theo thứ tự:
 2. Thời gian trả lời trung bình dài hơn → yếu hơn.
 3. Thứ tự mã cụm C1 → C5.
 
-Thay đổi Week 7 không thay logic tie-break. Màn kết quả ghi rõ bước nào đã quyết định W1, W2 và cụm yếu nhất vào Boss.
-
 ### 5.2 Công thức điểm Arena
 
 ```text
